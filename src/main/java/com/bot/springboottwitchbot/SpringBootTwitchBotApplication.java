@@ -1,7 +1,9 @@
 package com.bot.springboottwitchbot;
 
 import com.bot.springboottwitchbot.channels.TestChannel;
+import com.bot.springboottwitchbot.connection_runners.BotConnectionRunner;
 import com.bot.springboottwitchbot.connections.ChannelConnection;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,9 +21,7 @@ public class SpringBootTwitchBotApplication {
     public static void main(String[] args) {
         SpringApplication.run(SpringBootTwitchBotApplication.class, args);
 
-//        System.out.println(ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getBotToken());
-
-        ApplicationContextProvider.getApplicationContext().getBean(TestChannel.class).Run();
+        ApplicationContextProvider.getApplicationContext().getBean(BotConnectionRunner.class).getChannelConnection().Run();
     }
 
     //DataSource Config (postgres)
