@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BotConnectionRunner {
+public class MainConnectionRunner {
     private final ChannelConnection channelConnection;
     @Autowired
-    public BotConnectionRunner(@Qualifier("testChannel") ChannelConnection channelConnection) {
+    public MainConnectionRunner(@Qualifier("mainChannel") ChannelConnection channelConnection) {
         this.channelConnection = channelConnection;
     }
 

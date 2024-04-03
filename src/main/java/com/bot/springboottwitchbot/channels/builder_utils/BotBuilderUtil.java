@@ -6,13 +6,20 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 
 @Component
 public class BotBuilderUtil {
-    @Autowired
+
     TestChannelCredentialsUtil testChannelCredentialsUtil;
+
+    @Autowired
+    private BotBuilderUtil(TestChannelCredentialsUtil testChannelCredentialsUtil) {
+        this.testChannelCredentialsUtil = testChannelCredentialsUtil;
+    }
+
     public final OAuth2Credential credentialBot = new OAuth2Credential("twitch",
             ApplicationContextProvider.getApplicationContext().getBean(TestChannelCredentialsUtil.class).getBotToken());
     public final TwitchClient twitchClientBot =
@@ -24,15 +31,32 @@ public class BotBuilderUtil {
                     .withDefaultEventHandler(SimpleEventHandler.class)
                     .build();
 
+    public String getTestChannelId() {
+        return testChannelCredentialsUtil.getTestChannelId();
+    }
+
+    public String getBotChannelId() {
+        return testChannelCredentialsUtil.getBotChannelId();
+    }
+
+    public String getTestChannelToken() {
+        return testChannelCredentialsUtil.getTestChannelToken();
+    }
+
     public String getBotToken() {
         return testChannelCredentialsUtil.getBotToken();
+    }
+
+    public String getTestChannelName() {
+        return testChannelCredentialsUtil.getTestChannelName();
+    }
+
+    public String getClient_id() {
+        return testChannelCredentialsUtil.getClient_id();
     }
 
     public TwitchClient getTwitchClientBot() {
         return twitchClientBot;
     }
 
-    public String getTestChannelName () {
-        return testChannelCredentialsUtil.getTestChannelName();
-    }
 }

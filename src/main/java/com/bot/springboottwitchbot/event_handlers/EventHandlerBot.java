@@ -1,25 +1,28 @@
 package com.bot.springboottwitchbot.event_handlers;
 
 
+import com.bot.springboottwitchbot.ApplicationContextProvider;
+import com.bot.springboottwitchbot.channels.builder_utils.BotBuilderUtil;
+import com.bot.springboottwitchbot.utilities.UtilityCommandsGlobal;
+import com.bot.springboottwitchbot.utilities.UtilityCommandsTestChannel;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import com.github.twitch4j.pubsub.domain.SubscriptionData;
-import com.github.twitch4j.pubsub.events.ChannelSubscribeEvent;
+import org.springframework.context.ApplicationContext;
 //import org.bot.HttpClient.UtilityCommandsGlobal;
 //import org.bot.HttpClient.UtilityCommandsHttpHappa;
 //import org.bot.HttpClient.UtilityCommandsHttpTest;
-//import org.bot.Timers.Global10secCDTimer;
-//import org.bot.Timers.GlobalDuelTimer;
-//import org.bot.Timers.GlobalKillTimer;
-//import org.bot.Timers.GlobalRouletteTimer;
+//import org.bot.timers.Global10secCDTimer;
+//import org.bot.timers.GlobalDuelTimer;
+//import org.bot.timers.GlobalKillTimer;
+//import org.bot.timers.GlobalRouletteTimer;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Pattern;
 
 //import static org.bot.App.twitchClientBot;
 
 public class EventHandlerBot {
+    ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
 //    private String firstDuelName = null;
 //    private String secondDuelName = null;
 
@@ -738,52 +741,45 @@ public class EventHandlerBot {
 ////        }
 ////    }
 //
-////    @EventSubscriber
-////    public void badWordMessage(ChannelMessageEvent event) {
-////        String message = event.getMessage();
-////        if (message.contains("badword") || message.contains("фыва")) {
-////            twitchClient.getChat().sendMessage("maximuz666", "That was a bad word");
-////        }
-////    }
-//
-////    @EventSubscriber
-////    public void getModeratorsHappa(ChannelMessageEvent event) throws IOException {
-////        String message = event.getMessage();
-////        int id = Integer.parseInt(event.getUser().getId());
-////        if (message.contains("!mods")) {
-////            ArrayList<String> moderatorsList = UtilityCommandsHttpHappa.getModeratorsList();
-////            String fullModsList = moderatorsList.toString();
-////            twitchClient.getChat().sendMessage(event.getChannel().getName(), fullModsList);
-////        }
-////    }
-//    @EventSubscriber
-//    public void getUserIdTest(ChannelMessageEvent event) {
-//        String message = event.getMessage();
-//        if (message.contains("!test")) {
-//            try {
-//                String[] splitMessage = message.split(" ");
-//                if (splitMessage.length > 1) {
-//                    twitchClientBot.getChat().sendMessage(event.getChannel().getName(), UtilityCommandsGlobal.getUserIdByName(splitMessage[1]));
-//                }
-//                else {
-//                    twitchClientBot.getChat().sendMessage(event.getChannel().getName(), UtilityCommandsGlobal.getUserIdByName(event.getUser().getName()));
-//                }
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//
-//    }
-//
-//    @EventSubscriber
-//    public void vipUser(ChannelMessageEvent event) throws IOException {
-//        String message = event.getMessage();
-//        if (message.contains("!vip")) {
-//            UtilityCommandsHttpTest.vipUser(message.split(" ")[1]);
-//        }
-//
-//
-//    }
+    @EventSubscriber
+    public void badWordMessage(ChannelMessageEvent event) throws IOException {
+        String message = event.getMessage();
+        if (message.contains("badword") || message.contains("фыва")) {
+            UtilityCommandsTestChannel.timeoutUserTest("72903124", 10, "test");
+            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage("maximuz666", "new Bot: That was a bad word");
+        }
+    }
+
+    @EventSubscriber
+    public void getModeratorsTest(ChannelMessageEvent event) {
+        String message = event.getMessage();
+        if (message.contains("!mods")) {
+            ArrayList<String> moderatorsList = UtilityCommandsTestChannel.getModeratorsList();
+            String fullModsList = moderatorsList.toString();
+            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), fullModsList);
+        }
+    }
+    @EventSubscriber
+    public void getUserIdTest(ChannelMessageEvent event) {
+        String message = event.getMessage();
+        if (message.contains("!test")) {
+            try {
+                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                .getChat().sendMessage("maximuz666", "new bot: " + UtilityCommandsGlobal.getUserIdByName("maximuz666"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    @EventSubscriber
+    public void vipUser(ChannelMessageEvent event) throws IOException {
+        String message = event.getMessage();
+        if (message.contains("!vip")) {
+            UtilityCommandsTestChannel.vipUser(message.split(" ")[1]);
+        }
+    }
 //
 //    @EventSubscriber
 //    public void getSubNotificationTest(ChannelSubscribeEvent event) {
@@ -795,18 +791,17 @@ public class EventHandlerBot {
 //    }
 //
 //
-//    @EventSubscriber
-//    public void timeoutHappaTest(ChannelMessageEvent event) {
-//        String message = event.getMessage();
-//        try {
-//            if (message.contains("!timeout")) {
-//                UtilityCommandsHttpHappa.timeoutUser("39417514", 10, "no reason");
-//                twitchClientBot.getChat().sendMessage(event.getChannel().getName(), "request sent");
-//            }
-//        } catch (IOException e) {
-//            System.out.println(e.getMessage());
-//        }
-//    }
+    @EventSubscriber
+    public void timeoutHappaTest(ChannelMessageEvent event) {
+        String message = event.getMessage();
+        try {
+            if (message.contains("!emotetest")) {
+                UtilityCommandsTestChannel.emoteOnlyMode(true);
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 //
 //    @EventSubscriber
 //    public void duelCooldownTest(ChannelMessageEvent event) {
