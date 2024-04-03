@@ -1,4 +1,4 @@
-package com.bot.springboottwitchbot.channels.builder_utils;
+package com.bot.springboottwitchbot.connections.channels.builder_utils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;

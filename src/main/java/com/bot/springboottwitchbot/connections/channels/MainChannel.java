@@ -1,10 +1,8 @@
-package com.bot.springboottwitchbot.channels;
+package com.bot.springboottwitchbot.connections.channels;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
-import com.bot.springboottwitchbot.channels.builder_utils.BotBuilderUtil;
-import com.bot.springboottwitchbot.channels.builder_utils.MainBuilderUtil;
-import com.bot.springboottwitchbot.connections.ChannelConnection;
-import com.bot.springboottwitchbot.event_handlers.EventHandlerBot;
+import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
+import com.bot.springboottwitchbot.connections.channel_connections.ChannelConnection;
 import com.bot.springboottwitchbot.event_handlers.EventHandlerMain;
 import com.github.philippheuer.events4j.core.EventManager;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;

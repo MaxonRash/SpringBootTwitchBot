@@ -1,4 +1,4 @@
-package com.bot.springboottwitchbot.channels.builder_utils;
+package com.bot.springboottwitchbot.connections.channels.builder_utils;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;

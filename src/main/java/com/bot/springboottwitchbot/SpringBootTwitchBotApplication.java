@@ -1,17 +1,13 @@
 package com.bot.springboottwitchbot;
 
-import com.bot.springboottwitchbot.channels.builder_utils.BotBuilderUtil;
-import com.bot.springboottwitchbot.connection_runners.BotConnectionRunner;
-import com.bot.springboottwitchbot.connection_runners.MainConnectionRunner;
-import com.bot.springboottwitchbot.connections.ChannelConnection;
+import com.bot.springboottwitchbot.connections.connection_runners.BotConnectionRunner;
+import com.bot.springboottwitchbot.connections.connection_runners.MainConnectionRunner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
 
@@ -48,14 +44,5 @@ public class SpringBootTwitchBotApplication {
 
         return dataSource;
     }
-
-//    @Bean
-//    public RestTemplate restTemplate() {
-//        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-//        requestFactory.setReadTimeout(600000);
-//        requestFactory.setConnectTimeout(600000);
-//        return new RestTemplate(requestFactory);
-//    }
-
 
 }

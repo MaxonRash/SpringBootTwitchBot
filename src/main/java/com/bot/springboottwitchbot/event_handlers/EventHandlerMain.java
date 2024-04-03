@@ -1,17 +1,12 @@
 package com.bot.springboottwitchbot.event_handlers;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
-import com.bot.springboottwitchbot.channels.builder_utils.BotBuilderUtil;
-import com.bot.springboottwitchbot.channels.builder_utils.MainBuilderUtil;
+import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
+import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsMainChannel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import com.github.twitch4j.pubsub.domain.ChannelPointsRedemption;
-import com.github.twitch4j.pubsub.domain.ChannelPointsReward;
-import com.github.twitch4j.pubsub.domain.SubscriptionData;
-import com.github.twitch4j.pubsub.events.ChannelSubscribeEvent;
-import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
 import org.springframework.context.ApplicationContext;
 //import org.bot.HttpClient.UtilityCommandsGlobal;
 //import org.bot.HttpClient.UtilityCommandsHttpHappa;
@@ -20,7 +15,6 @@ import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Pattern;
 
 //import static org.bot.App.twitchClientBot;
 //import static org.bot.App.twitchClientHappa;

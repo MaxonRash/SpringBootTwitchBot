@@ -2,7 +2,7 @@ package com.bot.springboottwitchbot.utilities;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.bot.springboottwitchbot.DTOs.get_user_DTOs.GetUserDTO;
-import com.bot.springboottwitchbot.channels.builder_utils.BotBuilderUtil;
+import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;

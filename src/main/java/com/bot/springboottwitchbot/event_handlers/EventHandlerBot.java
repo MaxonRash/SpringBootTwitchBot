@@ -2,7 +2,7 @@ package com.bot.springboottwitchbot.event_handlers;
 
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
-import com.bot.springboottwitchbot.channels.builder_utils.BotBuilderUtil;
+import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsGlobal;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsTestChannel;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;

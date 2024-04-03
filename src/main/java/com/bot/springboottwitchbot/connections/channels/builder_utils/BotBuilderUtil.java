@@ -1,4 +1,4 @@
-package com.bot.springboottwitchbot.channels.builder_utils;
+package com.bot.springboottwitchbot.connections.channels.builder_utils;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
@@ -6,7 +6,6 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 

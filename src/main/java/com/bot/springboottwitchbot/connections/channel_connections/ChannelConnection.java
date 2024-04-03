@@ -1,4 +1,4 @@
-package com.bot.springboottwitchbot.connections;
+package com.bot.springboottwitchbot.connections.channel_connections;
 
 import org.springframework.stereotype.Component;
 @Component
