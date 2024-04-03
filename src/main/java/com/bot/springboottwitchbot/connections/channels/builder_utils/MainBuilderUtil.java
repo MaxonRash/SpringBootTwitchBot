@@ -47,4 +47,7 @@ public class MainBuilderUtil {
         return twitchClientMain;
     }
 
+    public OAuth2Credential getCredentialMain() {
+        return credentialMain;
+    }
 }

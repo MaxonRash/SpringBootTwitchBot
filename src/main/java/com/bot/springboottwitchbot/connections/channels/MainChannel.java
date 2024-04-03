@@ -19,5 +19,9 @@ public class MainChannel implements ChannelConnection {
         EventManager eventManagerMain = applicationContext.getBean(MainBuilderUtil.class).getTwitchClientMain().getEventManager();
         EventHandlerMain eventHandlerMain = new EventHandlerMain();
         eventManagerMain.getEventHandler(SimpleEventHandler.class).registerListener(eventHandlerMain);
+        applicationContext.getBean(MainBuilderUtil.class).getTwitchClientMain().getPubSub()
+                .listenForSubscriptionEvents(applicationContext.getBean(MainBuilderUtil.class).getCredentialMain(), "28735257");
+        applicationContext.getBean(MainBuilderUtil.class).getTwitchClientMain().getPubSub()
+                .listenForChannelPointsRedemptionEvents(applicationContext.getBean(MainBuilderUtil.class).getCredentialMain(), "28735257");
     }
 }

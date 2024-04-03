@@ -45,4 +45,13 @@ public class SpringBootTwitchBotApplication {
         return dataSource;
     }
 
+    // publishing a test event
+        /*
+        SubscriptionData subscriptionData = new SubscriptionData();
+        subscriptionData.setDisplayName("testUser");
+        ChannelSubscribeEvent channelSubscribeEvent = new ChannelSubscribeEvent(subscriptionData);
+        eventManagerHappa.publish(channelSubscribeEvent);
+        */
+
+//     twitchClientBot.getEventManager().onEvent(ChatModerationEvent.class, System.out::println);
 }
