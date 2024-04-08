@@ -3,6 +3,7 @@ package com.bot.springboottwitchbot.event_handlers;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
+import com.bot.springboottwitchbot.services.UsersService;
 import com.bot.springboottwitchbot.timers.Global10secCDTimer;
 import com.bot.springboottwitchbot.timers.GlobalDuelTimer;
 import com.bot.springboottwitchbot.timers.GlobalKillTimer;
@@ -12,15 +13,19 @@ import com.bot.springboottwitchbot.utilities.UtilityCommandsMainChannel;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsTestChannel;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-
+@Component
 public class EventHandlerBot {
     ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
+    @Autowired
+    UsersService usersService;
     private String firstDuelName = null;
     private String secondDuelName = null;
 
@@ -778,17 +783,15 @@ public class EventHandlerBot {
             UtilityCommandsTestChannel.vipUser(message.split(" ")[1]);
         }
     }
-//
-//    @EventSubscriber
-//    public void getSubNotificationTest(ChannelSubscribeEvent event) {
-//        SubscriptionData subscriptionData = event.getData();
-//
-//
-//
-//
-//    }
-//
-//
+
+    @EventSubscriber
+    public void saveUserTest(ChannelMessageEvent event) throws IOException {
+        if (event.getMessage().contains("!getuser")) {
+            usersService.save(UtilityCommandsGlobal.getUserDTOByName("maximuz666"));
+//            usersService.findOne("maxon54123");
+        }
+    }
+
     @EventSubscriber
     public void timeoutHappaTest(ChannelMessageEvent event) {
         String message = event.getMessage();

@@ -117,4 +117,21 @@ public class Data {
     public void setCreated_at(String created_at) {
         this.created_at = created_at;
     }
+
+    @Override
+    public String toString() {
+        return "Data{" +
+                "id='" + id + '\'' +
+                ", login='" + login + '\'' +
+                ", display_name='" + display_name + '\'' +
+                ", type='" + type + '\'' +
+                ", broadcaster_type='" + broadcaster_type + '\'' +
+                ", description='" + description + '\'' +
+                ", profile_image_url='" + profile_image_url + '\'' +
+                ", offline_image_url='" + offline_image_url + '\'' +
+                ", view_count=" + view_count +
+                ", email='" + email + '\'' +
+                ", created_at='" + created_at + '\'' +
+                '}';
+    }
 }

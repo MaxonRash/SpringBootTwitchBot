@@ -18,7 +18,7 @@ public class TestChannel implements ChannelConnection {
         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().joinChannel(
                 applicationContext.getBean(BotBuilderUtil.class).getTestChannelName());
         EventManager eventManagerBot = applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getEventManager();
-        EventHandlerBot eventHandlerBot = new EventHandlerBot();
-        eventManagerBot.getEventHandler(SimpleEventHandler.class).registerListener(eventHandlerBot);
+//        EventHandlerBot eventHandlerBot = new EventHandlerBot();
+        eventManagerBot.getEventHandler(SimpleEventHandler.class).registerListener(applicationContext.getBean(EventHandlerBot.class) /*eventHandlerBot*/);
     }
 }
