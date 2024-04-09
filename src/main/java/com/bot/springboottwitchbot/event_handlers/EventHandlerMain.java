@@ -3,6 +3,7 @@ package com.bot.springboottwitchbot.event_handlers;
 import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
+import com.bot.springboottwitchbot.services.UsersService;
 import com.bot.springboottwitchbot.timers.*;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsGlobal;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsMainChannel;
@@ -15,16 +16,21 @@ import com.github.twitch4j.pubsub.domain.ChannelPointsReward;
 import com.github.twitch4j.pubsub.domain.SubscriptionData;
 import com.github.twitch4j.pubsub.events.ChannelSubscribeEvent;
 import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
+@Component
 public class EventHandlerMain {
     ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
     private String firstDuelName = null;
     private String secondDuelName = null;
+    @Autowired
+    UsersService usersService;
 
     @EventSubscriber
     public void printChannelMessage(ChannelMessageEvent event) {

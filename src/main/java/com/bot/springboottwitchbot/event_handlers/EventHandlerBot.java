@@ -2,7 +2,9 @@ package com.bot.springboottwitchbot.event_handlers;
 
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
+import com.bot.springboottwitchbot.DTOs.utilities_for_DTOs.GetUserDTOToUserConverter;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
+import com.bot.springboottwitchbot.models.User;
 import com.bot.springboottwitchbot.services.UsersService;
 import com.bot.springboottwitchbot.timers.Global10secCDTimer;
 import com.bot.springboottwitchbot.timers.GlobalDuelTimer;
@@ -18,6 +20,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -785,10 +789,27 @@ public class EventHandlerBot {
     }
 
     @EventSubscriber
-    public void saveUserTest(ChannelMessageEvent event) throws IOException {
-        if (event.getMessage().contains("!getuser")) {
-            usersService.save(UtilityCommandsGlobal.getUserDTOByName("maximuz666"));
-//            usersService.findOne("maxon54123");
+    public void UserDOBTest(ChannelMessageEvent event) throws IOException, ParseException, InterruptedException {
+        String message = event.getMessage().toLowerCase();
+        if (message.startsWith("!др")) {
+            ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(message.split(" ")));
+            arrayList.remove("\udb40\udc00");
+            if (arrayList.size() > 1) {
+                String DOB = arrayList.get(1) + "/2000";
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                Date DOBDate = sdf.parse(DOB);
+                User user = GetUserDTOToUserConverter.ConvertUserFromDTO(UtilityCommandsGlobal
+                        .getUserDTOByName(event.getUser().getName()));
+                user.setDateOfBirth(DOBDate);
+
+                usersService.save(user);
+            }
+            else {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM");
+                User user = usersService.findOne(event.getUser().getName());
+                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                        .getChat().sendMessage( event.getChannel().getName(), simpleDateFormat.format(user.getDateOfBirth()));
+            }
         }
     }
 
