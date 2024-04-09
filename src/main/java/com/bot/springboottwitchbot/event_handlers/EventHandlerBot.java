@@ -789,6 +789,34 @@ public class EventHandlerBot {
     }
 
     @EventSubscriber
+    public void followedSinceTest(ChannelMessageEvent event) throws IOException, ParseException {
+        String message = event.getMessage();
+        if (message.contains("!follow")) {
+            User user = usersService.findOne("winretkristin");
+            Date followingSince = UtilityCommandsTestChannel.getFollowingSinceDate(137335434);
+            user.setFollowingSince(followingSince);
+            usersService.save(user);
+        }
+    }
+
+    @EventSubscriber
+    public void BobFollowTest(ChannelMessageEvent event) throws IOException, ParseException {
+        String message = event.getMessage();
+        if (message.contains("!checkfollow")) {
+            Date date = UtilityCommandsTestChannel.getFollowingSinceDate(Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName()))));
+//            User user = usersService.findOne("steyro");
+            if (date != null) {
+                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                        .getChat().sendMessage("maximuz666", date.toString());
+            }
+            else {
+                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                        .getChat().sendMessage("maximuz666", "TI NE FOLLOWER");
+            }
+        }
+    }
+
+    @EventSubscriber
     public void UserDOBTest(ChannelMessageEvent event) throws IOException, ParseException, InterruptedException {
         String message = event.getMessage().toLowerCase();
         if (message.startsWith("!др")) {

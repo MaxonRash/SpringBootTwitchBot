@@ -28,7 +28,7 @@ public class UsersService {
         User user = new User();
 //        user = usersRepository.findById(id);
         user = usersRepository.findUserByLoginIgnoreCase(login);
-        System.out.println(user.getLogin());
+//        System.out.println(user.getLogin());
         return user;
     }
 

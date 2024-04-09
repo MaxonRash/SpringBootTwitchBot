@@ -2,6 +2,7 @@ package com.bot.springboottwitchbot.utilities;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.bot.springboottwitchbot.DTOs.emote_only_DTOs.EmoteOnlyDTO;
+import com.bot.springboottwitchbot.DTOs.get_followers_DTOs.GetFollowersDTO;
 import com.bot.springboottwitchbot.DTOs.moderator_DTOs.ModeratorDTO;
 import com.bot.springboottwitchbot.DTOs.timeout_DTOs.Data;
 import com.bot.springboottwitchbot.DTOs.timeout_DTOs.TimeoutUserDTO;
@@ -15,7 +16,11 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Objects;
 
 public class UtilityCommandsMainChannel {
     private static final HttpEntity<Void> httpGetEntity;
@@ -125,6 +130,26 @@ public class UtilityCommandsMainChannel {
         }
 
         return moderatorsList;
+    }
+
+    public static Date getFollowingSinceDate(int userId) throws ParseException {
+        HttpHeaders followersHeaders = new HttpHeaders();
+        followersHeaders.setContentType(MediaType.APPLICATION_JSON);
+        followersHeaders.add("Authorization", "Bearer " + applicationContext.getBean(MainBuilderUtil.class).getMainToken());
+        followersHeaders.add("Client-Id", applicationContext.getBean(MainBuilderUtil.class).getClient_id());
+        String url = "https://api.twitch.tv/helix/channels/followers?broadcaster_id=" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelId()
+                + "&user_id=" + userId;
+        HttpEntity<Void> httpEntityGetFollowers = new HttpEntity<>(followersHeaders);
+        GetFollowersDTO getFollowersDTO = new RestTemplate().exchange(url, HttpMethod.GET, httpEntityGetFollowers, GetFollowersDTO.class).getBody();
+        if (!Objects.requireNonNull(getFollowersDTO).getData().isEmpty()) {
+            String followedAt = Objects.requireNonNull(getFollowersDTO).getData().get(0).getFollowed_at();
+//        System.out.println("Following since: " + followedAt);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            return simpleDateFormat.parse(followedAt);
+        }
+        else {
+            return null;
+        }
     }
 
 }
