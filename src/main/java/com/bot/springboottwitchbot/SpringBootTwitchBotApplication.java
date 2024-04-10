@@ -2,6 +2,10 @@ package com.bot.springboottwitchbot;
 
 import com.bot.springboottwitchbot.connections.connection_runners.BotConnectionRunner;
 import com.bot.springboottwitchbot.connections.connection_runners.MainConnectionRunner;
+import com.bot.springboottwitchbot.quartz.CheckDOBRunner;
+import com.bot.springboottwitchbot.quartz.CheckForDatesOfBirth;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +19,7 @@ import javax.sql.DataSource;
 @PropertySource("classpath:databaseCredentials.properties")
 public class SpringBootTwitchBotApplication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SchedulerException {
         SpringApplication.run(SpringBootTwitchBotApplication.class, args);
 
         //uncomment for running on test channel
@@ -23,6 +27,24 @@ public class SpringBootTwitchBotApplication {
 
         //uncomment for running on main channel
         ApplicationContextProvider.getApplicationContext().getBean(MainConnectionRunner.class).getChannelConnection().Run();
+
+        SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+        Scheduler scheduler = schedulerFactory.getScheduler();
+
+        JobDetail job = JobBuilder.newJob(CheckForDatesOfBirth.class)
+                .withIdentity("myJob", "group1")
+                .build();
+
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity("myTrigger", "group1")
+                .startNow()
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                        .withIntervalInSeconds(10)
+                        .repeatForever())
+                .build();
+        scheduler.scheduleJob(job, trigger);
+
+        scheduler.start();
     }
 
     //DataSource Config (postgres)

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class UtilityCommandsGlobal {
+    public static List<String> listOfUsersWithDOB;
     public static String getUserIdByName(String login) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
         ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
