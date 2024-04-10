@@ -28,23 +28,8 @@ public class SpringBootTwitchBotApplication {
         //uncomment for running on main channel
         ApplicationContextProvider.getApplicationContext().getBean(MainConnectionRunner.class).getChannelConnection().Run();
 
-        SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        Scheduler scheduler = schedulerFactory.getScheduler();
-
-        JobDetail job = JobBuilder.newJob(CheckForDatesOfBirth.class)
-                .withIdentity("myJob", "group1")
-                .build();
-
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity("myTrigger", "group1")
-                .startNow()
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .withIntervalInSeconds(10)
-                        .repeatForever())
-                .build();
-        scheduler.scheduleJob(job, trigger);
-
-        scheduler.start();
+//        CheckDOBRunner.runSimpleTriggerTest();
+        CheckDOBRunner.runCronTriggerTest();
     }
 
     //DataSource Config (postgres)

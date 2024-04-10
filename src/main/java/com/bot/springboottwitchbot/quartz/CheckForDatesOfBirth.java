@@ -3,9 +3,7 @@ package com.bot.springboottwitchbot.quartz;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsGlobal;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 public class CheckForDatesOfBirth implements Job {
