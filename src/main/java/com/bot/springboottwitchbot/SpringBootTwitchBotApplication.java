@@ -3,9 +3,7 @@ package com.bot.springboottwitchbot;
 import com.bot.springboottwitchbot.connections.connection_runners.BotConnectionRunner;
 import com.bot.springboottwitchbot.connections.connection_runners.MainConnectionRunner;
 import com.bot.springboottwitchbot.quartz.CheckDOBRunner;
-import com.bot.springboottwitchbot.quartz.CheckForDatesOfBirth;
-import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,7 +16,6 @@ import javax.sql.DataSource;
 @SpringBootApplication
 @PropertySource("classpath:databaseCredentials.properties")
 public class SpringBootTwitchBotApplication {
-
     public static void main(String[] args) throws SchedulerException {
         SpringApplication.run(SpringBootTwitchBotApplication.class, args);
 
@@ -29,7 +26,7 @@ public class SpringBootTwitchBotApplication {
         ApplicationContextProvider.getApplicationContext().getBean(MainConnectionRunner.class).getChannelConnection().Run();
 
 //        CheckDOBRunner.runSimpleTriggerTest();
-        CheckDOBRunner.runCronTriggerTest();
+//        CheckDOBRunner.runCronTriggerTest();
     }
 
     //DataSource Config (postgres)

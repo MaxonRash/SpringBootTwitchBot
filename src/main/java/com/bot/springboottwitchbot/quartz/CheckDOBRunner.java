@@ -35,7 +35,7 @@ public class CheckDOBRunner {
 
         CronTrigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity("cronTrigger1", "group1")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 * 04 ? * *"))
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 * * ? * *"))
                 .forJob("myJob", "group1")
                 .build();
 
