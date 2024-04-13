@@ -1,13 +1,16 @@
 package com.bot.springboottwitchbot.event_handlers;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
+import com.bot.springboottwitchbot.DTOs.utilities_for_DTOs.GetUserDTOToUserConverter;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
+import com.bot.springboottwitchbot.models.User;
 import com.bot.springboottwitchbot.services.UsersService;
 import com.bot.springboottwitchbot.timers.*;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsGlobal;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsMainChannel;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsTestChannel;
+import com.bot.springboottwitchbot.utilities.UtilityDOB;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
@@ -21,6 +24,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -455,7 +460,7 @@ public class EventHandlerMain {
     //_______________________________________________________________________________________________________________________________
     //_______________________________________________________________________________________________________________________________
     //_______________________________________________________________________________________________________________________________
-    // Other events Handlers (like subs)
+    // Other events Handlers (like subs and triggers)
     //_______________________________________________________________________________________________________________________________
     //_______________________________________________________________________________________________________________________________
     //_______________________________________________________________________________________________________________________________
@@ -553,6 +558,134 @@ public class EventHandlerMain {
                 userToTimeout = userToTimeout.substring(1);
             }
             UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(userToTimeout), 180, "Timeout for points");
+        }
+    }
+
+    @EventSubscriber
+    public void checkTodayDOBs(ChannelMessageEvent event) {
+        String message = event.getMessage().toLowerCase();
+        if (message.contains("!чек др") && (event.getUser().getName().equalsIgnoreCase("happasc2") || event.getUser().getName().equalsIgnoreCase("maximuz666"))) {
+            if (UtilityDOB.listOfUsersWithDOB.isEmpty()) {
+                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
+                        .sendMessage("happasc2", "@" + "Happasc2" + " Сегодня ни у кого нет ДР FeelsBadMan");
+            }
+            else if (UtilityDOB.listOfUsersWithDOB.size() == 1) {
+                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
+                        .sendMessage("happasc2", "@" + "Happasc2" + " Сегодня у " + UtilityDOB.listOfUsersWithDOB.get(0)
+                                + " день рождения! " + "@" + UtilityDOB.listOfUsersWithDOB.get(0) + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan "
+                                + "PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
+            }
+            else {
+                StringBuilder sb = new StringBuilder();
+                for (String login : UtilityDOB.listOfUsersWithDOB) {
+                    sb.append("@").append(login).append(" ");
+                }
+                String allUsersWithDOB = sb.toString().trim();
+                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
+                        .sendMessage("happasc2", "@" + "Happasc2" + " Сегодня у этих прекрасных людей дни рождения! "
+                                + allUsersWithDOB + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
+            }
+        }
+    }
+
+    @EventSubscriber
+    public void UserDOB(ChannelMessageEvent event) throws IOException, ParseException {
+        String message = event.getMessage().toLowerCase();
+        if (message.startsWith("!др")) {
+            ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(message.split(" ")));
+            arrayList.remove("\udb40\udc00");
+            if (arrayList.size() > 1) {
+                User checkUser = usersService.findOne(event.getUser().getName());
+                if (checkUser == null) {
+                    checkUser = GetUserDTOToUserConverter.ConvertUserFromDTO(UtilityCommandsGlobal.getUserDTOByName(event.getUser().getName()));
+                    checkUser.setFollowingSince(UtilityCommandsMainChannel.getFollowingSinceDate(
+                            Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
+                    usersService.save(checkUser);
+                }
+                if (checkUser.getFollowingSince() == null) {
+                    checkUser.setFollowingSince(UtilityCommandsMainChannel.getFollowingSinceDate(
+                            Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
+                    if (checkUser.getFollowingSince() == null) {
+                        if (Global10secCDTimer.getGlobal10secTimer() == null) {
+                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                    .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " нужно быть фолловером больше, чем"
+                                            + " 6 месяцев.");
+                            Global10secCDTimer.setGlobal10secTimer();
+                        }
+                    }
+                }
+                if(checkUser.getFollowingSince() != null) {
+                    if (UtilityDOB.CheckIfFollowIsMoreThan6Months(new Date(), checkUser.getFollowingSince())) {
+                        if (checkUser.getDateOfBirth() == null) {
+                            String originalDOB = arrayList.get(1);
+                            String DOB;
+                            Date DOBDate;
+                            if (originalDOB.matches("(0[1-9]|[1-2]\\d|3[01])[/.-](1[0-2]|0[1-9])[/.-](19[6-9]\\d|20[0-1]\\d)")) {
+                                originalDOB = originalDOB.replaceAll("\\.", "/");
+                                originalDOB = originalDOB.replaceAll("-", "/");
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                                DOB = originalDOB;
+                                DOBDate = sdf.parse(DOB);
+                            } else if (originalDOB.matches("(0[1-9]|[1-2]\\d|3[01])[/.-](1[0-2]|0[1-9])")) {
+                                originalDOB = originalDOB.replaceAll("\\.", "/");
+                                originalDOB = originalDOB.replaceAll("-", "/");
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                                DOB = originalDOB + "/1900";
+                                DOBDate = sdf.parse(DOB);
+                            } else {
+                                DOBDate = null;
+                                if (Global10secCDTimer.getGlobal10secTimer() == null) {
+                                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                            .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Формат даты должен быть таким: "
+                                                    + "день/месяц/год или день/месяц");
+                                    Global10secCDTimer.setGlobal10secTimer();
+                                }
+                            }
+                            if (DOBDate != null) {
+                                checkUser.setDateOfBirth(DOBDate);
+                                usersService.save(checkUser);
+                            }
+                        } else {
+                            if (Global10secCDTimer.getGlobal10secTimer() == null) {
+                                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                        .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " нельзя менять ДР DansGame");
+                                Global10secCDTimer.setGlobal10secTimer();
+                            }
+                        }
+                    }
+                    else {
+                        if (Global10secCDTimer.getGlobal10secTimer() == null) {
+                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                    .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " нужно быть фолловером больше, чем"
+                                            + " 6 месяцев.");
+                            Global10secCDTimer.setGlobal10secTimer();
+                        }
+                    }
+                }
+            }
+            else {
+                if (Global10secCDTimer.getGlobal10secTimer() == null) {
+                    SimpleDateFormat simpleDateFormatWithoutYear = new SimpleDateFormat("dd MMMM");
+                    SimpleDateFormat simpleDateFormatWithYear = new SimpleDateFormat("dd MMMM yyyy");
+                    User user = usersService.findOne(event.getUser().getName());
+                    if (user != null) {
+                        if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() == 0) {
+                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                    .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithoutYear.format(user.getDateOfBirth()));
+                        } else if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() != 0) {
+                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                    .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithYear.format(user.getDateOfBirth()));
+                        } else {
+                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                    .getChat().sendMessage(event.getChannel().getName(), "День Рождения не установлен");
+                        }
+                    } else {
+                        System.out.println("такого юзера нет: " + event.getUser().getName());
+                    }
+                    Global10secCDTimer.setGlobal10secTimer();
+                }
+            }
+
         }
     }
 

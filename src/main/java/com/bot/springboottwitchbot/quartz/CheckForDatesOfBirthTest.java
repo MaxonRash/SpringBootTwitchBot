@@ -9,7 +9,7 @@ import org.quartz.JobExecutionContext;
 
 import java.util.ArrayList;
 
-public class CheckForDatesOfBirth implements Job {
+public class CheckForDatesOfBirthTest implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
@@ -21,6 +21,6 @@ public class CheckForDatesOfBirth implements Job {
                 UtilityDOB.listOfUsersWithDOB.add(user.getLogin());
             }
         }
-        System.out.println("Добавлены ДР. Сегодня ДР у: " + UtilityDOB.listOfUsersWithDOB);
+        System.out.println("Сегодня ДР у: " + UtilityDOB.listOfUsersWithDOB);
     }
 }

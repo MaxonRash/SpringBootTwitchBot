@@ -1,11 +1,12 @@
 package com.bot.springboottwitchbot.utilities;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 public class UtilityDOB {
-    public static List<String> listOfUsersWithDOB /*= new ArrayList<>()*/;
+    public static List<String> listOfUsersWithDOB = new ArrayList<>();
     public static boolean CheckIfFollowIsMoreThan6Months(Date currentDate, Date dateOfFollowSince) {
         Calendar currentDateCalendar = Calendar.getInstance();
         currentDateCalendar.setTime(currentDate);

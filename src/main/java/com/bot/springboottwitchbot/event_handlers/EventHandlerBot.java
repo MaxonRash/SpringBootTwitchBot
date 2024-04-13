@@ -827,17 +827,17 @@ public class EventHandlerBot {
                 User checkUser = usersService.findOne(event.getUser().getName());
                 if (checkUser == null) {
                     checkUser = GetUserDTOToUserConverter.ConvertUserFromDTO(UtilityCommandsGlobal.getUserDTOByName(event.getUser().getName()));
-//                    checkUser.setFollowingSince(UtilityCommandsMainChannel.getFollowingSinceDate(
-//                            Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
-                    checkUser.setFollowingSince(UtilityCommandsTestChannel.getFollowingSinceDate(
+                    checkUser.setFollowingSince(UtilityCommandsMainChannel.getFollowingSinceDate(
                             Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
+//                    checkUser.setFollowingSince(UtilityCommandsTestChannel.getFollowingSinceDate(
+//                            Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
                     usersService.save(checkUser);
                 }
                 if (checkUser.getFollowingSince() == null) {
-//                    checkUser.setFollowingSince(UtilityCommandsMainChannel.getFollowingSinceDate(
-//                            Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
-                    checkUser.setFollowingSince(UtilityCommandsTestChannel.getFollowingSinceDate(
+                    checkUser.setFollowingSince(UtilityCommandsMainChannel.getFollowingSinceDate(
                             Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
+//                    checkUser.setFollowingSince(UtilityCommandsTestChannel.getFollowingSinceDate(
+//                            Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
                     if (checkUser.getFollowingSince() == null) {
                         if (Global10secCDTimer.getGlobal10secTimer() == null) {
                             applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()

@@ -27,6 +27,9 @@ public class SpringBootTwitchBotApplication {
 
 //        CheckDOBRunner.runSimpleTriggerTest();
 //        CheckDOBRunner.runCronTriggerTest();
+        CheckDOBRunner.runCronTriggerCheckDOBs(); // Adds today's users with DOB to list UtilityDOB.listOfUsersWithDOB
+        CheckDOBRunner.runCronTriggerSendMessageAboutUsersWithDOBsToday(); // Sends message about users with DOB
+
     }
 
     //DataSource Config (postgres)
