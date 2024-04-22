@@ -3,6 +3,7 @@ package com.bot.springboottwitchbot;
 import com.bot.springboottwitchbot.connections.connection_runners.BotConnectionRunner;
 import com.bot.springboottwitchbot.connections.connection_runners.MainConnectionRunner;
 import com.bot.springboottwitchbot.quartz.CheckDOBRunner;
+import com.bot.springboottwitchbot.utilities.UtilityDOB;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -27,8 +28,9 @@ public class SpringBootTwitchBotApplication {
 
 //        CheckDOBRunner.runSimpleTriggerTest();
 //        CheckDOBRunner.runCronTriggerTest();
-        CheckDOBRunner.runCronTriggerCheckDOBs(); // Adds today's users with DOB to list UtilityDOB.listOfUsersWithDOB
-        CheckDOBRunner.runCronTriggerSendMessageAboutUsersWithDOBsToday(); // Sends message about users with DOB
+        UtilityDOB.addDOBsToList(); // Adds today's users with DOB to list UtilityDOB.listOfUsersWithDOB at start
+        CheckDOBRunner.runCronTriggerCheckDOBs(); // Adds today's users with DOB to list UtilityDOB.listOfUsersWithDOB at 00:05 every day
+        CheckDOBRunner.runCronTriggerSendMessageAboutUsersWithDOBsToday(); // Sends message about users with DOB at 14:30 every day
 
     }
 

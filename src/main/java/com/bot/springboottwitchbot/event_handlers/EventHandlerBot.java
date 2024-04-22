@@ -818,9 +818,39 @@ public class EventHandlerBot {
     }
 
     @EventSubscriber
+    public void checkTodayDOBs(ChannelMessageEvent event) {
+        String message = event.getMessage().toLowerCase();
+        ArrayList<String> moderatorsList = UtilityCommandsMainChannel.getModeratorsList();
+        if (message.contains("!чек др") && (event.getUser().getName().equalsIgnoreCase("happasc2") || event.getUser().getName().equalsIgnoreCase("maximuz666")
+        || event.getUser().getName().equalsIgnoreCase("winretkristin") || moderatorsList.contains(event.getUser().getName()))) {
+            if (UtilityDOB.listOfUsersWithDOB.isEmpty()) {
+                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
+                        .sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня ни у кого нет ДР FeelsBadMan");
+            }
+            else if (UtilityDOB.listOfUsersWithDOB.size() == 1) {
+                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
+                        .sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня у " + UtilityDOB.listOfUsersWithDOB.get(0)
+                                + " день рождения! " + "@" + UtilityDOB.listOfUsersWithDOB.get(0) + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan "
+                                + "PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
+            }
+            else {
+                StringBuilder sb = new StringBuilder();
+                for (String login : UtilityDOB.listOfUsersWithDOB) {
+                    sb.append("@").append(login).append(" ");
+                }
+                String allUsersWithDOB = sb.toString().trim();
+                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
+                        .sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня у этих прекрасных людей дни рождения! "
+                                + allUsersWithDOB + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
+            }
+        }
+    }
+
+    @EventSubscriber
     public void UserDOBTest(ChannelMessageEvent event) throws IOException, ParseException {
         String message = event.getMessage().toLowerCase();
-        if (message.startsWith("!др")) {
+        message = message.replace("\udb40\udc00", "");
+        if (message.startsWith("!др ")) {
             ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(message.split(" ")));
             arrayList.remove("\udb40\udc00");
             if (arrayList.size() > 1) {
@@ -838,6 +868,7 @@ public class EventHandlerBot {
                             Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
 //                    checkUser.setFollowingSince(UtilityCommandsTestChannel.getFollowingSinceDate(
 //                            Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
+                    usersService.save(checkUser);
                     if (checkUser.getFollowingSince() == null) {
                         if (Global10secCDTimer.getGlobal10secTimer() == null) {
                             applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
@@ -870,13 +901,22 @@ public class EventHandlerBot {
                                 if (Global10secCDTimer.getGlobal10secTimer() == null) {
                                     applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
                                             .getChat().sendMessage("maximuz666", "@" + event.getUser().getName() + " Формат даты должен быть таким: "
-                                                    + "день/месяц/год или день/месяц");
+                                                    + "день/месяц/год или день/месяц . С лидирующими нолями в дне и месяце");
                                     Global10secCDTimer.setGlobal10secTimer();
                                 }
                             }
                             if (DOBDate != null) {
                                 checkUser.setDateOfBirth(DOBDate);
                                 usersService.save(checkUser);
+                                int dice = (int) (Math.random() * 2) + 1;
+                                if (dice == 1) {
+                                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
+                                            .sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " pepeNoted");
+                                }
+                                else if (dice == 2) {
+                                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
+                                            .sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " HmmNotes");
+                                }
                             }
                         } else {
                             if (Global10secCDTimer.getGlobal10secTimer() == null) {
@@ -896,29 +936,59 @@ public class EventHandlerBot {
                     }
                 }
             }
-            else {
-                if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                    SimpleDateFormat simpleDateFormatWithoutYear = new SimpleDateFormat("dd MMMM");
-                    SimpleDateFormat simpleDateFormatWithYear = new SimpleDateFormat("dd MMMM yyyy");
-                    User user = usersService.findOne(event.getUser().getName());
-                    if (user != null) {
-                        if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() == 0) {
-                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                    .getChat().sendMessage(event.getChannel().getName(), simpleDateFormatWithoutYear.format(user.getDateOfBirth()));
-                        } else if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() != 0) {
-                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                    .getChat().sendMessage(event.getChannel().getName(), simpleDateFormatWithYear.format(user.getDateOfBirth()));
-                        } else {
-                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                    .getChat().sendMessage(event.getChannel().getName(), "День Рождения не установлен");
-                        }
-                    } else {
-                        System.out.println("такого юзера нет: " + event.getUser().getName());
-                    }
-                    Global10secCDTimer.setGlobal10secTimer();
-                }
-            }
+//            else {
+//                if (Global10secCDTimer.getGlobal10secTimer() == null) {
+//                    Locale ruLocale = new Locale("ru", "RU");
+//                    SimpleDateFormat simpleDateFormatWithoutYear = new SimpleDateFormat("dd MMMM", ruLocale);
+//                    SimpleDateFormat simpleDateFormatWithYear = new SimpleDateFormat("dd MMMM yyyy", ruLocale);
+//                    User user = usersService.findOne(event.getUser().getName());
+//                    if (user != null) {
+//                        if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() == 0) {
+//                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+//                                    .getChat().sendMessage(event.getChannel().getName(), simpleDateFormatWithoutYear.format(user.getDateOfBirth()));
+//                        } else if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() != 0) {
+//                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+//                                    .getChat().sendMessage(event.getChannel().getName(), simpleDateFormatWithYear.format(user.getDateOfBirth()));
+//                        } else {
+//                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+//                                    .getChat().sendMessage(event.getChannel().getName(), "День рождения не установлен");
+//                        }
+//                    } else {
+//                        System.out.println("такого юзера нет: " + event.getUser().getName());
+//                    }
+//                    Global10secCDTimer.setGlobal10secTimer();
+//                }
+//            }
 
+        }
+        else if (message.equals("!др")) {
+            if (Global10secCDTimer.getGlobal10secTimer() == null) {
+                Locale ruLocale = new Locale("ru", "RU");
+                SimpleDateFormat simpleDateFormatWithoutYear = new SimpleDateFormat("dd MMMM", ruLocale);
+                SimpleDateFormat simpleDateFormatWithYear = new SimpleDateFormat("dd MMMM yyyy", ruLocale);
+                User user = usersService.findOne(event.getUser().getName());
+                if (user != null) {
+                    if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() == 0) {
+                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithoutYear.format(user.getDateOfBirth()));
+                    } else if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() != 0) {
+                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithYear.format(user.getDateOfBirth()));
+                    } else {
+                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                .getChat().sendMessage(event.getChannel().getName(), "День рождения не установлен");
+                    }
+                } else {
+                    if (Global10secCDTimer.getGlobal10secTimer() == null) {
+                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
+                                        + " сначала добавь командой !др день/месяц/год или день/месяц . С лидирующими нолями в дне и месяце");
+                        System.out.println("такого юзера нет: " + event.getUser().getName());
+                        Global10secCDTimer.setGlobal10secTimer();
+                    }
+                }
+                Global10secCDTimer.setGlobal10secTimer();
+            }
         }
     }
 
