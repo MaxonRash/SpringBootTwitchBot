@@ -29,6 +29,7 @@ public class SpringBootTwitchBotApplication {
 
 //        CheckDOBRunner.runSimpleTriggerTest();
 //        CheckDOBRunner.runCronTriggerTest();
+
         UtilityDOB.addDOBsToList(); // Adds today's users with DOB to list UtilityDOB.listOfUsersWithDOB at start
         CheckDOBRunner.runCronTriggerCheckDOBs(); // Adds today's users with DOB to list UtilityDOB.listOfUsersWithDOB at 00:05 every day
         CheckDOBRunner.runCronTriggerSendMessageAboutUsersWithDOBsToday(); // Sends message about users with DOB at 14:30 every day

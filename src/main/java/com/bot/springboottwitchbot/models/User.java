@@ -1,6 +1,7 @@
 package com.bot.springboottwitchbot.models;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.Objects;
@@ -21,15 +22,29 @@ public class User {
 
     @Column(name = "created_at")
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date createdAt;
 
     @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateOfBirth;
 
     @Column(name = "following_since")
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date followingSince;
+
+    public User() {
+    }
+
+    public User(int twitchId, String login, Date createdAt, Date dateOfBirth, Date followingSince) {
+        this.twitchId = twitchId;
+        this.login = login;
+        this.createdAt = createdAt;
+        this.dateOfBirth = dateOfBirth;
+        this.followingSince = followingSince;
+    }
 
     public int getId() {
         return id;
