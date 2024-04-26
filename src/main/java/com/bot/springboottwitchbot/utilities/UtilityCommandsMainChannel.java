@@ -114,7 +114,8 @@ public class UtilityCommandsMainChannel {
         headers.add("Client-Id", applicationContext.getBean(MainBuilderUtil.class).getClient_id());
         HttpEntity<Void> httpGetEntityMods = new HttpEntity<>(headers);
 
-        String url = "https://api.twitch.tv/helix/moderation/moderators?broadcaster_id=" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelId();
+        String url = "https://api.twitch.tv/helix/moderation/moderators?broadcaster_id=" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelId()
+                +"&first=50";
         ResponseEntity<ModeratorDTO> response = restTemplate.exchange(url, HttpMethod.GET, httpGetEntityMods, ModeratorDTO.class);
         ModeratorDTO moderatorDTO = null;
         if (response.hasBody()) {
