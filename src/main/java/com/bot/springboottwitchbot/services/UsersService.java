@@ -2,12 +2,14 @@ package com.bot.springboottwitchbot.services;
 
 import com.bot.springboottwitchbot.models.User;
 import com.bot.springboottwitchbot.repositories.UsersRepository;
+import com.bot.springboottwitchbot.utilities.UserDOBComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 @Service
@@ -41,6 +43,12 @@ public class UsersService {
             }
         }
         return usersWithTodayDOB;
+    }
+
+    public ArrayList<User> findAllUsersSortedByDOBMonth() {
+        ArrayList<User> userArrayList = (ArrayList<User>) usersRepository.findAll();
+        userArrayList.sort(new UserDOBComparator());
+        return userArrayList;
     }
 
 

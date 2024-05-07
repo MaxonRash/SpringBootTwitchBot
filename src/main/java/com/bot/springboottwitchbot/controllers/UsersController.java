@@ -2,6 +2,7 @@ package com.bot.springboottwitchbot.controllers;
 
 import com.bot.springboottwitchbot.models.User;
 import com.bot.springboottwitchbot.repositories.UsersRepository;
+import com.bot.springboottwitchbot.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +23,9 @@ import java.util.List;
 public class UsersController {
     @Autowired
     private UsersRepository usersRepository;
+
+    @Autowired
+    private UsersService usersService;
 
     @GetMapping("/users")
     public String getAll(Model model, @RequestParam(required = false) String login,
@@ -62,6 +66,12 @@ public class UsersController {
         }
 
         return "users";
+    }
+
+    @GetMapping("users/sorted_by_DOB_month")
+    public String showAllSortedByMonth(Model model) {
+        model.addAttribute("users", usersService.findAllUsersSortedByDOBMonth());
+        return "users_sorted_by_dob_month";
     }
 
     @GetMapping("/users/new")
