@@ -11,6 +11,10 @@ public class UserDOBComparator implements Comparator<User> {
             return 100;
         if (o2.getDateOfBirth() == null)
             return -100;
-        return o1.getDateOfBirth().getMonth() - o2.getDateOfBirth().getMonth();
+        int compared = o1.getDateOfBirth().getMonth() - o2.getDateOfBirth().getMonth();
+        if (compared == 0) {
+            compared = o1.getDateOfBirth().getDate() - o2.getDateOfBirth().getDate();
+        }
+        return compared;
     }
 }
