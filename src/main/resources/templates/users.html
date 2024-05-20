@@ -7,7 +7,7 @@
   <title>Users page</title>
 
   <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
-  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
         integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -56,9 +56,7 @@
       </div>
     </form>
     <div>
-      <form action="/users/sorted_by_DOB_month">
-        <button type="submit" class="btn btn-secondary">Sorted by month</button>
-      </form>
+        <input type="button" class="btn btn-outline-info" value="Sorted by month" onclick="window.open('/users/sorted_by_DOB_month')">
     </div>
   </div>
 
@@ -80,7 +78,7 @@
       <tr th:each="user : ${users}">
         <th scope="row">[[${user.id}]]</th>
         <td>[[${user.twitchId}]]</td>
-        <td>[[${user.login}]]</td>
+        <td class="bg-light">[[${user.login}]]</td>
         <td>[[${user.createdAt}]]</td>
         <td>[[${user.dateOfBirth}]]</td>
         <td>[[${user.FollowingSince}]]</td>

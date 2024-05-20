@@ -6,7 +6,8 @@
     <title>Users sorted by month page</title>
 
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
-    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+<!--    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />-->
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
           integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
           crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -35,7 +36,7 @@
     <tr th:each="users : ${users}">
         <td><span th:text="${users.id}"> Id </span></td>
         <td><span th:text="${users.twitchId}"> Twitch_ID </span></td>
-        <td><span th:text="${users.login}"> Login </span></td>
+        <td class="bg-light"><span th:text="${users.login}"> Login </span></td>
         <td><span th:text="${users.createdAt}"> Created_At </span></td>
         <td><span th:text="${users.dateOfBirth}"> Date_Of_Birth </span></td>
         <td><span th:text="${users.followingSince}"> Following_Since </span></td>
