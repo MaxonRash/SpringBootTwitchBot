@@ -974,33 +974,27 @@ public class EventHandlerBot {
                 SimpleDateFormat simpleDateFormatWithYear = new SimpleDateFormat("dd MMMM yyyy", ruLocale);
                 User user = usersService.findOne(event.getUser().getName());
                 if (user != null) {
-                    Date todayDate = new Date();
-                    LocalDate currentDate = LocalDate.ofInstant(todayDate.toInstant(), ZoneId.systemDefault()).withYear(1900);
-//                LocalDate currentDateCorrectYear = currentDate.withYear(1900);
-                    System.out.println("1: " + currentDate);
-                    Date userDateFromDB = user.getDateOfBirth();
-                    LocalDate userDate = Instant.ofEpochMilli(userDateFromDB.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
-                    System.out.println(userDate);
-                    LocalDate userDateUpdated;
-                    long daysBetween;
-                    if (userDate.getMonth().getValue() < currentDate.getMonth().getValue()) {
-                        userDateUpdated = userDate.withYear(1901);
-//                        System.out.println("updated 1: " + userDateUpdated);
-//                        System.out.println(DAYS.between(currentDate, userDateUpdated));
-                    }
-                    else {
-                        userDateUpdated = userDate.withYear(1900);
-                        System.out.println("updated 2: " + userDateUpdated);
-//                        System.out.println(DAYS.between(userDateUpdated, currentDate));
-//                        System.out.println(DAYS.between(currentDate, userDateUpdated));
-                    }
-                    daysBetween = DAYS.between(currentDate, userDateUpdated);
-                    String messageToDOB = ", ещё " + daysBetween + " дней!";
-                    if (String.valueOf(daysBetween).startsWith("-")) {
-                        messageToDOB = ", был всего " + String.valueOf(daysBetween).substring(1) + " дней назад Kappa";
-                    }
-                    if (daysBetween == 0) {
-                        messageToDOB = ", это же сегодня! Pog";
+                    String messageToDOB = "";
+                    long daysBetween= 0;
+                    if (user.getDateOfBirth() != null) {
+                        Date todayDate = new Date();
+                        LocalDate currentDate = LocalDate.ofInstant(todayDate.toInstant(), ZoneId.systemDefault()).withYear(1900);
+                        Date userDateFromDB = user.getDateOfBirth();
+                        LocalDate userDate = Instant.ofEpochMilli(userDateFromDB.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+                        LocalDate userDateUpdated;
+                        if (userDate.getMonth().getValue() < currentDate.getMonth().getValue()) {
+                            userDateUpdated = userDate.withYear(1901);
+                        } else {
+                            userDateUpdated = userDate.withYear(1900);
+                        }
+                        daysBetween = DAYS.between(currentDate, userDateUpdated);
+                        messageToDOB = ", ещё " + daysBetween + " дней!";
+                        if (String.valueOf(daysBetween).startsWith("-")) {
+                            messageToDOB = ", был всего " + String.valueOf(daysBetween).substring(1) + " дней назад Kappa";
+                        }
+                        if (daysBetween == 0) {
+                            messageToDOB = ", это же сегодня! Pog";
+                        }
                     }
                     if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() == 0) {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
@@ -1012,7 +1006,7 @@ public class EventHandlerBot {
                                 + messageToDOB);
                     } else {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                .getChat().sendMessage(event.getChannel().getName(), "День рождения не установлен");
+                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " День рождения не установлен");
                     }
                 } else {
                     if (Global10secCDTimer.getGlobal10secTimer() == null) {
