@@ -48,3 +48,16 @@
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
 }
+
+.td-bg-color-light {
+    background-color: #F8F9FA;
+}
+
+.td-bg-color-light:hover {
+    background-color: #b7b8b9;
+}
+
+/*.header {*/
+/*    position: sticky;*/
+/*    top: 0;*/
+/*}*/

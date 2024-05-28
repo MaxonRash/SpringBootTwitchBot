@@ -18,9 +18,12 @@
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
     <h2 class="text-center">Users</h2>
-<table class="table table-hover table-responsive-xl">
-    <thead class="thead-light">
+<!--<table class="table table-hover table-responsive-xl">-->
+    <table class="table table-hover">
+    <thead style="position: sticky;top: 0" class="thead-light">
+<!--    <thead class="thead-light">-->
     <tr>
+        <!--        <th class="header" scope="col"> Id </th>-->
         <th> Id </th>
         <th> Twitch_Id </th>
         <th> Login </th>
@@ -36,7 +39,7 @@
     <tr th:each="users : ${users}">
         <td><span th:text="${users.id}"> Id </span></td>
         <td><span th:text="${users.twitchId}"> Twitch_ID </span></td>
-        <td class="bg-light"><span th:text="${users.login}"> Login </span></td>
+        <td class="td-bg-color-light"><span th:text="${users.login}"> Login </span></td>
         <td><span th:text="${users.createdAt}"> Created_At </span></td>
         <td><span th:text="${users.dateOfBirth}"> Date_Of_Birth </span></td>
         <td><span th:text="${users.followingSince}"> Following_Since </span></td>

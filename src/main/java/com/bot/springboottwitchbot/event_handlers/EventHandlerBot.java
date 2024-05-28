@@ -23,8 +23,14 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Component
 public class EventHandlerBot {
@@ -968,12 +974,42 @@ public class EventHandlerBot {
                 SimpleDateFormat simpleDateFormatWithYear = new SimpleDateFormat("dd MMMM yyyy", ruLocale);
                 User user = usersService.findOne(event.getUser().getName());
                 if (user != null) {
+                    Date todayDate = new Date();
+                    LocalDate currentDate = LocalDate.ofInstant(todayDate.toInstant(), ZoneId.systemDefault()).withYear(1900);
+//                LocalDate currentDateCorrectYear = currentDate.withYear(1900);
+                    System.out.println("1: " + currentDate);
+                    Date userDateFromDB = user.getDateOfBirth();
+                    LocalDate userDate = Instant.ofEpochMilli(userDateFromDB.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+                    System.out.println(userDate);
+                    LocalDate userDateUpdated;
+                    long daysBetween;
+                    if (userDate.getMonth().getValue() < currentDate.getMonth().getValue()) {
+                        userDateUpdated = userDate.withYear(1901);
+//                        System.out.println("updated 1: " + userDateUpdated);
+//                        System.out.println(DAYS.between(currentDate, userDateUpdated));
+                    }
+                    else {
+                        userDateUpdated = userDate.withYear(1900);
+                        System.out.println("updated 2: " + userDateUpdated);
+//                        System.out.println(DAYS.between(userDateUpdated, currentDate));
+//                        System.out.println(DAYS.between(currentDate, userDateUpdated));
+                    }
+                    daysBetween = DAYS.between(currentDate, userDateUpdated);
+                    String messageToDOB = ", ещё " + daysBetween + " дней!";
+                    if (String.valueOf(daysBetween).startsWith("-")) {
+                        messageToDOB = ", был всего " + String.valueOf(daysBetween).substring(1) + " дней назад Kappa";
+                    }
+                    if (daysBetween == 0) {
+                        messageToDOB = ", это же сегодня! Pog";
+                    }
                     if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() == 0) {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithoutYear.format(user.getDateOfBirth()));
+                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithoutYear.format(user.getDateOfBirth())
+                                + messageToDOB);
                     } else if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() != 0) {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithYear.format(user.getDateOfBirth()));
+                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithYear.format(user.getDateOfBirth())
+                                + messageToDOB);
                     } else {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
                                 .getChat().sendMessage(event.getChannel().getName(), "День рождения не установлен");
