@@ -6,10 +6,16 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
+/**
+ * The idea of using ApplicationProvider is not good, but not to rewrite the whole structure here is the solution:
+ * <a href="https://stackoverflow.com/questions/78871993/why-applicationcontextprovider-throws-nullpointerexception-on-another-system">Why @DependsOn is used here</a>
+ */
 
 @Component
+@DependsOn({"applicationContextProvider"})
 public class BotBuilderUtil {
 
     TestChannelCredentialsUtil testChannelCredentialsUtil;

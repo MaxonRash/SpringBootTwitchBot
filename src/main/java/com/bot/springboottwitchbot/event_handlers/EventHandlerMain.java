@@ -1155,7 +1155,7 @@ public void timeouteForMat(ChannelMessageEvent event) {
 //            if (StringUtils.containsIgnoreCase(message, "бля")) {
         if (
                 ( (newMessage.toLowerCase().contains("мудила")) || (newMessage.toLowerCase().contains("мудак")) || (newMessage.toLowerCase().contains("мудень")) || (newMessage.toLowerCase().contains("мудозвон")) ||
-                        (newMessage.toLowerCase().contains("huecruch")) || (newMessage.toLowerCase().contains("дебил")) )
+                        (newMessage.toLowerCase().contains("huecruch")) || (newMessage.toLowerCase().contains("дебил")) || (newMessage.toLowerCase().contains("мандела")) || (newMessage.toLowerCase().contains("cтрахуемый")) )
         ) {}
         else if (
                 (Pattern.compile("[.]*ахую[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
