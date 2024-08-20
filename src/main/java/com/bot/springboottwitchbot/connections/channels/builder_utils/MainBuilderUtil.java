@@ -10,7 +10,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 /**
- * The idea of using ApplicationProvider is not good, but not to rewrite the whole structure here is the solution:
+ * The idea of using ApplicationContextProvider is not good, but not to rewrite the whole structure here is the solution:
  * <a href="https://stackoverflow.com/questions/78871993/why-applicationcontextprovider-throws-nullpointerexception-on-another-system">Why @DependsOn is used here</a>
  */
 
