@@ -1,17 +1,21 @@
 package com.bot.springboottwitchbot.DTOs.predictions_DTOs.create_predictions_DTOs.receive;
 
+import com.bot.springboottwitchbot.DTOs.predictions_DTOs.Top_predictors;
+
+import java.util.ArrayList;
+
 public class Outcomes {
     private String id;
     private String title;
     private int users;
     private int channel_points;
-    private String top_predictors;
+    private ArrayList<Top_predictors> top_predictors;
     private String color;
 
     public Outcomes() {
     }
 
-    public Outcomes(String id, String title, int users, int channel_points, String top_predictors, String color) {
+    public Outcomes(String id, String title, int users, int channel_points, ArrayList<Top_predictors> top_predictors, String color) {
         this.id = id;
         this.title = title;
         this.users = users;
@@ -52,11 +56,11 @@ public class Outcomes {
         this.channel_points = channel_points;
     }
 
-    public String getTop_predictors() {
+    public ArrayList<Top_predictors> getTop_predictors() {
         return top_predictors;
     }
 
-    public void setTop_predictors(String top_predictors) {
+    public void setTop_predictors(ArrayList<Top_predictors> top_predictors) {
         this.top_predictors = top_predictors;
     }
 

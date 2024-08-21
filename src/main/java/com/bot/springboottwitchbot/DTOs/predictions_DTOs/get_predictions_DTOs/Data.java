@@ -129,4 +129,22 @@ public class Data {
 
     public Data() {
     }
+
+    @Override
+    public String toString() {
+        return "Data{" +
+                "id='" + id + '\'' +
+                ", broadcaster_id='" + broadcaster_id + '\'' +
+                ", broadcaster_name='" + broadcaster_name + '\'' +
+                ", broadcaster_login='" + broadcaster_login + '\'' +
+                ", title='" + title + '\'' +
+                ", winning_outcome_id='" + winning_outcome_id + '\'' +
+                ", outcomes=" + outcomes +
+                ", prediction_window=" + prediction_window +
+                ", status='" + status + '\'' +
+                ", created_at='" + created_at + '\'' +
+                ", ended_at='" + ended_at + '\'' +
+                ", locked_at='" + locked_at + '\'' +
+                '}';
+    }
 }

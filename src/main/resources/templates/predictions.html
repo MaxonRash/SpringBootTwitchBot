@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+
+    <!-- Auto-refresh every 3 seconds -->
+    <meta http-equiv="refresh" content="3" />
+    <title>Prediction</title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+          integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+</head>
+
+<!--<body class="dark-theme">-->
+<body class="bd-gray-900">
+<div class="container-fluid">
+<!--    <h2 class="text-center">СТАВКА</h2>-->
+
+    <div th:if="${standardPredictionIsActive != true and standardPredictionIsLocked != true}" class="container-fluid">
+        <h2 class="text-center">СТАВКА НЕАКТИВНА!!!</h2>
+        <div class="text-right">
+            <a href="#" class="btn btn-secondary btn-sm disabled" tabindex="-1" role="button" aria-disabled="true">ГАЛЯ, ОТМЕНА</a>
+        </div>
+        <div class="text-center">
+<!--            <button type="button" class="btn btn-primary btn-lg" value="button">ПОСТАВИТЬ</button>-->
+            <a href="/predictions/make_standard_prediction" class="btn btn-primary btn-lg">ПОСТАВИТЬ</a>
+        </div>
+        <div class="text-center">
+            <div class="row justify-content-around">
+                <div class="col-4">
+<!--                    <button type="button" class="btn btn-success btn-lg" value="button" disabled>ВИН</button>-->
+                    <a href="#" class="btn btn-success btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">ВИН</a>
+                </div>
+                <div class="col-4">
+<!--                    <button type="button" class="btn btn-danger btn-lg" value="button" disabled>ЛУЗ</button>-->
+                    <a href="#" class="btn btn-danger btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">ЛУЗ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${standardPredictionIsActive == true}" class="container-fluid">
+        <h2 class="text-center">СТАВКА АКТИВНА!!! СТАВКИ ОТКРЫТЫ!!!</h2>
+        <div class="text-right">
+            <a href="/predictions/cancel_standard_prediction" class="btn btn-secondary btn-sm">ГАЛЯ, ОТМЕНА</a>
+        </div>
+        <div class="text-center">
+<!--            <button type="button" class="btn btn-primary btn-lg" value="button" disabled>ПОСТАВИТЬ</button>-->
+            <a href="#" class="btn btn-primary btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">ПОСТАВИТЬ</a>
+        </div>
+        <div class="text-center">
+            <div class="row justify-content-around">
+                <div class="col-4">
+<!--                    <button type="button" class="btn btn-success btn-lg" value="button">ВИН</button>-->
+                    <a href="#" class="btn btn-success btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">ВИН</a>
+                </div>
+                <div class="col-4">
+<!--                    <button type="button" class="btn btn-danger btn-lg" value="button">ЛУЗ</button>-->
+                    <a href="#" class="btn btn-danger btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">ЛУЗ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${standardPredictionIsLocked == true}" class="container-fluid">
+        <h2 class="text-center">СТАВКА АКТИВНА!!! СТАВКИ ЗАКРЫТЫ!!!</h2>
+        <div class="text-right">
+            <a href="/predictions/cancel_standard_prediction" class="btn btn-secondary btn-sm">ГАЛЯ, ОТМЕНА</a>
+        </div>
+        <div class="text-center">
+            <!--            <button type="button" class="btn btn-primary btn-lg" value="button" disabled>ПОСТАВИТЬ</button>-->
+            <a href="#" class="btn btn-primary btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">ПОСТАВИТЬ</a>
+        </div>
+        <div class="text-center">
+            <div class="row justify-content-around">
+                <div class="col-4">
+                    <!--                    <button type="button" class="btn btn-success btn-lg" value="button">ВИН</button>-->
+                    <a href="/predictions/win_standard_prediction" class="btn btn-success btn-lg">ВИН</a>
+                </div>
+                <div class="col-4">
+                    <!--                    <button type="button" class="btn btn-danger btn-lg" value="button">ЛУЗ</button>-->
+                    <a href="/predictions/lose_standard_prediction" class="btn btn-danger btn-lg">ЛУЗ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<h2 id="refresh-timer"></h2>-->
+</body>
+</html>

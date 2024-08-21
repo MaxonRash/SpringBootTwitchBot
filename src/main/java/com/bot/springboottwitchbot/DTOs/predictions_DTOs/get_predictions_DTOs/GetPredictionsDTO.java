@@ -1,7 +1,5 @@
 package com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs;
 
-import com.bot.springboottwitchbot.DTOs.get_followers_DTOs.Data;
-
 import java.util.ArrayList;
 
 public class GetPredictionsDTO {

@@ -57,6 +57,16 @@
     background-color: #b7b8b9;
 }
 
+/*body.dark-theme {*/
+/*    background-color: #414141;*/
+/*    color: #ffffff;*/
+/*}*/
+
+.bd-gray-900 {
+    color: #fff;
+    background-color: #212529;
+}
+
 /*.header {*/
 /*    position: sticky;*/
 /*    top: 0;*/
