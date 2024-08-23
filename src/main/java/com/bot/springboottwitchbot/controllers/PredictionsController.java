@@ -20,26 +20,30 @@ public class PredictionsController {
     }
 
     @GetMapping("/predictions/make_standard_prediction")
-    public String makeStandardPrediction() throws IOException {
+    public String makeStandardPrediction() throws IOException, InterruptedException {
         UtilityCommandsMainChannel.makeStandardPrediction();
+        Thread.sleep(1500);
         return "redirect:/predictions";
     }
 
     @GetMapping("/predictions/cancel_standard_prediction")
-    public String cancelStandardPrediction() throws IOException {
+    public String cancelStandardPrediction() throws IOException, InterruptedException {
         UtilityCommandsMainChannel.cancelStandardPrediction();
+        Thread.sleep(1500);
         return "redirect:/predictions";
     }
 
     @GetMapping("/predictions/win_standard_prediction")
-    public String winStandardPrediction() throws IOException {
+    public String winStandardPrediction() throws IOException, InterruptedException {
         UtilityCommandsMainChannel.winStandardPrediction();
+        Thread.sleep(1500);
         return "redirect:/predictions";
     }
 
     @GetMapping("/predictions/lose_standard_prediction")
-    public String loseStandardPrediction() throws IOException {
+    public String loseStandardPrediction() throws IOException, InterruptedException {
         UtilityCommandsMainChannel.loseStandardPrediction();
+        Thread.sleep(1500);
         return "redirect:/predictions";
     }
 
