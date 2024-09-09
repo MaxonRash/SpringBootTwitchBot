@@ -42,8 +42,8 @@ public class UtilityCommandsGlobal {
 
         // with Gson and apache
         /* HttpGet getUser = new HttpGet("https://api.twitch.tv/helix/users?login=" + login);
-        Header header1 = new BasicHeader("Authorization", "Bearer 4zu2o9yscreqifsdllckdsjivjv3um");
-        Header header2 = new BasicHeader("Client-Id", "gp762nuuoqcoxypju8c569th9wz7q5");
+        Header header1 = new BasicHeader("Authorization", "Bearer TOKEN");
+        Header header2 = new BasicHeader("Client-Id", "TOKEN");
         Header header3 = new BasicHeader("Content-Type", "application/json");
         Header[] headers = new Header[]{header1, header2, header3};
 
