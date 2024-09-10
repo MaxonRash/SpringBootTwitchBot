@@ -4,6 +4,7 @@ package com.bot.springboottwitchbot.event_handlers;
 import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.bot.springboottwitchbot.DTOs.utilities_for_DTOs.GetUserDTOToUserConverter;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
+import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
 import com.bot.springboottwitchbot.models.User;
 import com.bot.springboottwitchbot.services.UsersService;
 import com.bot.springboottwitchbot.timers.Global10secCDTimer;
@@ -80,7 +81,7 @@ public class EventHandlerBot {
                     GlobalDuelTimer.setDuelCoolDownTimerLeft(delay / 1000);
                     if (UtilityCommandsTestChannel.getModeratorsList().contains(this.secondDuelName)) {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstDuelName + " он же модир FailFish");
-                        UtilityCommandsTestChannel.timeoutUserTest(UtilityCommandsGlobal.getUserIdByName("happasc2"), 10, "no");
+                        UtilityCommandsTestChannel.timeoutUserTest(UtilityCommandsGlobal.getUserIdByName(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()), 10, "no");
                     }
                     //TODO duel logic
                 }
@@ -827,7 +828,7 @@ public class EventHandlerBot {
     public void checkTodayDOBs(ChannelMessageEvent event) {
         String message = event.getMessage().toLowerCase();
         ArrayList<String> moderatorsList = UtilityCommandsMainChannel.getModeratorsList();
-        if (message.contains("!чек др") && (event.getUser().getName().equalsIgnoreCase("happasc2") || event.getUser().getName().equalsIgnoreCase("maximuz666")
+        if (message.contains("!чек др") && (event.getUser().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()) || event.getUser().getName().equalsIgnoreCase("maximuz666")
         || event.getUser().getName().equalsIgnoreCase("winretkristin") || moderatorsList.contains(event.getUser().getName()))) {
             if (UtilityDOB.listOfUsersWithDOB.isEmpty()) {
                 ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
@@ -1097,7 +1098,7 @@ public void timeouteForMat(ChannelMessageEvent event) {
 
             String eventChannel = event.getChannel().getName();
 
-            if (event.getChannel().getName().equalsIgnoreCase("happasc2")) {
+            if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
 
                 UtilityCommandsMainChannel.timeoutUser(id, 600, "bad word bot");
 //            twitchClient.getChat().sendMessage("maximuz666",  "@" + event.getUser().getName() + " Мат в чате запрещён!");

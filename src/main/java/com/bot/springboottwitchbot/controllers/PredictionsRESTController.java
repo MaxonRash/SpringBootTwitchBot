@@ -4,6 +4,9 @@ import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsMainChannel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +19,9 @@ import java.io.IOException;
 
 @RestController
 public class PredictionsRESTController {
+    @Qualifier("webApplicationContext")
+    @Autowired
+    ApplicationContext applicationContext;
 
     private static String lastExecutedPredictionStartTime = null;
 
@@ -55,7 +61,8 @@ public class PredictionsRESTController {
                 System.err.println("Prediction is already started. Time: " + time + " Waiting fow outcome now.");
                 ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                         .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                                .getMainChannelName(), "@happasc2 Кто-то (модеры MODS ) уже запустил ставку ResidentSleeper Ок, если она для игры, "
+                                .getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                                + " Кто-то (модеры MODS ) уже запустил ставку ResidentSleeper Ок, если она для игры, "
                         + "начавшейся в " + time + " Ждём исхода...");
                 lastExecutedPredictionStartTime = time;
                 return "Prediction event is already existing, it's ok if it is for the game started at: " + time + " Waiting for outcome now";
@@ -65,7 +72,8 @@ public class PredictionsRESTController {
             System.out.println("New Prediction Made, Game Started at: " + time);
             ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                     .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                            .getMainChannelName(), "@happasc2 Начата ставка для игры, начавшейся в " + time);
+                            .getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                            + " Начата ставка для игры, начавшейся в " + time);
             return "New Prediction Made, Game Started at: " + time;
         }
         else if (winPrediction != null) {
@@ -77,7 +85,8 @@ public class PredictionsRESTController {
                     System.out.println("No opened predictions, someone closed it earlier. Time was: " + time);
                     ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                             .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                                    .getMainChannelName(), "@happasc2 Нет открытых ставок. Кто-то (модеры MODS ) уже закрыл ставку для игры, "
+                                    .getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                                    + " Нет открытых ставок. Кто-то (модеры MODS ) уже закрыл ставку для игры, "
                                     + "начавшейся в " + time + " Ждём начала новой игры...");
                     return "No opened predictions, someone closed it earlier. Time was: " + time;
                 }
@@ -86,7 +95,8 @@ public class PredictionsRESTController {
                 System.out.println("Outcome for prediction for game started at: " + time + " is set to WON");
                 ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                         .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                                .getMainChannelName(), "@happasc2 Исход для игры, начавшейся в " + time + " - WIN (1-4)");
+                                .getMainChannelName(),"@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                                + " Исход для игры, начавшейся в " + time + " - WIN (1-4)");
                 return "Outcome for prediction for game started at: " + time + " is set to WON";
             }
         }
@@ -99,7 +109,8 @@ public class PredictionsRESTController {
                     System.out.println("No opened predictions, someone closed it earlier. Time was: " + time);
                     ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                             .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                                    .getMainChannelName(), "@happasc2 Нет открытых ставок. Кто-то (модеры MODS ) уже закрыл ставку для игры, "
+                                    .getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                                    + " Нет открытых ставок. Кто-то (модеры MODS ) уже закрыл ставку для игры, "
                                     + "начавшейся в " + time + " Ждём начала новой игры...");
                     return "No opened predictions, someone closed it earlier. Time was: " + time;
                 }
@@ -108,7 +119,8 @@ public class PredictionsRESTController {
                 System.out.println("Outcome for prediction for game started at: " + time + " is set to LOST");
                 ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                         .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                                .getMainChannelName(), "@happasc2 Исход для игры, начавшейся в " + time + " - LOST (4-8)");
+                                .getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                                + " Исход для игры, начавшейся в " + time + " - LOST (4-8)");
                 return "Outcome for prediction for game started at: " + time + " is set to LOST";
             }
         }

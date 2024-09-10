@@ -184,7 +184,7 @@ public class EventHandlerMain {
         String[] array = newMessage.split(" ");
         ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(array));
         arrayList.remove("\udb40\udc00");
-        if (!event.getUser().getName().equalsIgnoreCase("maximuz_bot")) {
+        if (!event.getUser().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getBotChannelName())) {
             if (newMessage.toLowerCase().startsWith("!kill") && (arrayList.size() > 1) && (GlobalKillTimer.killCooldownTimer == null)) {
                 String firstNick = event.getUser().getName().toLowerCase();
                 String secondNick = arrayList.get(1).toLowerCase();
@@ -298,7 +298,7 @@ public class EventHandlerMain {
 
     @EventSubscriber
     public void resetKillCommand(ChannelMessageEvent event) {
-        if (!event.getUser().getName().equalsIgnoreCase("maximuz_bot")) {
+        if (!event.getUser().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getBotChannelName())) {
             String newMessage = event.getMessage().toLowerCase();
 
             String[] array = newMessage.split(" ");
@@ -350,7 +350,7 @@ public class EventHandlerMain {
     private ArrayList<String> russianRoulettePlayers = null;
     @EventSubscriber
     public void russianRouletteCommand(ChannelMessageEvent event) throws InterruptedException, IOException {
-        if (!event.getUser().getName().equalsIgnoreCase("maximuz_bot")) {
+        if (!event.getUser().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getBotChannelName())) {
             String newMessage = event.getMessage().toLowerCase();
             if (newMessage.contains("monkas") && russianRoulettePlayers == null && GlobalRouletteTimer.rouletteCooldownTimer == null) {
                 applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
@@ -478,8 +478,9 @@ public class EventHandlerMain {
 
         SubscriptionData subscriptionData = event.getData();
         System.out.println("Sub note Works");
-        if(subscriptionData.getDisplayName().equalsIgnoreCase("happasc2")) {
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(subscriptionData.getChannelName(), "@happasc2 найс катаешь Kappa");
+        if(subscriptionData.getDisplayName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
+            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(subscriptionData.getChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                    + " найс катаешь Kappa");
         }
         else {
             applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(subscriptionData.getChannelName(), "@" + subscriptionData.getDisplayName() +
@@ -570,7 +571,7 @@ public class EventHandlerMain {
     public void checkTodayDOBs(ChannelMessageEvent event) {
         String message = event.getMessage().toLowerCase();
         ArrayList<String> moderatorsList = UtilityCommandsMainChannel.getModeratorsList();
-        if (message.contains("!чек др") && (event.getUser().getName().equalsIgnoreCase("happasc2") || event.getUser().getName().equalsIgnoreCase("maximuz666")
+        if (message.contains("!чек др") && (event.getUser().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()) || event.getUser().getName().equalsIgnoreCase("maximuz666")
                 || event.getUser().getName().equalsIgnoreCase("winretkristin") || moderatorsList.contains(event.getUser().getName()))) {
             if (UtilityDOB.listOfUsersWithDOB.isEmpty()) {
                 ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
@@ -1115,7 +1116,7 @@ public class EventHandlerMain {
             String message = event.getMessage();
             try {
                 if (message.contains("!time1outnewtest")) {
-                    UtilityCommandsMainChannel.timeoutUser("39417514", 10, "no reason");
+                    UtilityCommandsMainChannel.timeoutUser(applicationContext.getBean(BotBuilderUtil.class).getTestChannelId(), 10, "no reason");
                     applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "new request sent");
                 }
             } catch (IOException e) {
@@ -1189,7 +1190,7 @@ public void timeouteForMat(ChannelMessageEvent event) {
 
             String eventChannel = event.getChannel().getName();
 
-            if (event.getChannel().getName().equalsIgnoreCase("happasc2")) {
+            if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
 
                 UtilityCommandsMainChannel.timeoutUser(id, 600, "bad word bot");
 //            twitchClient.getChat().sendMessage("maximuz666",  "@" + event.getUser().getName() + " Мат в чате запрещён!");

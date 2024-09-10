@@ -56,6 +56,10 @@ public class BotBuilderUtil {
         return testChannelCredentialsUtil.getTestChannelName();
     }
 
+    public String getBotChannelName() {
+        return testChannelCredentialsUtil.getBotChannelName();
+    }
+
     public String getClient_id() {
         return testChannelCredentialsUtil.getClient_id();
     }

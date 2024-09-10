@@ -13,6 +13,8 @@ public class TestChannelCredentialsUtil {
     private String botChannelId;
     @Value("${test_channel_name}")
     private String testChannelName;
+    @Value("${bot_channel_name}")
+    private String botChannelName;
     @Value("${test_channel_accessToken}")
     private String testChannelToken;
     @Value("${bot_channel_accessToken}")
@@ -42,5 +44,9 @@ public class TestChannelCredentialsUtil {
 
     public String getClient_id() {
         return client_id;
+    }
+
+    public String getBotChannelName() {
+        return botChannelName;
     }
 }
