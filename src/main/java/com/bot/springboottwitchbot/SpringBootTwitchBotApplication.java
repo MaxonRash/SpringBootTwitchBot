@@ -2,6 +2,7 @@ package com.bot.springboottwitchbot;
 
 import com.bot.springboottwitchbot.connections.connection_runners.BotConnectionRunner;
 import com.bot.springboottwitchbot.connections.connection_runners.MainConnectionRunner;
+import com.bot.springboottwitchbot.connections.connection_runners.SecondConnectionRunner;
 import com.bot.springboottwitchbot.quartz.CheckDOBRunner;
 import com.bot.springboottwitchbot.quartz.RepeatMessageRunner;
 import com.bot.springboottwitchbot.utilities.UtilityDOB;
@@ -26,6 +27,9 @@ public class SpringBootTwitchBotApplication {
 
         //uncomment for running on main channel
         ApplicationContextProvider.getApplicationContext().getBean(MainConnectionRunner.class).getChannelConnection().Run();
+
+        //uncomment for running on second channel
+//        ApplicationContextProvider.getApplicationContext().getBean(SecondConnectionRunner.class).getChannelConnection().Run();
 
 //        CheckDOBRunner.runSimpleTriggerTest();
 //        CheckDOBRunner.runCronTriggerTest();
