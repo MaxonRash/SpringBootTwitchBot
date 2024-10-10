@@ -10,7 +10,7 @@ Packages descriptions:
     - `PredictionsController` is used for /predictions endpoint. View is in `classpath:templates/predictions` The purpose of this controller is to make/cancel and resolve win/lose for predictions with buttons only. Logic is in `/utilities/UtilityCommandsMainChannel` making API requests to Twitch. The ThymeLeaf view is changed based on the prediction current state (active, closed, resolved), only right buttons are clickable at each state.
     ![image](https://t.ly/7_AAn)
     - `PredictionsRESTController` is REST controller for my project <a href="https://github.com/MaxonRash/prediction_client_3">CLIENT</a> for Hearthstone game. The logic of making and resolving predictions is the same as in `PredictionsController`, using `/utilities/UtilityCommandsMainChannel`. Client is based on parsing game logs and sending requests to this controller at certain time. Exceptions from Twitch API are caught and proper responses are sent to client.
-    - `UsersController` is CRUD controller for twitch users. Related views are in `classpath:templates`. Main `/users` page looks like this: ![image](https://clck.ru/3Dpqpx) 
+    - `UsersController` is CRUD controller for twitch users. Related views are in `classpath:templates`. Main `/users` page looks like this: ![image](https://i.imgur.com/NRS94qL.jpeg) 
 - **DTOs** :
   - are data transfer objects used in `/utilities` UtilityCommands for sending requests to Twitch API.
 - **event_handlers** :
