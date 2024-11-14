@@ -1,6 +1,7 @@
 package com.bot.springboottwitchbot.utilities;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
+import com.bot.springboottwitchbot.DTOs.banned_users_DTOs.BannedUserDTO;
 import com.bot.springboottwitchbot.DTOs.emote_only_DTOs.EmoteOnlyDTO;
 import com.bot.springboottwitchbot.DTOs.get_followers_DTOs.GetFollowersDTO;
 import com.bot.springboottwitchbot.DTOs.moderator_DTOs.ModeratorDTO;
@@ -156,6 +157,25 @@ public class UtilityCommandsMainChannel {
         else {
             return null;
         }
+    }
+
+    public static boolean isBannedUser(String userName) throws IOException {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + applicationContext.getBean(MainBuilderUtil.class).getMainToken());
+        headers.add("Client-Id", applicationContext.getBean(MainBuilderUtil.class).getClient_id());
+        HttpEntity<Void> httpGetBannedUser = new HttpEntity<>(headers);
+
+        String url = "https://api.twitch.tv/helix/moderation/banned?broadcaster_id=" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelId()
+                +"&first=50&user_id=" + UtilityCommandsGlobal.getUserIdByName(userName);
+        ResponseEntity<BannedUserDTO> response = restTemplate.exchange(url, HttpMethod.GET, httpGetBannedUser, BannedUserDTO.class);
+        BannedUserDTO bannedUserDTO = null;
+        if (response.hasBody()) {
+            bannedUserDTO = response.getBody();
+        }
+
+        return !Objects.requireNonNull(bannedUserDTO).getData().isEmpty();
     }
 
     public static ArrayList<com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data> getPredictionsList() {

@@ -68,6 +68,13 @@
         </dependency>
 
         <!--Added-->
+        <!--Swagger UI-->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+
         <dependency>
             <groupId>com.github.philippheuer.credentialmanager</groupId>
             <artifactId>credentialmanager</artifactId>

@@ -1034,6 +1034,17 @@ public class EventHandlerBot {
             System.out.println(e.getMessage());
         }
     }
+
+    @EventSubscriber
+    public void checkIfUserIsBanned(ChannelMessageEvent event) {
+        String message = event.getMessage();
+            if (message.contains("!checkbanned")) {
+                boolean isBanned = UtilityCommandsTestChannel.isBannedUser("72903124");
+                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
+                        .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
+                                + " " + isBanned);
+            }
+    }
 //
 //    @EventSubscriber
 //    public void duelCooldownTest(ChannelMessageEvent event) {

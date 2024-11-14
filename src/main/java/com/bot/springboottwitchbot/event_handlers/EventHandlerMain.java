@@ -205,6 +205,10 @@ public class EventHandlerMain {
                 System.out.println("updated command permission: " + commandPermissionList);
 
                 if (!commandPermissionList.isEmpty()) {
+                    if (UtilityCommandsMainChannel.isBannedUser(secondNick)) {
+                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick + " оно уже мертво WutFace");
+                        return;
+                    }
                     applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick + " подходит к @"
                             + secondNick + " ...");
                     Thread.sleep(3000);
