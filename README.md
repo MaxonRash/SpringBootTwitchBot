@@ -1,5 +1,3 @@
-My pet project:
-================
 **SpringBoot** chat bot for Twitch. Connection is based on Twitch4J API. Database - **PostgreSQL**. Views - **ThymeLeaf** and **BootStrap**. **Quartz** is for cron jobs. 
 
 Packages descriptions:
