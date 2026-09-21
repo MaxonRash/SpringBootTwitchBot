@@ -120,7 +120,7 @@ public class PredictionsRESTController {
                 ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                         .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
                                 .getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
-                                + " Исход для игры, начавшейся в " + time + " - LOST (4-8)");
+                                + " Исход для игры, начавшейся в " + time + " - LOST (5-8)");
                 return "Outcome for prediction for game started at: " + time + " is set to LOST";
             }
         }

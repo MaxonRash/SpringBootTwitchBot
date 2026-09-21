@@ -2,8 +2,13 @@ package com.bot.springboottwitchbot.event_handlers;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.bot.springboottwitchbot.DTOs.utilities_for_DTOs.GetUserDTOToUserConverter;
+import com.bot.springboottwitchbot.SpringBootTwitchBotApplication;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
+import com.bot.springboottwitchbot.gpt.FilterMode;
+import com.bot.springboottwitchbot.gpt.openai.GPT4o;
+import com.bot.springboottwitchbot.gpt.GptBotMode;
+import com.bot.springboottwitchbot.gpt.TsyaMode;
 import com.bot.springboottwitchbot.models.User;
 import com.bot.springboottwitchbot.services.UsersService;
 import com.bot.springboottwitchbot.timers.*;
@@ -41,6 +46,8 @@ public class EventHandlerMain {
     private String secondDuelName = null;
     @Autowired
     UsersService usersService;
+    @Autowired
+    GPT4o gpt4o;
 
     @EventSubscriber
     public void printChannelMessage(ChannelMessageEvent event) {
@@ -1150,68 +1157,300 @@ public class EventHandlerMain {
 //    //_______________________________________________________________________________________________________________________________
 //    //_______________________________________________________________________________________________________________________________
 //
-@EventSubscriber
-public void timeouteForMat(ChannelMessageEvent event) {
-    String newMessage = event.getMessage();
-//        String newMessage = message.replaceAll("\\s", "").toLowerCase();
-    newMessage = newMessage.replaceAll("(.)\\1+", "$1");
-//        twitchClient.getChat().sendMessage("maximuz666", "request sent: " + newMessage);
-    try {
-//            if (StringUtils.containsIgnoreCase(message, "бля")) {
-        if (
-                ( (newMessage.toLowerCase().contains("мудила")) || (newMessage.toLowerCase().contains("мудак")) || (newMessage.toLowerCase().contains("мудень")) || (newMessage.toLowerCase().contains("мудозвон")) ||
-                        (newMessage.toLowerCase().contains("huecruch")) || (newMessage.toLowerCase().contains("дебил")) || (newMessage.toLowerCase().contains("мандела")) || (newMessage.toLowerCase().contains("cтрахуемый")) )
-        ) {}
-        else if (
-                (Pattern.compile("[.]*ахую[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    /*Pattern.compile("^хуй[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*хуй[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("^х[ую[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*хую[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*похуй[.])*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*нахуй[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*хуя[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*хуи[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
+    private FilterMode filterMode = FilterMode.AI;
+    List<String> badWordsList = List.of("хуа", "хуе", "хуё", "хуи", "хуй", "хул", "хуу", "хуэ", "хую", "хуя",
+        "еба", "ебб,", "ебе", "ебё", "еби", "ебк", "ебл", "ебн", "ебо", "ебс", "ебу", "ебц", "ебч", "ебщ", "ебъ", "ебы", "ебь", "ебэ", "ебю", "ебя",
+        "аеб", "иеб", "йеб", "оеб", "уеб", "ъеб", "ыеб", "ьеб",
+        "ёб",
+        "эба", "эбб,", "эбе", "эбё", "эби", "эбк", "эбл", "эбн", "эбо", "эбс", "эбу", "эбц", "эбч", "эбщ", "эбъ", "эбы", "эбь", "эбэ", "эбю", "эбя",
+        "пизд", "пезд", "пёзд", "пэзд",
+        "писд", "песд", "пёсд", "пэсд",
+        "педи", "педа", "педо", "педе", "педр",
+        "пиди", "пида", "пидо", "пиде", "пидр",
+        "бля", "бле", "блэ",
+        "blya", "pizd", "hui");
+    List<String> notSoBadWordsList = List.of("мудила", "мудак", "мудень", "мудозвон", "huecruch", "дебил", "пидиди", "говн", "насилов", "хрен", "хер");
 
-                    Pattern.compile("[.]*хуев[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*хуё[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*охуе[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
+    @EventSubscriber
+    public void changeFilterMode(ChannelMessageEvent event) {
+        String newMessage = event.getMessage().toLowerCase();
+        newMessage = newMessage.replace("\udb40\udc00", "");
 
-                    Pattern.compile("[.]*пизд[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("^бля[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*бля[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*бляд[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*блеат[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("[.]*блеят[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                    Pattern.compile("\\s+бля", Pattern.CASE_INSENSITIVE).matcher(newMessage).find()*/
+        if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
+                event.getUser().getName().equalsIgnoreCase("winretkristin")) && (newMessage.toLowerCase().startsWith("!filter")) ) {
+            String[] splitMessage  = newMessage.split(" ");
+            if (splitMessage.length > 1) {
+                String mode = splitMessage[1];
+                if (mode.toUpperCase().equals(FilterMode.AI.getName())) {
+                    this.filterMode = FilterMode.AI;
+                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                            " мат фильтр теперь - " + this.filterMode.getName());
+                } else if (mode.toUpperCase().equals(FilterMode.OLD.getName())) {
+                    this.filterMode = FilterMode.OLD;
+                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                            " мат фильтр теперь - " + this.filterMode.getName());
+                }
+                else {
+                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                            " нужно указать способ фильтрации (ai или old), сейчас - " + this.filterMode.getName());
+                }
+            }
+            else {
+                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                        " нужно указать способ фильтрации (ai или old), сейчас - " + this.filterMode.getName());
+            }
+        }
+    }
 
-                        Pattern.compile("[.]*ахуе[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                        Pattern.compile("[.]*прихуе[.]*".toLowerCase()).matcher(newMessage.toLowerCase()).find() ||
-                        Pattern.compile("(?iu)\\b(([уyu]|[нзnz3][аa]|(хитро|не)?[вvwb][зz3]?[ыьъi]|[сsc][ьъ']|(и|[рpr][аa4])[зсzs]ъ?|([оo0][тбtb6]|[пp][оo0][дd9])[ьъ']?|(.\\B)+?[оаеиeo])?-?([еёe][бb6](?!о[рй])|и[пб][ае][тц]).*?|([нn][иеаaie]|([дпdp]|[вv][еe3][рpr][тt])[оo0]|[рpr][аa][зсzc3]|[з3z]?[аa]|с(ме)?|[оo0]([тt]|дно)?|апч)?-?[хxh][уuy]([яйиеёюuie]|ли(?!ган)).*?|([вvw][зы3z]|(три|два|четыре)жды|(н|[сc][уuy][кk])[аa])?-?[бb6][лl]([яy](?!(х|ш[кн]|мб)[ауеыио]).*?|[еэe][дтdt][ь']?)|([рp][аa][сзc3z]|[знzn][аa]|[соsc]|[вv][ыi]?|[пp]([еe][рpr][еe]|[рrp][оиioеe]|[оo0][дd])|и[зс]ъ?|[аоao][тt])?[пpn][иеёieu][зz3][дd9].*?|([зz3][аa])?[пp][иеieu][дd][аоеaoe]?[рrp](ну.*?|[оаoa][мm]|([аa][сcs])?([иiu]([лl][иiu])?[нщктлtlsn]ь?)?|([оo](ч[еиei])?|[аa][сcs])?[кk]([оo]й)?|[юu][гg])[ауеыauyei]?|[мm][аa][нnh][дd]([ауеыayueiи]([лl]([иi][сзc3щ])?[ауеыauyei])?|[оo][йi]|[аоao][вvwb][оo](ш|sh)[ь']?([e]?[кk][ауеayue])?|юк(ов|[ауи])?)|[мm][уuy][дd6]([яyаиоaiuo0].*?|[еe]?[нhn]([ьюия'uiya]|ей))|мля([тд]ь)?|лять|([нз]а|по)х|м[ао]л[ао]фь([яию]|[её]й))\\b").matcher(newMessage.toLowerCase()).find()
-                )) {
-//            if (message.contains("!timeout")) {
-            String id = event.getUser().getId();
+    @EventSubscriber
+    public void timeoutForMat(ChannelMessageEvent event) {
+        if (event.getUser().getName().equals("maximuz_bot")) {
+            return;
+        }
+        String newMessage = event.getMessage().toLowerCase();
+        newMessage = newMessage.replace("\udb40\udc00", "");
+        newMessage = newMessage.replaceAll("(.)\\1+", "$1");
+        String trimmedNewMessage = newMessage.replace(" ", "");
+        if (this.filterMode == FilterMode.AI) {
+            try {
+                if (
+                        notSoBadWordsList.stream().anyMatch(trimmedNewMessage::contains)
+                ) { //return
+                } else if (badWordsList.stream().anyMatch(trimmedNewMessage::contains)) {
+                    boolean isBadWord = gpt4o.isTextContainingBadWord(newMessage);
 
-            String eventChannel = event.getChannel().getName();
+                    System.out.println(isBadWord);
+                    if (isBadWord) {
+                        String textAboutBadWord = gpt4o.TextContainingBadWord(newMessage);
+                        String id = event.getUser().getId();
 
-            if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
+                        String eventChannel = event.getChannel().getName();
 
-                UtilityCommandsMainChannel.timeoutUser(id, 600, "bad word bot");
-//            twitchClient.getChat().sendMessage("maximuz666",  "@" + event.getUser().getName() + " Мат в чате запрещён!");
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " Мат в чате запрещён!");
-            } else if (event.getChannel().getName().equalsIgnoreCase("maximuz666")) {
-                try {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " Мат в чате запрещён!");
-                    UtilityCommandsTestChannel.timeoutUserTest(id, 5, "bad word bot");
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                        if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
+                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutBadWord);
+                            UtilityCommandsMainChannel.timeoutUser(id, 600, "bad word bot");
+                        } else if (event.getChannel().getName().equalsIgnoreCase("maximuz666")) {
+                            try {
+                                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutBadWord);
+                                UtilityCommandsTestChannel.timeoutUserTest(id, 5, "bad word bot");
+
+                            } catch (Exception e) {
+                                System.out.println(e.getMessage());
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        else {
+            if ( (newMessage.toLowerCase().contains("мудила")) || (newMessage.toLowerCase().contains("мудак")) || (newMessage.toLowerCase().contains("мудень")) || (newMessage.toLowerCase().contains("мудозвон")) ||
+                    (newMessage.toLowerCase().contains("huecruch")) || (newMessage.toLowerCase().contains("дебил")) ) {
+                //return
+            } else if (Pattern.compile("(?iu)\\b(([уyu]|[нзnz3][аa]|(хитро|не)?[вvwb][зz3]?[ыьъi]|[сsc][ьъ']|(и|[рpr][аa4])[зсzs]ъ?|([оo0][тбtb6]|[пp][оo0][дd9])[ьъ']?|(.\\B)+?[оаеиeo])?-?([еёe][бb6](?!о[рй])|и[пб][ае][тц]).*?|([нn][иеаaie]|([дпdp]|[вv][еe3][рpr][тt])[оo0]|[рpr][аa][зсzc3]|[з3z]?[аa]|с(ме)?|[оo0]([тt]|дно)?|апч)?-?[хxh][уuy]([яйиеёюuie]|ли(?!ган)).*?|([вvw][зы3z]|(три|два|четыре)жды|(н|[сc][уuy][кk])[аa])?-?[бb6][лl]([яy](?!(х|ш[кн]|мб)[ауеыио]).*?|[еэe][дтdt][ь']?)|([рp][аa][сзc3z]|[знzn][аa]|[соsc]|[вv][ыi]?|[пp]([еe][рpr][еe]|[рrp][оиioеe]|[оo0][дd])|и[зс]ъ?|[аоao][тt])?[пpn][иеёieu][зz3][дd9].*?|([зz3][аa])?[пp][иеieu][дd][аоеaoe]?[рrp](ну.*?|[оаoa][мm]|([аa][сcs])?([иiu]([лl][иiu])?[нщктлtlsn]ь?)?|([оo](ч[еиei])?|[аa][сcs])?[кk]([оo]й)?|[юu][гg])[ауеыauyei]?|[мm][аa][нnh][дd]([ауеыayueiи]([лl]([иi][сзc3щ])?[ауеыauyei])?|[оo][йi]|[аоao][вvwb][оo](ш|sh)[ь']?([e]?[кk][ауеayue])?|юк(ов|[ауи])?)|[мm][уuy][дd6]([яyаиоaiuo0].*?|[еe]?[нhn]([ьюия'uiya]|ей))|мля([тд]ь)?|лять|([нз]а|по)х|м[ао]л[ао]фь([яию]|[её]й))\\b").matcher(newMessage.toLowerCase()).find()) {
+                String id = event.getUser().getId();
+
+                String eventChannel = event.getChannel().getName();
+
+                if (eventChannel.equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
+                    try {
+                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " Мат в чате запрещён!");
+                        UtilityCommandsMainChannel.timeoutUser(id, 600, "bad word bot");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else if (eventChannel.equalsIgnoreCase("maximuz666")) {
+                    try {
+                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " Мат в чате запрещён!");
+                        UtilityCommandsTestChannel.timeoutUserTest(id, 5, "bad word bot");
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
         }
-    } catch (IOException e) {
-        System.out.println(e.getMessage());
     }
-}
+
+    private TsyaMode tsyaMode = TsyaMode.OFF;
+
+    @EventSubscriber
+    public void changeTsyaMode(ChannelMessageEvent event) {
+        if (event.getUser().getName().equals("maximuz_bot")) {
+            return;
+        }
+        String newMessage = event.getMessage().toLowerCase();
+        newMessage = newMessage.replace("\udb40\udc00", "");
+
+        if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
+                event.getUser().getName().equalsIgnoreCase("winretkristin")) && (newMessage.toLowerCase().startsWith("!tsya")) ) {
+            String[] splitMessage  = newMessage.split(" ");
+            if (splitMessage.length > 1) {
+                String mode = splitMessage[1];
+                if (mode.toUpperCase().equals(TsyaMode.ON.getName())) {
+                    this.tsyaMode = TsyaMode.ON;
+                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                            " ться триггер теперь - " + this.tsyaMode.getName());
+                } else if (mode.toUpperCase().equals(TsyaMode.OFF.getName())) {
+                    this.tsyaMode = TsyaMode.OFF;
+                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                            " ться триггер теперь - " + this.tsyaMode.getName());
+                }
+                else {
+                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                            " нужно указать ON или OFF, сейчас - " + this.tsyaMode.getName());
+                }
+            }
+            else {
+                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                        " нужно указать ON или OFF, сейчас - " + this.tsyaMode.getName());
+            }
+        }
+    }
+
+    @EventSubscriber
+    public void tellAboutTsyaMistake(ChannelMessageEvent event) {
+        if (event.getUser().getName().equals("maximuz_bot")) {
+            return;
+        }
+        String newMessage = event.getMessage().toLowerCase();
+        newMessage = newMessage.replace("\udb40\udc00", "");
+//        newMessage = newMessage.replaceAll("(.)\\1+", "$1");
+        String trimmedNewMessage = newMessage.replace(" ", "");
+        if (newMessage.split(" ").length > 1) {
+            if (this.tsyaMode == TsyaMode.ON) {
+                if (GlobalTsyaTimer.getTimerLeft() == 0) {
+                    if (trimmedNewMessage.contains("тся") || trimmedNewMessage.contains("ться")) {
+                        boolean hasTsyaMistakes = gpt4o.isTextContainingTsyaMistake(newMessage);
+
+                        System.out.println("ошибки с ться: " + hasTsyaMistakes);
+
+                        if (hasTsyaMistakes) {
+                            String textAboutTsyaMistakes = gpt4o.ResponseForTextContainingTsyaMistake(newMessage);
+                            String eventChannel = event.getChannel().getName();
+                            if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
+                                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutTsyaMistakes);
+                                GlobalTsyaTimer.setTimer();
+                            } else if (event.getChannel().getName().equalsIgnoreCase("maximuz666")) {
+                                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutTsyaMistakes);
+                                GlobalTsyaTimer.setTimer();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private GptBotMode gptBotMode = GptBotMode.ON;
+
+    @EventSubscriber
+    public void changeBotMode(ChannelMessageEvent event) {
+        if (event.getUser().getName().equals("maximuz_bot")) {
+            return;
+        }
+        String newMessage = event.getMessage().toLowerCase();
+        newMessage = newMessage.replace("\udb40\udc00", "");
+
+        if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
+                event.getUser().getName().equalsIgnoreCase("winretkristin")) && (newMessage.toLowerCase().startsWith("!botreply")) ) {
+            String[] splitMessage  = newMessage.split(" ");
+            if (splitMessage.length > 1) {
+                String mode = splitMessage[1];
+                if (mode.toUpperCase().equals(GptBotMode.ON.getName())) {
+                    this.gptBotMode = GptBotMode.ON;
+                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                            " теперь  бот будет отвечать");
+                } else if (mode.toUpperCase().equals(GptBotMode.OFF.getName())) {
+                    this.gptBotMode = GptBotMode.OFF;
+                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                            " теперь бот не будет отвечать");
+                }
+                else {
+                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                            " нужно указать ON или OFF, сейчас - " + this.gptBotMode.getName());
+                }
+            }
+            else {
+                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                        " нужно указать ON или OFF, сейчас - " + this.gptBotMode.getName());
+            }
+        }
+    }
+
+    @EventSubscriber
+    public void replyToMessage(ChannelMessageEvent event) {
+        if (event.getUser().getName().equals("maximuz_bot")) {
+            return;
+        }
+        String newMessage = event.getMessage().toLowerCase();
+        newMessage = newMessage.replace("\udb40\udc00", "");
+//        newMessage = newMessage.replaceAll("(.)\\1+", "$1");
+//        String trimmedNewMessage = newMessage.replace(" ", "");
+        if (newMessage.startsWith("@maximuz_bot ")) {
+            if (this.gptBotMode == GptBotMode.ON) {
+                String eventChannel = event.getChannel().getName();
+                if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
+                        event.getUser().getName().equalsIgnoreCase("winretkristin")) ) {
+                    String reply = gpt4o.ResponseForTextAddressingToBot(newMessage.substring(13));
+                    if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
+                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
+//                        GlobalTsyaTimer.setTimer();
+                    } else if (event.getChannel().getName().equalsIgnoreCase("maximuz666")) {
+                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
+//                        GlobalTsyaTimer.setTimer();
+                    }
+                }
+                else if (GlobalReplyTimer.getTimerLeft() == 0) {
+
+                    String commandPermissionString = event.getPermissions().toString();
+//                    System.out.println("String: " + commandPermissionString);
+                    commandPermissionString = commandPermissionString.substring(1);
+                    commandPermissionString = commandPermissionString.substring(0, commandPermissionString.lastIndexOf("]"));
+//                    System.out.println("Updated String: " + commandPermissionString);
+                    ArrayList<String> commandPermissionList = new ArrayList<>(Arrays.asList(commandPermissionString.split(", ")));
+//                    System.out.println("command permission list:  " + commandPermissionList);
+                    ArrayList<String> requiredPermissionList = new ArrayList<>(Arrays.asList("PARTNER, SUBSCRIBER, FOUNDER, SUBGIFTER, VIP, MODERATOR, BROADCASTER".split(", ")));
+//                    System.out.println("required permission list: " + requiredPermissionList);
+                    commandPermissionList.retainAll(requiredPermissionList);
+//                    System.out.println("updated command permission: " + commandPermissionList);
+
+                    if (!commandPermissionList.isEmpty()) {
+                        String reply = gpt4o.ResponseForTextAddressingToBot(newMessage.substring(13));
+                        if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
+                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
+                            GlobalReplyTimer.setTimer();
+                        } else if (event.getChannel().getName().equalsIgnoreCase("maximuz666")) {
+                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
+                            GlobalReplyTimer.setTimer();
+                        }
+                    }
+                } else if (GlobalReplyTimer.getTimerLeft() != 0) {
+                    if (Global10secCDTimer.getGlobal10secTimer() == null) {
+                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel,
+                                "@" + event.getUser().getName() + " не дудось меня AAAA (еще " + GlobalReplyTimer.getTimerLeft() + " сек)");
+
+                        Global10secCDTimer.setGlobal10secTimer();
+                    }
+                }
+
+            }
+        }
+    }
+
+    @EventSubscriber
+    public void rebootBotContext(ChannelMessageEvent event) {
+        String newMessage = event.getMessage().toLowerCase();
+        newMessage = newMessage.replace("\udb40\udc00", "");
+
+        if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
+                event.getUser().getName().equalsIgnoreCase("winretkristin")) && (newMessage.toLowerCase().startsWith("!reboot")) ) {
+            System.out.println("rebooting...");
+            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(),
+                    "@" + event.getUser().getName() + " rebooting...");
+            SpringBootTwitchBotApplication.restart();
+        }
+    }
 
 
 }

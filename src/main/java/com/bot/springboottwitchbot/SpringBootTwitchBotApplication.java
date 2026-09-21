@@ -8,8 +8,10 @@ import com.bot.springboottwitchbot.quartz.RepeatMessageRunner;
 import com.bot.springboottwitchbot.utilities.UtilityDOB;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -19,8 +21,10 @@ import javax.sql.DataSource;
 @SpringBootApplication
 @PropertySource("classpath:databaseCredentials.properties")
 public class SpringBootTwitchBotApplication {
+    private static ConfigurableApplicationContext context;
+
     public static void main(String[] args) throws SchedulerException {
-        SpringApplication.run(SpringBootTwitchBotApplication.class, args);
+        context = SpringApplication.run(SpringBootTwitchBotApplication.class, args);
 
         //uncomment for running on test channel
         ApplicationContextProvider.getApplicationContext().getBean(BotConnectionRunner.class).getChannelConnection().Run();
@@ -38,6 +42,7 @@ public class SpringBootTwitchBotApplication {
         CheckDOBRunner.runCronTriggerCheckDOBs(); // Adds today's users with DOB to list UtilityDOB.listOfUsersWithDOB at 00:05 every day
         CheckDOBRunner.runCronTriggerSendMessageAboutUsersWithDOBsToday(); // Sends message about users with DOB at 14:30 every day
         RepeatMessageRunner.runCronTriggerDOBAddingReminderMessage(); // Sends message to remind about adding DOB every hour between 14 and 23
+
 
     }
 
@@ -59,6 +64,18 @@ public class SpringBootTwitchBotApplication {
         dataSource.setPassword(password);
 
         return dataSource;
+    }
+
+    public static void restart() {
+        ApplicationArguments args = context.getBean(ApplicationArguments.class);
+
+        Thread thread = new Thread(() -> {
+            context.close();
+            context = SpringApplication.run(SpringBootTwitchBotApplication.class, args.getSourceArgs());
+        });
+
+        thread.setDaemon(false);
+        thread.start();
     }
 
     // publishing a test event
