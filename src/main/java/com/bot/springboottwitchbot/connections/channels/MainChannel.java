@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MainChannel implements ChannelConnection {
     @Override
-    public void Run() {
+    public void run() {
         ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
         applicationContext.getBean(MainBuilderUtil.class).getTwitchClientMain().getChat().joinChannel(
                 applicationContext.getBean(MainBuilderUtil.class).getMainChannelName());

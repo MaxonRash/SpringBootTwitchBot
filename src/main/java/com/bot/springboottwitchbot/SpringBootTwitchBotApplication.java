@@ -27,13 +27,13 @@ public class SpringBootTwitchBotApplication {
         context = SpringApplication.run(SpringBootTwitchBotApplication.class, args);
 
         //uncomment for running on test channel
-        ApplicationContextProvider.getApplicationContext().getBean(BotConnectionRunner.class).getChannelConnection().Run();
+        ApplicationContextProvider.getApplicationContext().getBean(BotConnectionRunner.class).getChannelConnection().run();
 
         //uncomment for running on main channel
-        ApplicationContextProvider.getApplicationContext().getBean(MainConnectionRunner.class).getChannelConnection().Run();
+        ApplicationContextProvider.getApplicationContext().getBean(MainConnectionRunner.class).getChannelConnection().run();
 
         //uncomment for running on second channel
-//        ApplicationContextProvider.getApplicationContext().getBean(SecondConnectionRunner.class).getChannelConnection().Run();
+//        ApplicationContextProvider.getApplicationContext().getBean(SecondConnectionRunner.class).getChannelConnection().run();
 
 //        CheckDOBRunner.runSimpleTriggerTest();
 //        CheckDOBRunner.runCronTriggerTest();

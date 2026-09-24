@@ -2,7 +2,7 @@ package com.bot.springboottwitchbot.event_handlers;
 
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
-import com.bot.springboottwitchbot.DTOs.utilities_for_DTOs.GetUserDTOToUserConverter;
+import com.bot.springboottwitchbot.dto.utilities_for_DTOs.GetUserDTOToUserConverter;
 import com.bot.springboottwitchbot.SpringBootTwitchBotApplication;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;

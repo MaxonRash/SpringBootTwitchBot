@@ -1,0 +1,12 @@
+# Normalize line endings. Git auto-detects text vs binary; text files are
+# stored as LF in the repository and checked out as LF on every platform.
+# This keeps diffs clean cross-platform and ensures shell scripts (e.g. mvnw)
+# are LF so they run on the Linux deploy target.
+* text=auto eol=lf
+
+# Windows scripts must stay CRLF or cmd.exe can misbehave (includes mvnw.cmd).
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files — never apply end-of-line conversion.
+*.jar binary

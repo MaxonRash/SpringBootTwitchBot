@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SecondChannel implements ChannelConnection {
-    public void Run() {
+    public void run() {
         ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
         applicationContext.getBean(SecondBuilderUtil.class).getTwitchClientSecond().getChat().joinChannel(
                 applicationContext.getBean(SecondBuilderUtil.class).getSecondChannelName());

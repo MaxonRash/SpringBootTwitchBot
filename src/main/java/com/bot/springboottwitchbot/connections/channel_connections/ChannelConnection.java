@@ -4,6 +4,6 @@ import org.springframework.stereotype.Component;
 @Component
 public interface ChannelConnection {
 
-    public void Run();
+    public void run();
 
 }

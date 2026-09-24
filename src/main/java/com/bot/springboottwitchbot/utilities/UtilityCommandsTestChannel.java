@@ -1,12 +1,12 @@
 package com.bot.springboottwitchbot.utilities;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
-import com.bot.springboottwitchbot.DTOs.banned_users_DTOs.BannedUserDTO;
-import com.bot.springboottwitchbot.DTOs.emote_only_DTOs.EmoteOnlyDTO;
-import com.bot.springboottwitchbot.DTOs.get_followers_DTOs.GetFollowersDTO;
-import com.bot.springboottwitchbot.DTOs.moderator_DTOs.ModeratorDTO;
-import com.bot.springboottwitchbot.DTOs.timeout_DTOs.Data;
-import com.bot.springboottwitchbot.DTOs.timeout_DTOs.TimeoutUserDTO;
+import com.bot.springboottwitchbot.dto.banned_users_DTOs.BannedUserDTO;
+import com.bot.springboottwitchbot.dto.emote_only_DTOs.EmoteOnlyDTO;
+import com.bot.springboottwitchbot.dto.get_followers_DTOs.GetFollowersDTO;
+import com.bot.springboottwitchbot.dto.moderator_DTOs.ModeratorDTO;
+import com.bot.springboottwitchbot.dto.timeout_DTOs.Data;
+import com.bot.springboottwitchbot.dto.timeout_DTOs.TimeoutUserDTO;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -90,7 +90,7 @@ public class UtilityCommandsTestChannel {
 
         ArrayList<String> moderatorsList = new ArrayList<>();
         if (moderatorDTO != null && !moderatorDTO.getData().isEmpty()) {
-            for (com.bot.springboottwitchbot.DTOs.moderator_DTOs.Data data : moderatorDTO.getData()) {
+            for (com.bot.springboottwitchbot.dto.moderator_DTOs.Data data : moderatorDTO.getData()) {
 //                System.out.println(data.getUser_login()); // - debug
                 moderatorsList.add(data.getUser_login());
             }

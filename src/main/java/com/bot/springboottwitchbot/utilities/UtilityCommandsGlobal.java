@@ -1,8 +1,8 @@
 package com.bot.springboottwitchbot.utilities;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
-import com.bot.springboottwitchbot.DTOs.get_user_DTOs.Data;
-import com.bot.springboottwitchbot.DTOs.get_user_DTOs.GetUserDTO;
+import com.bot.springboottwitchbot.dto.get_user_DTOs.Data;
+import com.bot.springboottwitchbot.dto.get_user_DTOs.GetUserDTO;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

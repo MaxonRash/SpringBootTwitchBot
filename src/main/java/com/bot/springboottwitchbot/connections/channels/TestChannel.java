@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class TestChannel implements ChannelConnection {
 
     @Override
-    public void Run() {
+    public void run() {
         ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().joinChannel(
                 applicationContext.getBean(BotBuilderUtil.class).getTestChannelName());

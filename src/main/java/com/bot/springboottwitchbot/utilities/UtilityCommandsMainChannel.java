@@ -1,16 +1,16 @@
 package com.bot.springboottwitchbot.utilities;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
-import com.bot.springboottwitchbot.DTOs.banned_users_DTOs.BannedUserDTO;
-import com.bot.springboottwitchbot.DTOs.emote_only_DTOs.EmoteOnlyDTO;
-import com.bot.springboottwitchbot.DTOs.get_followers_DTOs.GetFollowersDTO;
-import com.bot.springboottwitchbot.DTOs.moderator_DTOs.ModeratorDTO;
-import com.bot.springboottwitchbot.DTOs.predictions_DTOs.create_predictions_DTOs.send.Outcomes;
-import com.bot.springboottwitchbot.DTOs.predictions_DTOs.create_predictions_DTOs.send.SendCreatePredictionDTO;
-import com.bot.springboottwitchbot.DTOs.predictions_DTOs.end_predictions_DTOs.send.SendEndPredictionDTO;
-import com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.GetPredictionsDTO;
-import com.bot.springboottwitchbot.DTOs.timeout_DTOs.Data;
-import com.bot.springboottwitchbot.DTOs.timeout_DTOs.TimeoutUserDTO;
+import com.bot.springboottwitchbot.dto.banned_users_DTOs.BannedUserDTO;
+import com.bot.springboottwitchbot.dto.emote_only_DTOs.EmoteOnlyDTO;
+import com.bot.springboottwitchbot.dto.get_followers_DTOs.GetFollowersDTO;
+import com.bot.springboottwitchbot.dto.moderator_DTOs.ModeratorDTO;
+import com.bot.springboottwitchbot.dto.predictions_DTOs.create_predictions_DTOs.send.Outcomes;
+import com.bot.springboottwitchbot.dto.predictions_DTOs.create_predictions_DTOs.send.SendCreatePredictionDTO;
+import com.bot.springboottwitchbot.dto.predictions_DTOs.end_predictions_DTOs.send.SendEndPredictionDTO;
+import com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.GetPredictionsDTO;
+import com.bot.springboottwitchbot.dto.timeout_DTOs.Data;
+import com.bot.springboottwitchbot.dto.timeout_DTOs.TimeoutUserDTO;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -133,7 +133,7 @@ public class UtilityCommandsMainChannel {
 
         ArrayList<String> moderatorsList = new ArrayList<>();
         if (moderatorDTO != null && !moderatorDTO.getData().isEmpty()) {
-            for (com.bot.springboottwitchbot.DTOs.moderator_DTOs.Data data : moderatorDTO.getData()) {
+            for (com.bot.springboottwitchbot.dto.moderator_DTOs.Data data : moderatorDTO.getData()) {
 //                System.out.println(data.getUser_login()); // - debug
                 moderatorsList.add(data.getUser_login());
             }
@@ -181,7 +181,7 @@ public class UtilityCommandsMainChannel {
         return !Objects.requireNonNull(bannedUserDTO).getData().isEmpty();
     }
 
-    public static ArrayList<com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data> getPredictionsList() {
+    public static ArrayList<com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data> getPredictionsList() {
         HttpHeaders getPredictionsHeaders = new HttpHeaders();
         getPredictionsHeaders.setContentType(MediaType.APPLICATION_JSON);
         getPredictionsHeaders.add("Authorization", "Bearer " + applicationContext.getBean(MainBuilderUtil.class).getMainToken());
@@ -199,7 +199,7 @@ public class UtilityCommandsMainChannel {
 
     public static boolean checkIfStandardPredictionIsActive() {
         if (getPredictionsList()!= null) {
-            for (com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
+            for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
                 if (data.getTitle().toLowerCase().contains("Победа или смерть?".toLowerCase())) {
                     if (data.getStatus().equalsIgnoreCase("active")) {
 //                        System.out.println("Prediction status is ACTIVE");
@@ -213,7 +213,7 @@ public class UtilityCommandsMainChannel {
 
     public static boolean checkIfStandardPredictionIsLocked() {
         if (getPredictionsList()!= null) {
-            for (com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
+            for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
                 if (data.getTitle().toLowerCase().contains("Победа или смерть?".toLowerCase())) {
                     if (data.getStatus().equalsIgnoreCase("locked")) {
 //                        System.out.println("Prediction status is ACTIVE");
@@ -225,9 +225,9 @@ public class UtilityCommandsMainChannel {
         return false;
     }
 
-    public static com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data checkAndReturnDataIfStandardPredictionIsActive() {
+    public static com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data checkAndReturnDataIfStandardPredictionIsActive() {
         if (getPredictionsList()!= null) {
-            for (com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
+            for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
                 if (data.getTitle().toLowerCase().contains("Победа или смерть?".toLowerCase())) {
                     if (data.getStatus().equalsIgnoreCase("active")) {
 //                        System.out.println("Prediction status is ACTIVE");
@@ -239,9 +239,9 @@ public class UtilityCommandsMainChannel {
         return null;
     }
 
-    public static com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data checkAndReturnDataIfStandardPredictionIsLocked() {
+    public static com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data checkAndReturnDataIfStandardPredictionIsLocked() {
         if (getPredictionsList()!= null) {
-            for (com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
+            for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
                 if (data.getTitle().toLowerCase().contains("Победа или смерть?".toLowerCase())) {
                     if (data.getStatus().equalsIgnoreCase("locked")) {
 //                        System.out.println("Prediction status is ACTIVE");
@@ -278,7 +278,7 @@ public class UtilityCommandsMainChannel {
     }
 
     public static void cancelStandardPrediction () throws JsonProcessingException {
-        com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data data = checkAndReturnDataIfStandardPredictionIsActive();
+        com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data = checkAndReturnDataIfStandardPredictionIsActive();
         if (data == null) {
             data = checkAndReturnDataIfStandardPredictionIsLocked();
         }
@@ -302,7 +302,7 @@ public class UtilityCommandsMainChannel {
     }
 
     public static void winStandardPrediction () throws JsonProcessingException {
-        com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data data = checkAndReturnDataIfStandardPredictionIsLocked();
+        com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data = checkAndReturnDataIfStandardPredictionIsLocked();
         SendEndPredictionDTO sendEndPredictionDTO = new SendEndPredictionDTO();
         sendEndPredictionDTO.setBroadcaster_id(applicationContext.getBean(MainBuilderUtil.class).getMainChannelId());
         sendEndPredictionDTO.setId(Objects.requireNonNull(data).getId());
@@ -310,7 +310,7 @@ public class UtilityCommandsMainChannel {
 
         String winningOutcomeId = null;
 
-        for (com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Outcomes outcome : data.getOutcomes()) {
+        for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Outcomes outcome : data.getOutcomes()) {
             if (outcome.getTitle().toLowerCase().contains("Я гордый Беливер (1-4)".toLowerCase())) {
                 winningOutcomeId = outcome.getId();
             }
@@ -334,7 +334,7 @@ public class UtilityCommandsMainChannel {
 
 
     public static void loseStandardPrediction () throws JsonProcessingException {
-        com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data data = checkAndReturnDataIfStandardPredictionIsLocked();
+        com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data = checkAndReturnDataIfStandardPredictionIsLocked();
         SendEndPredictionDTO sendEndPredictionDTO = new SendEndPredictionDTO();
         sendEndPredictionDTO.setBroadcaster_id(applicationContext.getBean(MainBuilderUtil.class).getMainChannelId());
         sendEndPredictionDTO.setId(Objects.requireNonNull(data).getId());
@@ -342,7 +342,7 @@ public class UtilityCommandsMainChannel {
 
         String winningOutcomeId = null;
 
-        for (com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Outcomes outcome : data.getOutcomes()) {
+        for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Outcomes outcome : data.getOutcomes()) {
             if (outcome.getTitle().toLowerCase().contains("Я скользкий Даубтер (5-8)".toLowerCase())) {
                 winningOutcomeId = outcome.getId();
             }
