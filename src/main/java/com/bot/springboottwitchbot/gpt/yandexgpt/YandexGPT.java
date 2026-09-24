@@ -1,6 +1,8 @@
 package com.bot.springboottwitchbot.gpt.yandexgpt;
 
 import com.bot.springboottwitchbot.gpt.yandexgpt.yandexgptDTO.CreateModelRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +17,8 @@ import java.util.Map;
 
 @Component
 public class YandexGPT {
+    private static final Logger log = LoggerFactory.getLogger(YandexGPT.class);
+
     @Autowired
     GetIAMTokenFromOAuth gptToken;
 
@@ -54,10 +58,10 @@ public class YandexGPT {
                     .postForEntity(url, new HttpEntity<>(modelRequest, headers),
                             String.class);
         } catch (Exception e) {
-            System.out.println("error while requesting to gpt: " + e.getMessage());
+            log.error("error while requesting to gpt", e);
         }
         String textFromResponse = "";
-        System.out.println(response.getBody());
+        log.debug("gpt response body: {}", response.getBody());
         return true;
     }
 }

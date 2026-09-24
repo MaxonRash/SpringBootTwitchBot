@@ -15,6 +15,8 @@ import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilder
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -29,6 +31,7 @@ import java.util.Date;
 import java.util.Objects;
 
 public class UtilityCommandsMainChannel {
+    private static final Logger log = LoggerFactory.getLogger(UtilityCommandsMainChannel.class);
     private static final HttpEntity<Void> httpGetEntity;
     private static final ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
     private static final HttpHeaders headersBotToken;
@@ -59,7 +62,7 @@ public class UtilityCommandsMainChannel {
         HttpEntity<Void> request = new HttpEntity<>(headersVIP);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
-        System.out.println("Making VIP user " + userLogin + " " + response);
+        log.info("Making VIP user {} {}", userLogin, response);
     }
 
     public static void unVipUser(String userLogin) throws IOException {
@@ -77,7 +80,7 @@ public class UtilityCommandsMainChannel {
         HttpEntity<Void> request = new HttpEntity<>(headersVIP);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, request, String.class);
 
-        System.out.println("Unmaking VIP user " + userLogin + " " + response);
+        log.info("Unmaking VIP user {} {}", userLogin, response);
     }
 
     public static void timeoutUser(String userId, int duration, String reason) throws IOException {
@@ -89,7 +92,7 @@ public class UtilityCommandsMainChannel {
         String timeoutUserStringDTO = new ObjectMapper().writeValueAsString(timeoutUserDTO);
 
         HttpEntity<String> request = new HttpEntity<>(timeoutUserStringDTO, headersBotToken);
-        System.out.println("Timeout:" + new RestTemplate().postForObject(url, request, String.class));
+        log.info("Timeout: {}", new RestTemplate().postForObject(url, request, String.class));
     }
 
     public static void emoteOnlyMode(Boolean state) throws JsonProcessingException {
@@ -107,7 +110,7 @@ public class UtilityCommandsMainChannel {
         String emoteOnlyStringDTO = new ObjectMapper().writeValueAsString(emoteOnlyDTO);
         HttpEntity<String> request = new HttpEntity<>(emoteOnlyStringDTO, headersEmotemode);
 
-        System.out.println("Emote mode: " + state + " " + restTemplate.patchForObject(url, request, String.class));
+        log.info("Emote mode: {} {}", state, restTemplate.patchForObject(url, request, String.class));
 
     }
 
@@ -271,7 +274,7 @@ public class UtilityCommandsMainChannel {
         httpHeaders.add("Client-Id", applicationContext.getBean(MainBuilderUtil.class).getClient_id());
 
         HttpEntity<String> request = new HttpEntity<>(sendCreatePredictionStringDTO, httpHeaders);
-        System.out.println("Prediction started: " + new RestTemplate().postForObject(url, request, String.class));
+        log.info("Prediction started: {}", new RestTemplate().postForObject(url, request, String.class));
     }
 
     public static void cancelStandardPrediction () throws JsonProcessingException {
@@ -295,7 +298,7 @@ public class UtilityCommandsMainChannel {
         HttpEntity<String> request = new HttpEntity<>(sendEndPredictionStringDTO, httpHeaders);
         RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
 
-        System.out.println("Prediction CANCELED: " + restTemplate.patchForObject(url, request, String.class));
+        log.info("Prediction CANCELED: {}", restTemplate.patchForObject(url, request, String.class));
     }
 
     public static void winStandardPrediction () throws JsonProcessingException {
@@ -326,7 +329,7 @@ public class UtilityCommandsMainChannel {
         HttpEntity<String> request = new HttpEntity<>(sendEndPredictionStringDTO, httpHeaders);
         RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
 
-        System.out.println("Prediction RESOLVED WIN: " + restTemplate.patchForObject(url, request, String.class));
+        log.info("Prediction RESOLVED WIN: {}", restTemplate.patchForObject(url, request, String.class));
     }
 
 
@@ -358,6 +361,6 @@ public class UtilityCommandsMainChannel {
         HttpEntity<String> request = new HttpEntity<>(sendEndPredictionStringDTO, httpHeaders);
         RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
 
-        System.out.println("Prediction RESOLVED LOSE: " + restTemplate.patchForObject(url, request, String.class));
+        log.info("Prediction RESOLVED LOSE: {}", restTemplate.patchForObject(url, request, String.class));
     }
 }

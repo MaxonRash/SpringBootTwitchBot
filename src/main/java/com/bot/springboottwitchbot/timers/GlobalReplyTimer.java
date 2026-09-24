@@ -1,8 +1,12 @@
 package com.bot.springboottwitchbot.timers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GlobalReplyTimer {
+    private static final Logger log = LoggerFactory.getLogger(GlobalReplyTimer.class);
     private static volatile AtomicInteger TIMER_LEFT = new AtomicInteger();
 
     public static void setTimer() {
@@ -21,7 +25,7 @@ public class GlobalReplyTimer {
                         TIMER_LEFT.decrementAndGet();
                     }
                     TIMER_LEFT.set(0);
-                    System.out.println("сейчас таймер на ответ: " + GlobalReplyTimer.getTimerLeft());
+                    log.debug("сейчас таймер на ответ: {}", GlobalReplyTimer.getTimerLeft());
                 }
             };
             countDown.start();

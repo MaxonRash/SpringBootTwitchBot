@@ -4,6 +4,8 @@ import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.bot.springboottwitchbot.DTOs.get_user_DTOs.Data;
 import com.bot.springboottwitchbot.DTOs.get_user_DTOs.GetUserDTO;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class UtilityCommandsGlobal {
+    private static final Logger log = LoggerFactory.getLogger(UtilityCommandsGlobal.class);
     public static String getUserIdByName(String login) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
         ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
@@ -29,7 +32,7 @@ public class UtilityCommandsGlobal {
         try {
             return Objects.requireNonNull(response.getBody()).getData().get(0).getId();
         } catch (NullPointerException e) {
-            System.out.println(e.getMessage());
+            log.warn("getUserIdByName: user not found for login {}", login, e);
         }
 
         // without mapping to DTO :
@@ -83,7 +86,7 @@ public class UtilityCommandsGlobal {
         try {
             return Objects.requireNonNull(response.getBody()).getData();
         } catch (NullPointerException e) {
-            System.out.println(e.getMessage());
+            log.warn("getUserDTODataByName: user not found for login {}", login, e);
             throw new IOException("User not found");
         }
 //        throw new IOException("User not found");
@@ -105,7 +108,7 @@ public class UtilityCommandsGlobal {
         try {
             return Objects.requireNonNull(response.getBody());
         } catch (NullPointerException e) {
-            System.out.println(e.getMessage());
+            log.warn("getUserDTOByName: user not found for login {}", login, e);
             throw new IOException("User not found");
         }
 //        throw new IOException("User not found");

@@ -4,6 +4,8 @@ import com.bot.springboottwitchbot.gpt.openai.openaiDTO.CreateModelResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class GPT4o {
+    private static final Logger log = LoggerFactory.getLogger(GPT4o.class);
+
     @Value("${gpt_token}")
     String gptToken;
     public boolean isTextContainingBadWord (String text) {
@@ -29,18 +33,18 @@ public class GPT4o {
                     .postForEntity(url, new HttpEntity<>(createModelResponse, headers),
                             String.class);
         } catch (Exception e) {
-            System.out.println("error while requesting to gpt: " + e.getMessage());
+            log.error("error while requesting to gpt", e);
         }
         String textFromResponse = "";
-        System.out.println(response.getBody());
+        log.debug("gpt response body: {}", response.getBody());
         if (response != null) {
             try {
                 JsonNode outputNode = new ObjectMapper().readTree(response.getBody()).path("output");
                 JsonNode contentNode = outputNode.get(0).path("content");
                 textFromResponse = contentNode.get(0).path("text").asText();
-                System.out.println("text from response: " + textFromResponse);
+                log.debug("text from response: {}", textFromResponse);
             } catch (JsonProcessingException e) {
-                System.out.println("unable to deserialize json");
+                log.error("unable to deserialize json", e);
             }
         }
         return textFromResponse.toLowerCase().contains("да");
@@ -60,7 +64,7 @@ public class GPT4o {
                     .postForEntity(url, new HttpEntity<>(createModelResponse, headers),
                             String.class);
         } catch (Exception e) {
-            System.out.println("error while requesting to gpt: " + e.getMessage());
+            log.error("error while requesting to gpt", e);
         }
         String textFromResponse = "";
         if (response != null) {
@@ -69,7 +73,7 @@ public class GPT4o {
                 JsonNode contentNode = outputNode.get(0).path("content");
                 textFromResponse = contentNode.get(0).path("text").asText();
             } catch (JsonProcessingException e) {
-                System.out.println("unable to deserialize json");
+                log.error("unable to deserialize json", e);
             }
         }
         return textFromResponse;
@@ -88,18 +92,18 @@ public class GPT4o {
                     .postForEntity(url, new HttpEntity<>(createModelResponse, headers),
                             String.class);
         } catch (Exception e) {
-            System.out.println("error while requesting to gpt: " + e.getMessage());
+            log.error("error while requesting to gpt", e);
         }
         String textFromResponse = "";
-        System.out.println(response.getBody());
+        log.debug("gpt response body: {}", response.getBody());
         if (response != null) {
             try {
                 JsonNode outputNode = new ObjectMapper().readTree(response.getBody()).path("output");
                 JsonNode contentNode = outputNode.get(0).path("content");
                 textFromResponse = contentNode.get(0).path("text").asText();
-                System.out.println("text from response: " + textFromResponse);
+                log.debug("text from response: {}", textFromResponse);
             } catch (JsonProcessingException e) {
-                System.out.println("unable to deserialize json");
+                log.error("unable to deserialize json", e);
             }
         }
         return textFromResponse.toLowerCase().contains("да");
@@ -118,7 +122,7 @@ public class GPT4o {
                     .postForEntity(url, new HttpEntity<>(createModelResponse, headers),
                             String.class);
         } catch (Exception e) {
-            System.out.println("error while requesting to gpt: " + e.getMessage());
+            log.error("error while requesting to gpt", e);
         }
         String textFromResponse = "";
         if (response != null) {
@@ -127,7 +131,7 @@ public class GPT4o {
                 JsonNode contentNode = outputNode.get(0).path("content");
                 textFromResponse = contentNode.get(0).path("text").asText();
             } catch (JsonProcessingException e) {
-                System.out.println("unable to deserialize json");
+                log.error("unable to deserialize json", e);
             }
         }
         return textFromResponse;
@@ -146,7 +150,7 @@ public class GPT4o {
                     .postForEntity(url, new HttpEntity<>(createModelResponse, headers),
                             String.class);
         } catch (Exception e) {
-            System.out.println("error while requesting to gpt: " + e.getMessage());
+            log.error("error while requesting to gpt", e);
         }
         String textFromResponse = "";
         if (response != null) {
@@ -155,7 +159,7 @@ public class GPT4o {
                 JsonNode contentNode = outputNode.get(0).path("content");
                 textFromResponse = contentNode.get(0).path("text").asText();
             } catch (JsonProcessingException e) {
-                System.out.println("unable to deserialize json");
+                log.error("unable to deserialize json", e);
             }
         }
         return textFromResponse;

@@ -8,6 +8,8 @@ import com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Ge
 import com.bot.springboottwitchbot.connections.channels.builder_utils.SecondBuilderUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class UtilityCommandsSecondChannel {
+    private static final Logger log = LoggerFactory.getLogger(UtilityCommandsSecondChannel.class);
     private static final ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
     public static ArrayList<com.bot.springboottwitchbot.DTOs.predictions_DTOs.get_predictions_DTOs.Data> getPredictionsList() {
         HttpHeaders getPredictionsHeaders = new HttpHeaders();
@@ -122,7 +125,7 @@ public class UtilityCommandsSecondChannel {
         httpHeaders.add("Client-Id", applicationContext.getBean(SecondBuilderUtil.class).getClient_id());
 
         HttpEntity<String> request = new HttpEntity<>(sendCreatePredictionStringDTO, httpHeaders);
-        System.out.println("Prediction started: " + new RestTemplate().postForObject(url, request, String.class));
+        log.info("Prediction started: {}", new RestTemplate().postForObject(url, request, String.class));
     }
 
     public static void winStandardPrediction () throws JsonProcessingException {
@@ -154,7 +157,7 @@ public class UtilityCommandsSecondChannel {
         HttpEntity<String> request = new HttpEntity<>(sendEndPredictionStringDTO, httpHeaders);
         RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
 
-        System.out.println("Prediction RESOLVED WIN: " + restTemplate.patchForObject(url, request, String.class));
+        log.info("Prediction RESOLVED WIN: {}", restTemplate.patchForObject(url, request, String.class));
     }
 
 
@@ -187,6 +190,6 @@ public class UtilityCommandsSecondChannel {
         HttpEntity<String> request = new HttpEntity<>(sendEndPredictionStringDTO, httpHeaders);
         RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
 
-        System.out.println("Prediction RESOLVED LOSE: " + restTemplate.patchForObject(url, request, String.class));
+        log.info("Prediction RESOLVED LOSE: {}", restTemplate.patchForObject(url, request, String.class));
     }
 }

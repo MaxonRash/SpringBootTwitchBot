@@ -4,6 +4,8 @@ import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.SecondBuilderUtil;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsSecondChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -18,6 +20,8 @@ import java.io.IOException;
 
 @RestController
 public class SecondPredictionsRESTController {
+    private static final Logger log = LoggerFactory.getLogger(SecondPredictionsRESTController.class);
+
     @Qualifier("webApplicationContext")
     @Autowired
     ApplicationContext applicationContext;
@@ -27,13 +31,13 @@ public class SecondPredictionsRESTController {
     @GetMapping("/second_rest_predictions/resetLastPredictionTime")
     public String resetLastPredictionTime() {
         SecondPredictionsRESTController.lastExecutedPredictionStartTime = null;
-        System.out.println("Second channel: Last prediction time has been reset");
+        log.info("Second channel: Last prediction time has been reset");
         return "Second channel: Last prediction time has been reset";
     }
 
     @GetMapping("/second_rest_predictions/showLastPredictionTime")
     public String showLastPredictionTime() {
-        System.out.println("Second channel: Last prediction time is: " + lastExecutedPredictionStartTime);
+        log.info("Second channel: Last prediction time is: {}", lastExecutedPredictionStartTime);
         return "Second channel: Last prediction time is: " + lastExecutedPredictionStartTime;
     }
 //    Maybe will be added later if necessary
@@ -50,13 +54,13 @@ public class SecondPredictionsRESTController {
                                      @RequestParam(required = false) String losePrediction,
                                      @RequestParam() String time) throws IOException, InterruptedException {
         if (makeNewPrediction == null && winPrediction == null && losePrediction == null) {
-            System.err.println("Second channel: No one of the required parameters");
+            log.warn("Second channel: No one of the required parameters");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No req param", new Exception("No req param"));
         }
         if (makeNewPrediction != null) {
             if (lastExecutedPredictionStartTime != null) {
                 if (time.equals(lastExecutedPredictionStartTime)) {
-                    System.err.println("Second channel: This prediction was already executed earlier");
+                    log.warn("Second channel: This prediction was already executed earlier");
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "This prediction was already executed earlier",
                             new Exception("Same prediction"));
                 }
@@ -64,7 +68,7 @@ public class SecondPredictionsRESTController {
             try {
                 UtilityCommandsSecondChannel.makeStandardPrediction();
             } catch (HttpClientErrorException.BadRequest e) {
-                System.err.println("Second channel: Prediction is already started. Time: " + time + " Waiting fow outcome now.");
+                log.warn("Second channel: Prediction is already started. Time: {} Waiting fow outcome now.", time);
                 ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                         .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(SecondBuilderUtil.class)
                                 .getSecondChannelName(), "@" + applicationContext.getBean(SecondBuilderUtil.class).getSecondChannelName()
@@ -75,7 +79,7 @@ public class SecondPredictionsRESTController {
             }
             Thread.sleep(1000);
             lastExecutedPredictionStartTime = time;
-            System.out.println("Second channel: New Prediction Made, Game Started at: " + time);
+            log.info("Second channel: New Prediction Made, Game Started at: {}", time);
             ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                     .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(SecondBuilderUtil.class)
                             .getSecondChannelName(), "@" + applicationContext.getBean(SecondBuilderUtil.class).getSecondChannelName()
@@ -88,7 +92,7 @@ public class SecondPredictionsRESTController {
                     UtilityCommandsSecondChannel.winStandardPrediction();
                 } catch (NullPointerException e) {
                     lastExecutedPredictionStartTime = null;
-                    System.out.println("No opened predictions for second channel, someone closed it earlier. Time was: " + time);
+                    log.info("No opened predictions for second channel, someone closed it earlier. Time was: {}", time);
                     ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                             .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(SecondBuilderUtil.class)
                                     .getSecondChannelName(), "@" + applicationContext.getBean(SecondBuilderUtil.class).getSecondChannelName()
@@ -98,7 +102,7 @@ public class SecondPredictionsRESTController {
                 }
                 Thread.sleep(1000);
                 lastExecutedPredictionStartTime = null;
-                System.out.println("Second channel: Outcome for prediction for game started at: " + time + " is set to WON");
+                log.info("Second channel: Outcome for prediction for game started at: {} is set to WON", time);
                 ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                         .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(SecondBuilderUtil.class)
                                 .getSecondChannelName(),"@" + applicationContext.getBean(SecondBuilderUtil.class).getSecondChannelName()
@@ -112,7 +116,7 @@ public class SecondPredictionsRESTController {
                     UtilityCommandsSecondChannel.loseStandardPrediction();
                 } catch (NullPointerException e) {
                     lastExecutedPredictionStartTime = null;
-                    System.out.println("Second channel: No opened predictions, someone closed it earlier. Time was: " + time);
+                    log.info("Second channel: No opened predictions, someone closed it earlier. Time was: {}", time);
                     ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                             .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(SecondBuilderUtil.class)
                                     .getSecondChannelName(), "@" + applicationContext.getBean(SecondBuilderUtil.class).getSecondChannelName()
@@ -122,7 +126,7 @@ public class SecondPredictionsRESTController {
                 }
                 Thread.sleep(1000);
                 lastExecutedPredictionStartTime = null;
-                System.out.println("Second channel: Outcome for prediction for game started at: " + time + " is set to LOST");
+                log.info("Second channel: Outcome for prediction for game started at: {} is set to LOST", time);
                 ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
                         .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(SecondBuilderUtil.class)
                                 .getSecondChannelName(), "@" + applicationContext.getBean(SecondBuilderUtil.class).getSecondChannelName()
@@ -130,7 +134,7 @@ public class SecondPredictionsRESTController {
                 return "Outcome for prediction for game started at: " + time + " is set to LOST";
             }
         }
-        System.err.println("Second channel: Nothing was done, but ok...");
+        log.warn("Second channel: Nothing was done, but ok...");
         return "Nothing was done, but ok...";
     }
 }

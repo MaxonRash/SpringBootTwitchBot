@@ -3,6 +3,8 @@ package com.bot.springboottwitchbot.utilities;
 import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.bot.springboottwitchbot.models.User;
 import com.bot.springboottwitchbot.services.UsersService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 public class UtilityDOB {
+    private static final Logger log = LoggerFactory.getLogger(UtilityDOB.class);
     public static List<String> listOfUsersWithDOB = new ArrayList<>();
     public static boolean CheckIfFollowIsMoreThan6Months(Date currentDate, Date dateOfFollowSince) {
         Calendar currentDateCalendar = Calendar.getInstance();
@@ -28,6 +31,6 @@ public class UtilityDOB {
                 UtilityDOB.listOfUsersWithDOB.add(user.getLogin());
             }
         }
-        System.out.println("Добавлены ДР. Сегодня ДР у: " + UtilityDOB.listOfUsersWithDOB);
+        log.info("Добавлены ДР. Сегодня ДР у: {}", UtilityDOB.listOfUsersWithDOB);
     }
 }

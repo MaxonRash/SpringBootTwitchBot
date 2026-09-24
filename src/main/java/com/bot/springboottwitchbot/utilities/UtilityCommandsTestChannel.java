@@ -10,6 +10,8 @@ import com.bot.springboottwitchbot.DTOs.timeout_DTOs.TimeoutUserDTO;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -23,6 +25,7 @@ import java.util.Date;
 import java.util.Objects;
 
 public class UtilityCommandsTestChannel {
+    private static final Logger log = LoggerFactory.getLogger(UtilityCommandsTestChannel.class);
 
     private static final HttpEntity<Void> httpGetEntity;
     private static final ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
@@ -54,7 +57,7 @@ public class UtilityCommandsTestChannel {
         HttpEntity<Void> request = new HttpEntity<>(headersVIP);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
-        System.out.println(response);
+        log.info("VIP response: {}", response);
     }
 
     public static void timeoutUserTest(String userId, int duration, String reason) throws JsonProcessingException {
@@ -66,7 +69,7 @@ public class UtilityCommandsTestChannel {
         String timeoutUserStringDTO = new ObjectMapper().writeValueAsString(timeoutUserDTO);
 
         HttpEntity<String> request = new HttpEntity<>(timeoutUserStringDTO, headersBotToken);
-        System.out.println("Timeout:" + new RestTemplate().postForObject(url, request, String.class));
+        log.info("Timeout: {}", new RestTemplate().postForObject(url, request, String.class));
     }
 
     public static ArrayList<String> getModeratorsList() {
@@ -109,7 +112,7 @@ public class UtilityCommandsTestChannel {
 
 
         HttpEntity<String> request = new HttpEntity<>(emoteOnlyStringDTO, emoteHeaders);
-        System.out.println(restTemplate.patchForObject(url, request, String.class));
+        log.info("Emote mode response: {}", restTemplate.patchForObject(url, request, String.class));
     }
 
     public static Date getFollowingSinceDate(int userId) throws ParseException {

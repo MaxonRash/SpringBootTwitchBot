@@ -21,6 +21,8 @@ import com.bot.springboottwitchbot.utilities.UtilityCommandsTestChannel;
 import com.bot.springboottwitchbot.utilities.UtilityDOB;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -37,6 +39,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 @Component
 public class EventHandlerBot {
+    private static final Logger log = LoggerFactory.getLogger(EventHandlerBot.class);
     ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
     @Autowired
     UsersService usersService;
@@ -49,7 +52,7 @@ public class EventHandlerBot {
 
     @EventSubscriber
     public void printChannelMessage(ChannelMessageEvent event) {
-        System.out.println("[" + event.getChannel().getName() + "]" + "{MyEventHandlerBot}" + "["+event.getPermissions().toString()+"] " + event.getUser().getName() + ": " + event.getMessage());
+        log.debug("[{}]{{MyEventHandlerBot}}[{}] {}: {}", event.getChannel().getName(), event.getPermissions(), event.getUser().getName(), event.getMessage());
     }
 
     @EventSubscriber
@@ -122,7 +125,7 @@ public class EventHandlerBot {
                 else {
                     this.firstDuelName = firstDuelName.toLowerCase();
                     applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + firstDuelName + " вызывает " + "@" + secondDuelName + " на дуэль!");
-                    System.out.println(arrayList);
+                    log.debug("duel command args: {}", arrayList);
                     String finalSecondDuelName = secondDuelName;
                     this.secondDuelName = finalSecondDuelName;
 //            System.out.println("second name = " + this.secondDuelName + "// first name = " + this.firstDuelName);
@@ -357,14 +360,14 @@ public class EventHandlerBot {
                 GlobalRouletteTimer.rouletteTimerToAccept.schedule(timerTask, delay);
             }
 
-            System.out.println(russianRoulettePlayers);
+            log.debug("roulette players: {}", russianRoulettePlayers);
         }
         else if (newMessage.contains("monkas") && russianRoulettePlayers != null && GlobalRouletteTimer.rouletteCooldownTimer == null) {
             if (russianRoulettePlayers.size() < 6) {
                 //TODO uncomment after tests
 //                if (!russianRoulettePlayers.contains(event.getUser().getName())) {
                 russianRoulettePlayers.add(event.getUser().getName());
-                System.out.println(russianRoulettePlayers);
+                log.debug("roulette players: {}", russianRoulettePlayers);
 //                }
             }
             if (russianRoulettePlayers.size() == 6) {
@@ -1020,7 +1023,7 @@ public class EventHandlerBot {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
                                 .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
                                         + " сначала добавь командой !др день/месяц/год или день/месяц . С лидирующими нолями в дне и месяце");
-                        System.out.println("такого юзера нет: " + event.getUser().getName());
+                        log.debug("такого юзера нет: {}", event.getUser().getName());
                         Global10secCDTimer.setGlobal10secTimer();
                     }
                 }
@@ -1037,7 +1040,7 @@ public class EventHandlerBot {
                 UtilityCommandsTestChannel.emoteOnlyMode(true);
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            log.error("timeoutHappaTest failed", e);
         }
     }
 
@@ -1138,7 +1141,7 @@ public class EventHandlerBot {
 //                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), textAboutBadWord);
 
 //                                if (gpt4oMini.isTextContainingBadWord(newMessage)) {
-                System.out.println(isBadWord);
+                log.debug("isBadWord: {}", isBadWord);
                 if (isBadWord) {
                     String textAboutBadWord = gpt4o.TextContainingBadWord(newMessage);
 //            if (message.contains("!timeout")) {
@@ -1147,25 +1150,25 @@ public class EventHandlerBot {
                     String eventChannel = event.getChannel().getName();
 
                     if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
-                        System.out.println("here 1");
+                        log.debug("timeoutForMat: main channel branch");
 
                         UtilityCommandsMainChannel.timeoutUser(id, 600, "bad word bot");
 //            twitchClient.getChat().sendMessage("maximuz666",  "@" + event.getUser().getName() + " Мат в чате запрещён!");
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutBadWord);
                     } else if (event.getChannel().getName().equalsIgnoreCase("maximuz666")) {
-                        System.out.println("here 2");
+                        log.debug("timeoutForMat: test channel branch");
                         try {
                             applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutBadWord);
                             UtilityCommandsTestChannel.timeoutUserTest(id, 5, "bad word bot");
 
                         } catch (Exception e) {
-                            System.out.println(e.getMessage());
+                            log.error("timeoutForMat: failed to timeout test channel user", e);
                         }
                     }
                 }
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            log.error("timeoutForMat failed", e);
         }
     }
 
@@ -1219,7 +1222,7 @@ public class EventHandlerBot {
                 if (trimmedNewMessage.contains("тся") || trimmedNewMessage.contains("ться")) {
                     boolean hasTsyaMistakes = gpt4o.isTextContainingTsyaMistake(newMessage);
 
-                    System.out.println("ошибки с ться: " + hasTsyaMistakes);
+                    log.debug("ошибки с ться: {}", hasTsyaMistakes);
 
                     if (hasTsyaMistakes) {
                         String textAboutTsyaMistakes = gpt4o.ResponseForTextContainingTsyaMistake(newMessage);
@@ -1304,12 +1307,12 @@ public class EventHandlerBot {
                     commandPermissionString = commandPermissionString.substring(0, commandPermissionString.lastIndexOf("]"));
 //                    System.out.println("Updated String: " + commandPermissionString);
                     ArrayList<String> commandPermissionList = new ArrayList<>(Arrays.asList(commandPermissionString.split(", ")));
-                    System.out.println("command permission list:  " + commandPermissionList);
+                    log.debug("command permission list: {}", commandPermissionList);
                     ArrayList<String> requiredPermissionList = new ArrayList<>(Arrays.asList("PARTNER, SUBSCRIBER, FOUNDER, SUBGIFTER, VIP, MODERATOR, BROADCASTER".split(", ")));
 //                    ArrayList<String> requiredPermissionList = new ArrayList<>(Arrays.asList("VIP".split(", ")));
-                    System.out.println("required permission list: " + requiredPermissionList);
+                    log.debug("required permission list: {}", requiredPermissionList);
                     commandPermissionList.retainAll(requiredPermissionList);
-                    System.out.println("updated command permission: " + commandPermissionList);
+                    log.debug("updated command permission: {}", commandPermissionList);
 
                     if (!commandPermissionList.isEmpty()) {
                         String reply = gpt4o.ResponseForTextAddressingToBot(newMessage.substring(13));
@@ -1341,7 +1344,7 @@ public class EventHandlerBot {
 
         if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
                 event.getUser().getName().equalsIgnoreCase("winretkristin")) && (newMessage.toLowerCase().startsWith("!reboot")) ) {
-            System.out.println("rebooting...");
+            log.info("rebooting...");
             applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(),
                     "@" + event.getUser().getName() + " rebooting...");
             SpringBootTwitchBotApplication.restart();

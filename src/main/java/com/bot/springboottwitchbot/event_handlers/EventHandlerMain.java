@@ -24,6 +24,8 @@ import com.github.twitch4j.pubsub.domain.ChannelPointsReward;
 import com.github.twitch4j.pubsub.domain.SubscriptionData;
 import com.github.twitch4j.pubsub.events.ChannelSubscribeEvent;
 import com.github.twitch4j.pubsub.events.RewardRedeemedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -41,6 +43,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 @Component
 public class EventHandlerMain {
+    private static final Logger log = LoggerFactory.getLogger(EventHandlerMain.class);
     ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
     private String firstDuelName = null;
     private String secondDuelName = null;
@@ -51,7 +54,7 @@ public class EventHandlerMain {
 
     @EventSubscriber
     public void printChannelMessage(ChannelMessageEvent event) {
-        System.out.println("[" + event.getChannel().getName() + "]" + "{MyEventHandlerHappa}" + "["+event.getPermissions().toString()+"] " + event.getUser().getName() + ": " + event.getMessage());
+        log.debug("[{}]{{MyEventHandlerHappa}}[{}] {}: {}", event.getChannel().getName(), event.getPermissions(), event.getUser().getName(), event.getMessage());
     }
 
     @EventSubscriber
@@ -138,7 +141,7 @@ public class EventHandlerMain {
                 else {
                     this.firstDuelName = firstDuelName.toLowerCase();
                     applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + firstDuelName + " вызывает " + "@" + secondDuelName + " на дуэль! happaPled");
-                    System.out.println(arrayList);
+                    log.debug("duel command args: {}", arrayList);
                     String finalSecondDuelName = secondDuelName;
                     this.secondDuelName = finalSecondDuelName;
 //            System.out.println("second name = " + this.secondDuelName + "// first name = " + this.firstDuelName);
@@ -200,16 +203,16 @@ public class EventHandlerMain {
                 }
 
                 String commandPermissionString = event.getPermissions().toString();
-                System.out.println("String: " + commandPermissionString);
+                log.debug("String: {}", commandPermissionString);
                 commandPermissionString = commandPermissionString.substring(1);
                 commandPermissionString = commandPermissionString.substring(0, commandPermissionString.lastIndexOf("]"));
-                System.out.println("Updated String: " + commandPermissionString);
+                log.debug("Updated String: {}", commandPermissionString);
                 ArrayList<String> commandPermissionList = new ArrayList<>(Arrays.asList(commandPermissionString.split(", ")));
-                System.out.println("command permission list:  " + commandPermissionList);
+                log.debug("command permission list: {}", commandPermissionList);
                 ArrayList<String> requiredPermissionList = new ArrayList<>(Arrays.asList("PARTNER, SUBSCRIBER, FOUNDER, SUBGIFTER, VIP, MODERATOR, BROADCASTER".split(", ")));
-                System.out.println("required permission list: " + requiredPermissionList);
+                log.debug("required permission list: {}", requiredPermissionList);
                 commandPermissionList.retainAll(requiredPermissionList);
-                System.out.println("updated command permission: " + commandPermissionList);
+                log.debug("updated command permission: {}", commandPermissionList);
 
                 if (!commandPermissionList.isEmpty()) {
                     if (UtilityCommandsMainChannel.isBannedUser(secondNick)) {
@@ -318,23 +321,23 @@ public class EventHandlerMain {
 
             if (newMessage.toLowerCase().startsWith("!reset") && (arrayList.size() > 1) && (arrayList.get(1).equals("kill"))) {
                 String commandPermissionString = event.getPermissions().toString();
-                System.out.println("String: " + commandPermissionString);
+                log.debug("String: {}", commandPermissionString);
                 commandPermissionString = commandPermissionString.substring(1);
                 commandPermissionString = commandPermissionString.substring(0, commandPermissionString.lastIndexOf("]"));
-                System.out.println("Updated String: " + commandPermissionString);
+                log.debug("Updated String: {}", commandPermissionString);
                 ArrayList<String> commandPermissionList = new ArrayList<>(Arrays.asList(commandPermissionString.split(", ")));
-                System.out.println("Permissions All: " + commandPermissionList);
+                log.debug("Permissions All: {}", commandPermissionList);
                 ArrayList<String> requiredPermissionList = new ArrayList<>(Arrays.asList("VIP, MODERATOR, BROADCASTER".split(", ")));
-                System.out.println("Permissions Required: " + requiredPermissionList);
+                log.debug("Permissions Required: {}", requiredPermissionList);
                 commandPermissionList.retainAll(requiredPermissionList);
-                System.out.println("Permissions Left: " + commandPermissionList);
+                log.debug("Permissions Left: {}", commandPermissionList);
 
 
                 if (commandPermissionList.size() != 0 && (KillResetTimer.killResetCooldownTimer == null)) {
                     try {
                         GlobalKillTimer.resetKill();
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        log.error("resetKillCommand failed", e);
                     }
                     applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "!kill готов happaDjosh =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿");
                     KillResetTimer.killResetCooldownTimer = new Timer("killResetCoolDownTimer");
@@ -393,13 +396,13 @@ public class EventHandlerMain {
                     GlobalRouletteTimer.rouletteTimerToAccept.schedule(timerTask, delay);
                 }
 
-                System.out.println(russianRoulettePlayers);
+                log.debug("roulette players: {}", russianRoulettePlayers);
             } else if (newMessage.contains("monkas") && russianRoulettePlayers != null && GlobalRouletteTimer.rouletteCooldownTimer == null) {
                 if (russianRoulettePlayers.size() < 6) {
                     //TODO uncomment after tests
                     if (!russianRoulettePlayers.contains(event.getUser().getName())) { // comment for tests
                         russianRoulettePlayers.add(event.getUser().getName());
-                        System.out.println(russianRoulettePlayers);
+                        log.debug("roulette players: {}", russianRoulettePlayers);
                     } // comment for tests
                 }
                 if (russianRoulettePlayers.size() == 6) {
@@ -488,7 +491,7 @@ public class EventHandlerMain {
 //        subscriptionPlan.
 
         SubscriptionData subscriptionData = event.getData();
-        System.out.println("Sub note Works");
+        log.info("Sub note Works");
         if(subscriptionData.getDisplayName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
             applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(subscriptionData.getChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
                     + " найс катаешь Kappa");
@@ -503,7 +506,7 @@ public class EventHandlerMain {
     public void emoteOnlyForPoints(RewardRedeemedEvent event) throws IOException {
         ChannelPointsRedemption rewardRedeemedEvent = event.getRedemption();
         ChannelPointsReward channelPointsReward = rewardRedeemedEvent.getReward();
-        System.out.println(channelPointsReward);
+        log.debug("channel points reward: {}", channelPointsReward);
 //        System.out.println(channelPointsReward.getId());
 //        System.out.println(channelPointsReward.getPrompt());
 //        System.out.println(channelPointsReward.getTitle());
@@ -538,7 +541,7 @@ public class EventHandlerMain {
         ChannelPointsRedemption rewardRedeemedEvent = event.getRedemption();
         ChannelPointsReward channelPointsReward = rewardRedeemedEvent.getReward();
 
-        System.out.println(channelPointsReward);
+        log.debug("channel points reward: {}", channelPointsReward);
 
         String title = channelPointsReward.getTitle().toLowerCase();
         if (title.equalsIgnoreCase("Я персона VIP VIP")) {
@@ -565,7 +568,7 @@ public class EventHandlerMain {
         ChannelPointsRedemption rewardRedeemedEvent = event.getRedemption();
         ChannelPointsReward channelPointsReward = rewardRedeemedEvent.getReward();
 
-        System.out.println(channelPointsReward);
+        log.debug("channel points reward: {}", channelPointsReward);
 
         String title = channelPointsReward.getTitle().toLowerCase();
         if (title.equalsIgnoreCase("ТАЙМАЧ БРАТУЗЕ!")) {
@@ -740,7 +743,7 @@ public class EventHandlerMain {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
                                 .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
                                         + " сначала добавь командой !др день/месяц/год или день/месяц . С лидирующими нолями в дне и месяце");
-                        System.out.println("такого юзера нет: " + event.getUser().getName());
+                        log.debug("такого юзера нет: {}", event.getUser().getName());
                         Global10secCDTimer.setGlobal10secTimer();
                     }
                 }
@@ -1056,7 +1059,7 @@ public class EventHandlerMain {
         ChannelPointsRedemption rewardRedeemedEvent = event.getRedemption();
         ChannelPointsReward channelPointsReward = rewardRedeemedEvent.getReward();
 
-        System.out.println(channelPointsReward);
+        log.debug("channel points reward: {}", channelPointsReward);
 
         String title = channelPointsReward.getTitle().toLowerCase();
         if (title.equalsIgnoreCase("-1000") && rewardRedeemedEvent.getUser().getDisplayName().equalsIgnoreCase("maximuz666")) {
@@ -1105,7 +1108,7 @@ public class EventHandlerMain {
                 Thread.sleep(5000);
                 UtilityCommandsMainChannel.unVipUser("steyro");
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                log.error("vipAndUnVipTest failed", e);
             }
         }
     }
@@ -1131,7 +1134,7 @@ public class EventHandlerMain {
                     applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "new request sent");
                 }
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                log.error("timeoutMainTest failed", e);
             }
         }
     }
@@ -1219,7 +1222,7 @@ public class EventHandlerMain {
                 } else if (badWordsList.stream().anyMatch(trimmedNewMessage::contains)) {
                     boolean isBadWord = gpt4o.isTextContainingBadWord(newMessage);
 
-                    System.out.println(isBadWord);
+                    log.debug("isBadWord: {}", isBadWord);
                     if (isBadWord) {
                         String textAboutBadWord = gpt4o.TextContainingBadWord(newMessage);
                         String id = event.getUser().getId();
@@ -1235,13 +1238,13 @@ public class EventHandlerMain {
                                 UtilityCommandsTestChannel.timeoutUserTest(id, 5, "bad word bot");
 
                             } catch (Exception e) {
-                                System.out.println(e.getMessage());
+                                log.error("timeoutForMat: failed to timeout test channel user", e);
                             }
                         }
                     }
                 }
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                log.error("timeoutForMat failed", e);
             }
         }
         else {
@@ -1265,7 +1268,7 @@ public class EventHandlerMain {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " Мат в чате запрещён!");
                         UtilityCommandsTestChannel.timeoutUserTest(id, 5, "bad word bot");
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        log.error("timeoutForMat (old filter): failed to timeout test channel user", e);
                     }
                 }
             }
@@ -1323,7 +1326,7 @@ public class EventHandlerMain {
                     if (trimmedNewMessage.contains("тся") || trimmedNewMessage.contains("ться")) {
                         boolean hasTsyaMistakes = gpt4o.isTextContainingTsyaMistake(newMessage);
 
-                        System.out.println("ошибки с ться: " + hasTsyaMistakes);
+                        log.debug("ошибки с ться: {}", hasTsyaMistakes);
 
                         if (hasTsyaMistakes) {
                             String textAboutTsyaMistakes = gpt4o.ResponseForTextContainingTsyaMistake(newMessage);
@@ -1445,7 +1448,7 @@ public class EventHandlerMain {
 
         if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
                 event.getUser().getName().equalsIgnoreCase("winretkristin")) && (newMessage.toLowerCase().startsWith("!reboot")) ) {
-            System.out.println("rebooting...");
+            log.info("rebooting...");
             applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(),
                     "@" + event.getUser().getName() + " rebooting...");
             SpringBootTwitchBotApplication.restart();

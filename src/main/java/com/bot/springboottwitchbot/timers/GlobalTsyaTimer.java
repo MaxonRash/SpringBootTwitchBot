@@ -1,6 +1,10 @@
 package com.bot.springboottwitchbot.timers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GlobalTsyaTimer {
+    private static final Logger log = LoggerFactory.getLogger(GlobalTsyaTimer.class);
     private static volatile long TIMER_LEFT = 0;
 
     public static void setTimer() {
@@ -19,7 +23,7 @@ public class GlobalTsyaTimer {
                         timer--;
                     }
                     TIMER_LEFT = 0;
-                    System.out.println("сейчас таймер на ться: " + GlobalTsyaTimer.getTimerLeft());
+                    log.debug("сейчас таймер на ться: {}", GlobalTsyaTimer.getTimerLeft());
                 }
             };
             countDown.start();

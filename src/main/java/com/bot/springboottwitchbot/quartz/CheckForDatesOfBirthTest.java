@@ -6,10 +6,13 @@ import com.bot.springboottwitchbot.services.UsersService;
 import com.bot.springboottwitchbot.utilities.UtilityDOB;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
 public class CheckForDatesOfBirthTest implements Job {
+    private static final Logger log = LoggerFactory.getLogger(CheckForDatesOfBirthTest.class);
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
@@ -21,6 +24,6 @@ public class CheckForDatesOfBirthTest implements Job {
                 UtilityDOB.listOfUsersWithDOB.add(user.getLogin());
             }
         }
-        System.out.println("Сегодня ДР у: " + UtilityDOB.listOfUsersWithDOB);
+        log.info("Сегодня ДР у: {}", UtilityDOB.listOfUsersWithDOB);
     }
 }

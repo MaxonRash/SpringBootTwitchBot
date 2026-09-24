@@ -4,6 +4,8 @@ import com.bot.springboottwitchbot.gpt.yandexgpt.yandexgptDTO.OAuthToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class GetIAMTokenFromOAuth {
+    private static final Logger log = LoggerFactory.getLogger(GetIAMTokenFromOAuth.class);
+
     @Value("${oauth_token}")
     String oAuthToken;
 
@@ -28,17 +32,17 @@ public class GetIAMTokenFromOAuth {
                     .postForEntity(url, new HttpEntity<>(new OAuthToken(oAuthToken), headers),
                             String.class);
         } catch (Exception e) {
-            System.out.println("error while requesting IAMToken from OAuthToken: " + e.getMessage());
+            log.error("error while requesting IAMToken from OAuthToken", e);
         }
         String textFromResponse = "";
         if (response.getBody() != null) {
-            System.out.println("ответ при запросе IAMToken: " + response.getBody());
+            log.debug("ответ при запросе IAMToken: {}", response.getBody());
             try {
                 JsonNode node = new ObjectMapper().readTree(response.getBody());
                 textFromResponse = node.get("iamToken").asText();
-                System.out.println("text extracted from response, iamToken: " + textFromResponse);
+                log.debug("text extracted from response, iamToken: {}", textFromResponse);
             } catch (JsonProcessingException e) {
-                System.out.println("unable to deserialize json");
+                log.error("unable to deserialize json", e);
             }
         }
 
