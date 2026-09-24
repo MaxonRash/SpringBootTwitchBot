@@ -1,12 +1,12 @@
 package com.bot.springboottwitchbot.utilities;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
-import com.bot.springboottwitchbot.dto.banned_users_DTOs.BannedUserDTO;
-import com.bot.springboottwitchbot.dto.emote_only_DTOs.EmoteOnlyDTO;
-import com.bot.springboottwitchbot.dto.get_followers_DTOs.GetFollowersDTO;
-import com.bot.springboottwitchbot.dto.moderator_DTOs.ModeratorDTO;
-import com.bot.springboottwitchbot.dto.timeout_DTOs.Data;
-import com.bot.springboottwitchbot.dto.timeout_DTOs.TimeoutUserDTO;
+import com.bot.springboottwitchbot.dto.bannedusers.BannedUsersResponse;
+import com.bot.springboottwitchbot.dto.emoteonly.EmoteOnlyRequest;
+import com.bot.springboottwitchbot.dto.followers.FollowersResponse;
+import com.bot.springboottwitchbot.dto.moderator.ModeratorsResponse;
+import com.bot.springboottwitchbot.dto.timeout.TimeoutData;
+import com.bot.springboottwitchbot.dto.timeout.TimeoutUserRequest;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,8 +61,8 @@ public class UtilityCommandsTestChannel {
     }
 
     public static void timeoutUserTest(String userId, int duration, String reason) throws JsonProcessingException {
-        Data data = new Data(userId, duration, reason);
-        TimeoutUserDTO timeoutUserDTO = new TimeoutUserDTO(data);
+        TimeoutData data = new TimeoutData(userId, duration, reason);
+        TimeoutUserRequest timeoutUserDTO = new TimeoutUserRequest(data);
         String url = "https://api.twitch.tv/helix/moderation/bans?broadcaster_id=" + applicationContext.getBean(BotBuilderUtil.class).getTestChannelId() +
                 "&moderator_id=" + applicationContext.getBean(BotBuilderUtil.class).getBotChannelId();
 
@@ -82,15 +82,15 @@ public class UtilityCommandsTestChannel {
 
         String url = "https://api.twitch.tv/helix/moderation/moderators?broadcaster_id=" + applicationContext.getBean(BotBuilderUtil.class).getTestChannelId()
                 +"&first=50";
-        ResponseEntity<ModeratorDTO> response = restTemplate.exchange(url, HttpMethod.GET, httpGetEntityMods, ModeratorDTO.class);
-        ModeratorDTO moderatorDTO = null;
+        ResponseEntity<ModeratorsResponse> response = restTemplate.exchange(url, HttpMethod.GET, httpGetEntityMods, ModeratorsResponse.class);
+        ModeratorsResponse moderatorDTO = null;
         if (response.hasBody()) {
             moderatorDTO = response.getBody();
         }
 
         ArrayList<String> moderatorsList = new ArrayList<>();
         if (moderatorDTO != null && !moderatorDTO.getData().isEmpty()) {
-            for (com.bot.springboottwitchbot.dto.moderator_DTOs.Data data : moderatorDTO.getData()) {
+            for (com.bot.springboottwitchbot.dto.moderator.ModeratorData data : moderatorDTO.getData()) {
 //                System.out.println(data.getUser_login()); // - debug
                 moderatorsList.add(data.getUser_login());
             }
@@ -107,7 +107,7 @@ public class UtilityCommandsTestChannel {
         emoteHeaders.add("Client-Id", applicationContext.getBean(BotBuilderUtil.class).getClient_id());
         String url = "https://api.twitch.tv/helix/chat/settings?broadcaster_id=" + applicationContext.getBean(BotBuilderUtil.class).getTestChannelId()
                 + "&moderator_id=" + applicationContext.getBean(BotBuilderUtil.class).getBotChannelId();
-        EmoteOnlyDTO emoteOnlyDTO = new EmoteOnlyDTO(state);
+        EmoteOnlyRequest emoteOnlyDTO = new EmoteOnlyRequest(state);
         String emoteOnlyStringDTO = new ObjectMapper().writeValueAsString(emoteOnlyDTO);
 
 
@@ -123,7 +123,7 @@ public class UtilityCommandsTestChannel {
         String url = "https://api.twitch.tv/helix/channels/followers?broadcaster_id=" + applicationContext.getBean(BotBuilderUtil.class).getTestChannelId()
                 + "&user_id=" + userId;
         HttpEntity<Void> httpEntityGetFollowers = new HttpEntity<>(followersHeaders);
-        GetFollowersDTO getFollowersDTO = new RestTemplate().exchange(url, HttpMethod.GET, httpEntityGetFollowers, GetFollowersDTO.class).getBody();
+        FollowersResponse getFollowersDTO = new RestTemplate().exchange(url, HttpMethod.GET, httpEntityGetFollowers, FollowersResponse.class).getBody();
         if (!Objects.requireNonNull(getFollowersDTO).getData().isEmpty()) {
             String followedAt = Objects.requireNonNull(getFollowersDTO).getData().get(0).getFollowed_at();
 //        System.out.println("Following since: " + followedAt);
@@ -145,8 +145,8 @@ public class UtilityCommandsTestChannel {
 
         String url = "https://api.twitch.tv/helix/moderation/banned?broadcaster_id=" + applicationContext.getBean(BotBuilderUtil.class).getTestChannelId()
                 +"&first=50&user_id=" + userId;
-        ResponseEntity<BannedUserDTO> response = restTemplate.exchange(url, HttpMethod.GET, httpGetBannedUser, BannedUserDTO.class);
-        BannedUserDTO bannedUserDTO = null;
+        ResponseEntity<BannedUsersResponse> response = restTemplate.exchange(url, HttpMethod.GET, httpGetBannedUser, BannedUsersResponse.class);
+        BannedUsersResponse bannedUserDTO = null;
         if (response.hasBody()) {
             bannedUserDTO = response.getBody();
         }

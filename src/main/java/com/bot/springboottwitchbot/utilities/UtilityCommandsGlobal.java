@@ -1,8 +1,8 @@
 package com.bot.springboottwitchbot.utilities;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
-import com.bot.springboottwitchbot.dto.get_user_DTOs.Data;
-import com.bot.springboottwitchbot.dto.get_user_DTOs.GetUserDTO;
+import com.bot.springboottwitchbot.dto.user.UserData;
+import com.bot.springboottwitchbot.dto.user.UsersResponse;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class UtilityCommandsGlobal {
         headers.add("Client-Id", applicationContext.getBean(BotBuilderUtil.class).getClient_id());
 
         HttpEntity<Void> request = new HttpEntity<>(headers);
-        ResponseEntity<GetUserDTO> response = restTemplate.exchange(url, HttpMethod.GET, request, GetUserDTO.class);
+        ResponseEntity<UsersResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, UsersResponse.class);
         try {
             return Objects.requireNonNull(response.getBody()).getData().get(0).getId();
         } catch (NullPointerException e) {
@@ -58,10 +58,10 @@ public class UtilityCommandsGlobal {
             userDetails = EntityUtils.toString(response.getEntity());
         }
 
-        GetUserDTO getUserDTO = null;
+        UsersResponse getUserDTO = null;
         if (userDetails != null) {
             Gson gson = new Gson();
-            getUserDTO = gson.fromJson(userDetails, GetUserDTO.class);
+            getUserDTO = gson.fromJson(userDetails, UsersResponse.class);
         }
         if (getUserDTO != null) {
             return getUserDTO.getData().get(0).getId();
@@ -70,7 +70,7 @@ public class UtilityCommandsGlobal {
         return null;
     }
 
-    public static List<Data> getUserDTODataByName(String login) throws IOException {
+    public static List<UserData> getUserDTODataByName(String login) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
         ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
 
@@ -82,7 +82,7 @@ public class UtilityCommandsGlobal {
         headers.add("Client-Id", applicationContext.getBean(BotBuilderUtil.class).getClient_id());
 
         HttpEntity<Void> request = new HttpEntity<>(headers);
-        ResponseEntity<GetUserDTO> response = restTemplate.exchange(url, HttpMethod.GET, request, GetUserDTO.class);
+        ResponseEntity<UsersResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, UsersResponse.class);
         try {
             return Objects.requireNonNull(response.getBody()).getData();
         } catch (NullPointerException e) {
@@ -92,7 +92,7 @@ public class UtilityCommandsGlobal {
 //        throw new IOException("User not found");
     }
 
-    public static GetUserDTO getUserDTOByName(String login) throws IOException {
+    public static UsersResponse getUserDTOByName(String login) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
         ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
 
@@ -104,7 +104,7 @@ public class UtilityCommandsGlobal {
         headers.add("Client-Id", applicationContext.getBean(BotBuilderUtil.class).getClient_id());
 
         HttpEntity<Void> request = new HttpEntity<>(headers);
-        ResponseEntity<GetUserDTO> response = restTemplate.exchange(url, HttpMethod.GET, request, GetUserDTO.class);
+        ResponseEntity<UsersResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, UsersResponse.class);
         try {
             return Objects.requireNonNull(response.getBody());
         } catch (NullPointerException e) {

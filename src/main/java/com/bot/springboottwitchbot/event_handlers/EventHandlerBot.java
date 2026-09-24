@@ -2,7 +2,7 @@ package com.bot.springboottwitchbot.event_handlers;
 
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
-import com.bot.springboottwitchbot.dto.utilities_for_DTOs.GetUserDTOToUserConverter;
+import com.bot.springboottwitchbot.dto.support.UsersResponseToUserConverter;
 import com.bot.springboottwitchbot.SpringBootTwitchBotApplication;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
@@ -872,7 +872,7 @@ public class EventHandlerBot {
             if (arrayList.size() > 1) {
                 User checkUser = usersService.findOne(event.getUser().getName());
                 if (checkUser == null) {
-                    checkUser = GetUserDTOToUserConverter.ConvertUserFromDTO(UtilityCommandsGlobal.getUserDTOByName(event.getUser().getName()));
+                    checkUser = UsersResponseToUserConverter.ConvertUserFromDTO(UtilityCommandsGlobal.getUserDTOByName(event.getUser().getName()));
                     checkUser.setFollowingSince(UtilityCommandsMainChannel.getFollowingSinceDate(
                             Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
 //                    checkUser.setFollowingSince(UtilityCommandsTestChannel.getFollowingSinceDate(

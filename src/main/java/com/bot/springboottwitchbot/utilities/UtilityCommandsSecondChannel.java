@@ -1,10 +1,10 @@
 package com.bot.springboottwitchbot.utilities;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
-import com.bot.springboottwitchbot.dto.predictions_DTOs.create_predictions_DTOs.send.Outcomes;
-import com.bot.springboottwitchbot.dto.predictions_DTOs.create_predictions_DTOs.send.SendCreatePredictionDTO;
-import com.bot.springboottwitchbot.dto.predictions_DTOs.end_predictions_DTOs.send.SendEndPredictionDTO;
-import com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.GetPredictionsDTO;
+import com.bot.springboottwitchbot.dto.prediction.create.request.CreatePredictionRequestOutcome;
+import com.bot.springboottwitchbot.dto.prediction.create.request.CreatePredictionRequest;
+import com.bot.springboottwitchbot.dto.prediction.end.request.EndPredictionRequest;
+import com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsResponse;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.SecondBuilderUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +26,7 @@ import java.util.Objects;
 public class UtilityCommandsSecondChannel {
     private static final Logger log = LoggerFactory.getLogger(UtilityCommandsSecondChannel.class);
     private static final ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
-    public static ArrayList<com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data> getPredictionsList() {
+    public static ArrayList<com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsData> getPredictionsList() {
         HttpHeaders getPredictionsHeaders = new HttpHeaders();
         getPredictionsHeaders.setContentType(MediaType.APPLICATION_JSON);
         getPredictionsHeaders.add("Authorization", "Bearer " + applicationContext.getBean(SecondBuilderUtil.class).getSecondChannelToken());
@@ -34,7 +34,7 @@ public class UtilityCommandsSecondChannel {
         String url = "https://api.twitch.tv/helix/predictions?broadcaster_id=" + applicationContext.getBean(SecondBuilderUtil.class).getSecondChannelId()
                 +"&first=3";
         HttpEntity<Void> httpEntityGetPredictions = new HttpEntity<>(getPredictionsHeaders);
-        GetPredictionsDTO getPredictionsDTO = new RestTemplate().exchange(url, HttpMethod.GET, httpEntityGetPredictions, GetPredictionsDTO.class).getBody();
+        GetPredictionsResponse getPredictionsDTO = new RestTemplate().exchange(url, HttpMethod.GET, httpEntityGetPredictions, GetPredictionsResponse.class).getBody();
         if (getPredictionsDTO != null && getPredictionsDTO.getData() != null && !getPredictionsDTO.getData().isEmpty()) {
 //            System.out.println("getPredictionList: " + getPredictionsDTO.getData());
             return getPredictionsDTO.getData();
@@ -44,7 +44,7 @@ public class UtilityCommandsSecondChannel {
 
     public static boolean checkIfStandardPredictionIsActive() {
         if (getPredictionsList()!= null) {
-            for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
+            for (com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsData data : getPredictionsList()) {
                 //TODO POMENYAT
                 if (data.getTitle().toLowerCase().contains("Победа или смерть?".toLowerCase())) {
                     if (data.getStatus().equalsIgnoreCase("active")) {
@@ -59,7 +59,7 @@ public class UtilityCommandsSecondChannel {
 
     public static boolean checkIfStandardPredictionIsLocked() {
         if (getPredictionsList()!= null) {
-            for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
+            for (com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsData data : getPredictionsList()) {
                 //TODO POMENYAT
                 if (data.getTitle().toLowerCase().contains("Победа или смерть?".toLowerCase())) {
                     if (data.getStatus().equalsIgnoreCase("locked")) {
@@ -72,9 +72,9 @@ public class UtilityCommandsSecondChannel {
         return false;
     }
 
-    public static com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data checkAndReturnDataIfStandardPredictionIsActive() {
+    public static com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsData checkAndReturnDataIfStandardPredictionIsActive() {
         if (getPredictionsList()!= null) {
-            for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
+            for (com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsData data : getPredictionsList()) {
                 //TODO POMENYAT
                 if (data.getTitle().toLowerCase().contains("Победа или смерть?".toLowerCase())) {
                     if (data.getStatus().equalsIgnoreCase("active")) {
@@ -87,9 +87,9 @@ public class UtilityCommandsSecondChannel {
         return null;
     }
 
-    public static com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data checkAndReturnDataIfStandardPredictionIsLocked() {
+    public static com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsData checkAndReturnDataIfStandardPredictionIsLocked() {
         if (getPredictionsList()!= null) {
-            for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data : getPredictionsList()) {
+            for (com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsData data : getPredictionsList()) {
                 //TODO POMENYAT
                 if (data.getTitle().toLowerCase().contains("Победа или смерть?".toLowerCase())) {
                     if (data.getStatus().equalsIgnoreCase("locked")) {
@@ -102,13 +102,13 @@ public class UtilityCommandsSecondChannel {
         return null;
     }
     public static void makeStandardPrediction() throws IOException {
-        SendCreatePredictionDTO sendCreatePredictionDTO = new SendCreatePredictionDTO();
-        Outcomes outcome1 = new Outcomes();
-        Outcomes outcome2 = new Outcomes();
+        CreatePredictionRequest sendCreatePredictionDTO = new CreatePredictionRequest();
+        CreatePredictionRequestOutcome outcome1 = new CreatePredictionRequestOutcome();
+        CreatePredictionRequestOutcome outcome2 = new CreatePredictionRequestOutcome();
         //TODO POMENYAT
         outcome1.setTitle("Я гордый Беливер (1-4)");
         outcome2.setTitle("Я скользкий Даубтер (5-8)");
-        ArrayList<Outcomes> outcomes = new ArrayList<>(Arrays.asList(outcome1, outcome2));
+        ArrayList<CreatePredictionRequestOutcome> outcomes = new ArrayList<>(Arrays.asList(outcome1, outcome2));
         sendCreatePredictionDTO.setOutcomes(outcomes);
         //TODO POMENYAT
         sendCreatePredictionDTO.setPrediction_window(300);
@@ -129,15 +129,15 @@ public class UtilityCommandsSecondChannel {
     }
 
     public static void winStandardPrediction () throws JsonProcessingException {
-        com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data = checkAndReturnDataIfStandardPredictionIsLocked();
-        SendEndPredictionDTO sendEndPredictionDTO = new SendEndPredictionDTO();
+        com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsData data = checkAndReturnDataIfStandardPredictionIsLocked();
+        EndPredictionRequest sendEndPredictionDTO = new EndPredictionRequest();
         sendEndPredictionDTO.setBroadcaster_id(applicationContext.getBean(SecondBuilderUtil.class).getSecondChannelId());
         sendEndPredictionDTO.setId(Objects.requireNonNull(data).getId());
         sendEndPredictionDTO.setStatus("RESOLVED");
 
         String winningOutcomeId = null;
 
-        for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Outcomes outcome : data.getOutcomes()) {
+        for (com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsOutcome outcome : data.getOutcomes()) {
             //TODO POMENYAT
             if (outcome.getTitle().toLowerCase().contains("Я гордый Беливер (1-4)".toLowerCase())) {
                 winningOutcomeId = outcome.getId();
@@ -162,15 +162,15 @@ public class UtilityCommandsSecondChannel {
 
 
     public static void loseStandardPrediction () throws JsonProcessingException {
-        com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Data data = checkAndReturnDataIfStandardPredictionIsLocked();
-        SendEndPredictionDTO sendEndPredictionDTO = new SendEndPredictionDTO();
+        com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsData data = checkAndReturnDataIfStandardPredictionIsLocked();
+        EndPredictionRequest sendEndPredictionDTO = new EndPredictionRequest();
         sendEndPredictionDTO.setBroadcaster_id(applicationContext.getBean(SecondBuilderUtil.class).getSecondChannelId());
         sendEndPredictionDTO.setId(Objects.requireNonNull(data).getId());
         sendEndPredictionDTO.setStatus("RESOLVED");
 
         String losingOutcomeId = null;
 
-        for (com.bot.springboottwitchbot.dto.predictions_DTOs.get_predictions_DTOs.Outcomes outcome : data.getOutcomes()) {
+        for (com.bot.springboottwitchbot.dto.prediction.get.GetPredictionsOutcome outcome : data.getOutcomes()) {
             //TODO POMENYAT
             if (outcome.getTitle().toLowerCase().contains("Я скользкий Даубтер (5-8)".toLowerCase())) {
                 losingOutcomeId = outcome.getId();
