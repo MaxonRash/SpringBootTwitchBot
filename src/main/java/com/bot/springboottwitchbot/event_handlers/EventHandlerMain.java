@@ -1,6 +1,7 @@
 package com.bot.springboottwitchbot.event_handlers;
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
+import com.bot.springboottwitchbot.config.BotProperties;
 import com.bot.springboottwitchbot.dto.support.UsersResponseToUserConverter;
 import com.bot.springboottwitchbot.SpringBootTwitchBotApplication;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
@@ -51,6 +52,8 @@ public class EventHandlerMain {
     UsersService usersService;
     @Autowired
     GPT4o gpt4o;
+    @Autowired
+    BotProperties botProperties;
 
     @EventSubscriber
     public void printChannelMessage(ChannelMessageEvent event) {
@@ -585,8 +588,8 @@ public class EventHandlerMain {
     public void checkTodayDOBs(ChannelMessageEvent event) {
         String message = event.getMessage().toLowerCase();
         ArrayList<String> moderatorsList = UtilityCommandsMainChannel.getModeratorsList();
-        if (message.contains("!чек др") && (event.getUser().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()) || event.getUser().getName().equalsIgnoreCase("maximuz666")
-                || event.getUser().getName().equalsIgnoreCase("winretkristin") || moderatorsList.contains(event.getUser().getName()))) {
+        if (message.contains("!чек др") && (event.getUser().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()) || botProperties.isOwner(event.getUser().getName())
+                || botProperties.isModerator(event.getUser().getName()) || moderatorsList.contains(event.getUser().getName()))) {
             if (UtilityDOB.listOfUsersWithDOB.isEmpty()) {
                 ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
                         .sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня ни у кого нет ДР FeelsBadMan");
@@ -987,7 +990,7 @@ public class EventHandlerMain {
             Global10secCDTimer.setGlobal10secTimer();
         }
 
-        if (newMessage.toLowerCase().startsWith("!с локтя") && (event.getUser().getName().equalsIgnoreCase("maximuz666"))) {
+        if (newMessage.toLowerCase().startsWith("!с локтя") && (botProperties.isOwner(event.getUser().getName()))) {
             String[] array = newMessage.split(" ");
             ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(array));
             arrayList.remove("\udb40\udc00");
@@ -1062,7 +1065,7 @@ public class EventHandlerMain {
         log.debug("channel points reward: {}", channelPointsReward);
 
         String title = channelPointsReward.getTitle().toLowerCase();
-        if (title.equalsIgnoreCase("-1000") && rewardRedeemedEvent.getUser().getDisplayName().equalsIgnoreCase("maximuz666")) {
+        if (title.equalsIgnoreCase("-1000") && botProperties.isOwner(rewardRedeemedEvent.getUser().getDisplayName())) {
 //            System.out.println("if to timeoutUserForPoints works");
             UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName("steyro"), 10, "Timeout for points test");
         }
@@ -1070,7 +1073,7 @@ public class EventHandlerMain {
 
     @EventSubscriber
     public void emoteModeMessage(ChannelMessageEvent event) throws InterruptedException, JsonProcessingException {
-        if (event.getUser().getName().equalsIgnoreCase("maximuz666")) {
+        if (botProperties.isOwner(event.getUser().getName())) {
             if (event.getMessage().toLowerCase().contains("!emotemodetest")) {
                 UtilityCommandsMainChannel.emoteOnlyMode(true);
                 Thread.sleep(7000);
@@ -1082,7 +1085,7 @@ public class EventHandlerMain {
     @EventSubscriber
     public void getModeratorsHappa(ChannelMessageEvent event) throws IOException {
         String message = event.getMessage();
-        if (event.getUser().getName().equalsIgnoreCase("maximuz666")) {
+        if (botProperties.isOwner(event.getUser().getName())) {
             if (message.contains("!mods")) {
                 ArrayList<String> moderatorsList = UtilityCommandsMainChannel.getModeratorsList();
                 String fullModsList = moderatorsList.toString();
@@ -1093,7 +1096,7 @@ public class EventHandlerMain {
 
     @EventSubscriber
     public void replyTest(ChannelMessageEvent event) {
-        if (event.getUser().getName().equalsIgnoreCase("maximuz666")) {
+        if (botProperties.isOwner(event.getUser().getName())) {
             if (event.getMessage().toLowerCase().contains("!rep1ly")) {
 //                twitchClientHappa.getChat().sendMessage(event.getChannel().getName(), "ku");
                 applicationContext.getBean(MainBuilderUtil.class).getTwitchClientMain().getChat().sendMessage(event.getChannel().getName(), "ku");
@@ -1102,7 +1105,7 @@ public class EventHandlerMain {
     }
     @EventSubscriber
     public void vipAndUnVipTest(ChannelMessageEvent event) {
-        if (event.getUser().getName().equalsIgnoreCase("maximuz666") && event.getMessage().contains("!viptest")) {
+        if (botProperties.isOwner(event.getUser().getName()) && event.getMessage().contains("!viptest")) {
             try {
                 UtilityCommandsMainChannel.vipUser("steyro");
                 Thread.sleep(5000);
@@ -1115,7 +1118,7 @@ public class EventHandlerMain {
 //
 //    @EventSubscriber
 //    public void getSubNotificationTest(ChannelMessageEvent event) {
-//        if (event.getUser().getName().equalsIgnoreCase("maximuz666")) {
+//        if (botProperties.isOwner(event.getUser().getName())) {
 //            String message = event.getMessage();
 //            if (message.contains("!testSub")) {
 //                System.out.println(event.getEventId());
@@ -1126,7 +1129,7 @@ public class EventHandlerMain {
 //
     @EventSubscriber
     public void timeoutMainTest(ChannelMessageEvent event) {
-        if (event.getUser().getName().equalsIgnoreCase("maximuz666")) {
+        if (botProperties.isOwner(event.getUser().getName())) {
             String message = event.getMessage();
             try {
                 if (message.contains("!time1outnewtest")) {
@@ -1141,7 +1144,7 @@ public class EventHandlerMain {
 //
 //    @EventSubscriber
 //    public void duelCooldownTest(ChannelMessageEvent event) {
-//        if (event.getUser().getName().equalsIgnoreCase("maximuz666")) {
+//        if (botProperties.isOwner(event.getUser().getName())) {
 //            String message = event.getMessage();
 //            if (message.contains("!cooldownduel")) {
 //                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), String.valueOf(GlobalDuelTimer.duelCoolDownTimerLeft));
@@ -1160,7 +1163,7 @@ public class EventHandlerMain {
 //    //_______________________________________________________________________________________________________________________________
 //    //_______________________________________________________________________________________________________________________________
 //
-    private FilterMode filterMode = FilterMode.AI;
+    private FilterMode filterMode = FilterMode.OLD;
     List<String> badWordsList = List.of("хуа", "хуе", "хуё", "хуи", "хуй", "хул", "хуу", "хуэ", "хую", "хуя",
         "еба", "ебб,", "ебе", "ебё", "еби", "ебк", "ебл", "ебн", "ебо", "ебс", "ебу", "ебц", "ебч", "ебщ", "ебъ", "ебы", "ебь", "ебэ", "ебю", "ебя",
         "аеб", "иеб", "йеб", "оеб", "уеб", "ъеб", "ыеб", "ьеб",
@@ -1179,8 +1182,7 @@ public class EventHandlerMain {
         String newMessage = event.getMessage().toLowerCase();
         newMessage = newMessage.replace("\udb40\udc00", "");
 
-        if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
-                event.getUser().getName().equalsIgnoreCase("winretkristin")) && (newMessage.toLowerCase().startsWith("!filter")) ) {
+        if ( (botProperties.isModerator(event.getUser().getName())) && (newMessage.toLowerCase().startsWith("!filter")) ) {
             String[] splitMessage  = newMessage.split(" ");
             if (splitMessage.length > 1) {
                 String mode = splitMessage[1];
@@ -1207,7 +1209,7 @@ public class EventHandlerMain {
 
     @EventSubscriber
     public void timeoutForMat(ChannelMessageEvent event) {
-        if (event.getUser().getName().equals("maximuz_bot")) {
+        if (event.getUser().getName().equals(botProperties.getBotAccountName())) {
             return;
         }
         String newMessage = event.getMessage().toLowerCase();
@@ -1232,7 +1234,7 @@ public class EventHandlerMain {
                         if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
                             applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutBadWord);
                             UtilityCommandsMainChannel.timeoutUser(id, 600, "bad word bot");
-                        } else if (event.getChannel().getName().equalsIgnoreCase("maximuz666")) {
+                        } else if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
                             try {
                                 applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutBadWord);
                                 UtilityCommandsTestChannel.timeoutUserTest(id, 5, "bad word bot");
@@ -1263,7 +1265,7 @@ public class EventHandlerMain {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                } else if (eventChannel.equalsIgnoreCase("maximuz666")) {
+                } else if (eventChannel.equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
                     try {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " Мат в чате запрещён!");
                         UtilityCommandsTestChannel.timeoutUserTest(id, 5, "bad word bot");
@@ -1279,14 +1281,13 @@ public class EventHandlerMain {
 
     @EventSubscriber
     public void changeTsyaMode(ChannelMessageEvent event) {
-        if (event.getUser().getName().equals("maximuz_bot")) {
+        if (event.getUser().getName().equals(botProperties.getBotAccountName())) {
             return;
         }
         String newMessage = event.getMessage().toLowerCase();
         newMessage = newMessage.replace("\udb40\udc00", "");
 
-        if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
-                event.getUser().getName().equalsIgnoreCase("winretkristin")) && (newMessage.toLowerCase().startsWith("!tsya")) ) {
+        if ( (botProperties.isModerator(event.getUser().getName())) && (newMessage.toLowerCase().startsWith("!tsya")) ) {
             String[] splitMessage  = newMessage.split(" ");
             if (splitMessage.length > 1) {
                 String mode = splitMessage[1];
@@ -1313,7 +1314,7 @@ public class EventHandlerMain {
 
     @EventSubscriber
     public void tellAboutTsyaMistake(ChannelMessageEvent event) {
-        if (event.getUser().getName().equals("maximuz_bot")) {
+        if (event.getUser().getName().equals(botProperties.getBotAccountName())) {
             return;
         }
         String newMessage = event.getMessage().toLowerCase();
@@ -1334,7 +1335,7 @@ public class EventHandlerMain {
                             if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
                                 applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutTsyaMistakes);
                                 GlobalTsyaTimer.setTimer();
-                            } else if (event.getChannel().getName().equalsIgnoreCase("maximuz666")) {
+                            } else if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
                                 applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutTsyaMistakes);
                                 GlobalTsyaTimer.setTimer();
                             }
@@ -1349,14 +1350,13 @@ public class EventHandlerMain {
 
     @EventSubscriber
     public void changeBotMode(ChannelMessageEvent event) {
-        if (event.getUser().getName().equals("maximuz_bot")) {
+        if (event.getUser().getName().equals(botProperties.getBotAccountName())) {
             return;
         }
         String newMessage = event.getMessage().toLowerCase();
         newMessage = newMessage.replace("\udb40\udc00", "");
 
-        if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
-                event.getUser().getName().equalsIgnoreCase("winretkristin")) && (newMessage.toLowerCase().startsWith("!botreply")) ) {
+        if ( (botProperties.isModerator(event.getUser().getName())) && (newMessage.toLowerCase().startsWith("!botreply")) ) {
             String[] splitMessage  = newMessage.split(" ");
             if (splitMessage.length > 1) {
                 String mode = splitMessage[1];
@@ -1383,7 +1383,7 @@ public class EventHandlerMain {
 
     @EventSubscriber
     public void replyToMessage(ChannelMessageEvent event) {
-        if (event.getUser().getName().equals("maximuz_bot")) {
+        if (event.getUser().getName().equals(botProperties.getBotAccountName())) {
             return;
         }
         String newMessage = event.getMessage().toLowerCase();
@@ -1393,13 +1393,12 @@ public class EventHandlerMain {
         if (newMessage.startsWith("@maximuz_bot ")) {
             if (this.gptBotMode == GptBotMode.ON) {
                 String eventChannel = event.getChannel().getName();
-                if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
-                        event.getUser().getName().equalsIgnoreCase("winretkristin")) ) {
+                if ( (botProperties.isModerator(event.getUser().getName())) ) {
                     String reply = gpt4o.ResponseForTextAddressingToBot(newMessage.substring(13));
                     if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
 //                        GlobalTsyaTimer.setTimer();
-                    } else if (event.getChannel().getName().equalsIgnoreCase("maximuz666")) {
+                    } else if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
                         applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
 //                        GlobalTsyaTimer.setTimer();
                     }
@@ -1423,7 +1422,7 @@ public class EventHandlerMain {
                         if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
                             applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
                             GlobalReplyTimer.setTimer();
-                        } else if (event.getChannel().getName().equalsIgnoreCase("maximuz666")) {
+                        } else if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
                             applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
                             GlobalReplyTimer.setTimer();
                         }
@@ -1446,8 +1445,7 @@ public class EventHandlerMain {
         String newMessage = event.getMessage().toLowerCase();
         newMessage = newMessage.replace("\udb40\udc00", "");
 
-        if ( (event.getUser().getName().equalsIgnoreCase("maximuz666") || event.getUser().getName().equalsIgnoreCase("happasc2") ||
-                event.getUser().getName().equalsIgnoreCase("winretkristin")) && (newMessage.toLowerCase().startsWith("!reboot")) ) {
+        if ( (botProperties.isModerator(event.getUser().getName())) && (newMessage.toLowerCase().startsWith("!reboot")) ) {
             log.info("rebooting...");
             applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(),
                     "@" + event.getUser().getName() + " rebooting...");

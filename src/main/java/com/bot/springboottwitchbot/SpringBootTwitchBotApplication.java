@@ -3,6 +3,7 @@ package com.bot.springboottwitchbot;
 import com.bot.springboottwitchbot.connections.connection_runners.BotConnectionRunner;
 import com.bot.springboottwitchbot.connections.connection_runners.MainConnectionRunner;
 import com.bot.springboottwitchbot.connections.connection_runners.SecondConnectionRunner;
+import com.bot.springboottwitchbot.config.BotProperties;
 import com.bot.springboottwitchbot.quartz.CheckDOBRunner;
 import com.bot.springboottwitchbot.quartz.RepeatMessageRunner;
 import com.bot.springboottwitchbot.utilities.UtilityDOB;
@@ -26,14 +27,17 @@ public class SpringBootTwitchBotApplication {
     public static void main(String[] args) throws SchedulerException {
         context = SpringApplication.run(SpringBootTwitchBotApplication.class, args);
 
-        //uncomment for running on test channel
-        ApplicationContextProvider.getApplicationContext().getBean(BotConnectionRunner.class).getChannelConnection().run();
-
-        //uncomment for running on main channel
-        ApplicationContextProvider.getApplicationContext().getBean(MainConnectionRunner.class).getChannelConnection().run();
-
-        //uncomment for running on second channel
-//        ApplicationContextProvider.getApplicationContext().getBean(SecondConnectionRunner.class).getChannelConnection().run();
+        // Which channels connect is driven by the bot.channels property (see application.properties).
+        BotProperties botProperties = ApplicationContextProvider.getApplicationContext().getBean(BotProperties.class);
+        if (botProperties.isChannelEnabled("test")) {
+            ApplicationContextProvider.getApplicationContext().getBean(BotConnectionRunner.class).getChannelConnection().run();
+        }
+        if (botProperties.isChannelEnabled("main")) {
+            ApplicationContextProvider.getApplicationContext().getBean(MainConnectionRunner.class).getChannelConnection().run();
+        }
+        if (botProperties.isChannelEnabled("second")) {
+            ApplicationContextProvider.getApplicationContext().getBean(SecondConnectionRunner.class).getChannelConnection().run();
+        }
 
 //        CheckDOBRunner.runSimpleTriggerTest();
 //        CheckDOBRunner.runCronTriggerTest();
