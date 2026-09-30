@@ -644,10 +644,7 @@ public class EventHandlerBot {
             Global10secCDTimer.setGlobal10secTimer();
         }
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!паук"))) {
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "ВИКТОР - /\\/\\╭( ͡° ͡° ͜ʖ ͡° ͡°)╮/\\╱\\");
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // !паук migrated to commands/SpiderCommand (Phase 5).
 
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().contains("амиго"))) {
             String firstNick = event.getUser().getName();
@@ -656,22 +653,11 @@ public class EventHandlerBot {
             Global10secCDTimer.setGlobal10secTimer();
         }
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!джошукен"))) {
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "༼ つ happaDans ༽つ ─=≡Σ happaDjosh ))");
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // !джошукен migrated to commands/JoshukenCommand (Phase 5).
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!хадукен"))) {
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "༼ つಠ益ಠ༽つ ─=≡ΣO))");
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // !хадукен migrated to commands/HadoukenCommand (Phase 5).
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!пасты"))) {
-            String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                    + " Только не балуйся Kapp https://docs.google.com/document/d/1S8tudkuBmTQjoLZcIcTPDFJ4AZqnpi7pof3FlhevktI/edit?usp=sharing");
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // !пасты migrated to commands/PastasCommand (Phase 5).
 
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!судоку"))) {
             String firstNick = event.getUser().getName();
@@ -1313,18 +1299,7 @@ public class EventHandlerBot {
         }
     }
 
-    @EventSubscriber
-    public void rebootBotContext(ChannelMessageEvent event) {
-        String newMessage = event.getMessage().toLowerCase();
-        newMessage = newMessage.replace("\udb40\udc00", "");
-
-        if ( (botProperties.isModerator(event.getUser().getName())) && (newMessage.toLowerCase().startsWith("!reboot")) ) {
-            log.info("rebooting...");
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(),
-                    "@" + event.getUser().getName() + " rebooting...");
-            SpringBootTwitchBotApplication.restart();
-        }
-    }
+    // rebootBotContext (!reboot) migrated to commands/RebootCommand (Phase 5).
 
 
     @EventSubscriber
