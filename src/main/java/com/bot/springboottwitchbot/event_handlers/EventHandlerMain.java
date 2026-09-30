@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -43,6 +44,9 @@ import java.util.regex.Pattern;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 @Component
+// The applicationContext field below is initialized from ApplicationContextProvider at construction time,
+// so the provider bean must be created first (see ApplicationContextProvider). Removed in Phase 5.
+@DependsOn({"applicationContextProvider"})
 public class EventHandlerMain {
     private static final Logger log = LoggerFactory.getLogger(EventHandlerMain.class);
     ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
@@ -81,7 +85,7 @@ public class EventHandlerMain {
                 if (secondDuelName.equals(this.firstDuelName) && (event.getUser().getName().equals(this.secondDuelName))) {
                     GlobalDuelTimer.duelTimerToAccept.cancel();
                     GlobalDuelTimer.duelTimerToAccept = null;
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel,
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel,
                             "@" + this.firstDuelName + " и " + "@" + this.secondDuelName + " подходят друг к другу...");
                     GlobalDuelTimer.duelCooldownTimer = new Timer("duelCoolDownTimer");
                     //TODO change delay to 600
@@ -94,18 +98,18 @@ public class EventHandlerMain {
                     }, delay); // delay of duel cooldown
                     GlobalDuelTimer.setDuelCoolDownTimerLeft(delay / 1000);
                     if (UtilityCommandsMainChannel.getModeratorsList().contains(this.secondDuelName)) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstDuelName + " он же модир FailFish");
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstDuelName + " он же модир FailFish");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstDuelName), 60, "duel");
                     }
                     else {
                         int dice = (int) (Math.random() * 2) + 1;
                         if (dice == 1) {
-                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + this.firstDuelName
+                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + this.firstDuelName
                                     + " отстреливает " + "@" + this.secondDuelName + " лицо happaDans");
                             UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(this.secondDuelName), 60, "duel");
                         }
                         if (dice == 2) {
-                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + this.secondDuelName
+                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + this.secondDuelName
                                     + " отстреливает " + "@" + this.firstDuelName + " лицо happaDans");
                             UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(this.firstDuelName), 60, "duel");
                         }
@@ -128,7 +132,7 @@ public class EventHandlerMain {
                 String eventChannel = event.getChannel().getName();
                 String firstDuelName = event.getUser().getName();
                 if (firstDuelName.equals(secondDuelName)) {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel,"@" + firstDuelName + " выстрелил себе в лицо FailFish");
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel,"@" + firstDuelName + " выстрелил себе в лицо FailFish");
                     UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstDuelName), 60, "duel");
                     GlobalDuelTimer.duelCooldownTimer = new Timer("duelCoolDownTimer");
                     //TODO change delay to 600
@@ -143,7 +147,7 @@ public class EventHandlerMain {
                 }
                 else {
                     this.firstDuelName = firstDuelName.toLowerCase();
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + firstDuelName + " вызывает " + "@" + secondDuelName + " на дуэль! happaPled");
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + firstDuelName + " вызывает " + "@" + secondDuelName + " на дуэль! happaPled");
                     log.debug("duel command args: {}", arrayList);
                     String finalSecondDuelName = secondDuelName;
                     this.secondDuelName = finalSecondDuelName;
@@ -151,7 +155,7 @@ public class EventHandlerMain {
                     TimerTask timerTask = new TimerTask() {
                         @Override
                         public void run() {
-                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + finalSecondDuelName + " намочил штанишки 4Head");
+                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + finalSecondDuelName + " намочил штанишки 4Head");
                             GlobalDuelTimer.duelTimerToAccept = null;
                         }
                     };
@@ -165,12 +169,12 @@ public class EventHandlerMain {
             }
             else if (Global10secCDTimer.getGlobal10secTimer() == null) {
                 if (GlobalDuelTimer.duelCoolDownTimerLeft != 0) {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
                             + " вызвать кого-либо на дуэль можно через " + GlobalDuelTimer.duelCoolDownTimerLeft + " секунд OpieOP");
                     Global10secCDTimer.setGlobal10secTimer();
                 }
                 else {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
                             + " можно вызвать кого-то на дуэль Kappa");
                     Global10secCDTimer.setGlobal10secTimer();
                 }
@@ -178,12 +182,12 @@ public class EventHandlerMain {
         }
         else if (newMessage.toLowerCase().startsWith("!duel") && (arrayList.size() == 1) && (Global10secCDTimer.getGlobal10secTimer() == null)){
             if (GlobalDuelTimer.duelCoolDownTimerLeft != 0) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
                         + " вызвать кого-либо на дуэль можно через " + GlobalDuelTimer.duelCoolDownTimerLeft + " секунд OpieOP");
                 Global10secCDTimer.setGlobal10secTimer();
             }
             else {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
                         + " можно вызвать кого-то на дуэль Kappa");
                 Global10secCDTimer.setGlobal10secTimer();
             }
@@ -219,10 +223,10 @@ public class EventHandlerMain {
 
                 if (!commandPermissionList.isEmpty()) {
                     if (UtilityCommandsMainChannel.isBannedUser(secondNick)) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick + " оно уже мертво WutFace");
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " оно уже мертво WutFace");
                         return;
                     }
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick + " подходит к @"
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " подходит к @"
                             + secondNick + " ...");
                     Thread.sleep(3000);
 
@@ -230,57 +234,57 @@ public class EventHandlerMain {
 
                     int dice = (int) (Math.random() * 17) + 1;
                     if (dice == 1) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " проходит мимо " + "@" + secondNick + " peepoLeaveFinger");
                     } else if (dice == 2) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " отстреливает " + "@" + secondNick + " лицо WutFace");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(secondNick), 60, "kill");
                     } else if (dice == 3) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " зачем-то обнимает " + "@" + secondNick + " ヽ༼ຈل͜ຈ༽ﾉ");
                     } else if (dice == 4) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " убивает " + "@" + secondNick + " джошукеном ─=≡Σ happaDjosh ))");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(secondNick), 60, "kill");
                     } else if (dice == 5) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " убивает " + "@" + secondNick + " хадукеном つಠ益ಠ༽つ ─=≡ΣO))");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(secondNick), 60, "kill");
                     } else if (dice == 6) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " убивает " + "@" + secondNick + " со снайперки ▄︻̿┻̿═━一");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(secondNick), 60, "kill");
                     } else if (dice == 7) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " убивает " + "@" + secondNick + " с автомата <,︻╦╤─ ҉ — —");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(secondNick), 60, "kill");
                     } else if (dice == 8) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " заколол " + "@" + secondNick + " трезубцами Ψ༼ຈل͜ຈ༽Ψ");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(secondNick), 60, "kill");
                     } else if (dice == 9) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " убивает " + "@" + secondNick + " с помощью магии ( ͡ ͠° ͟ʖ ͡° )つ──☆*:・ﾟ");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(secondNick), 60, "kill");
                     } else if (dice == 10) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " убивает " + "@" + secondNick + " катаной ▬▬ι═══════ﺤ");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(secondNick), 60, "kill");
                     } else if (dice == 11) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " убивает " + "@" + secondNick + " с локтя ༼ᕗ•̀_•́༽ᕗ");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(secondNick), 60, "kill");
                     } else if (dice == 12) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " убивает " + "@" + secondNick + " силой русского репа ヾ(⌐■_■)ノ♪");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(secondNick), 60, "kill");
                     } else if (dice == 13) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " кидает в " + "@" + secondNick + " стол (ノಠ益ಠ)ノ彡┻━┻");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(secondNick), 60, "kill");
                     } else if (dice == 14 || dice == 15 || dice == 16 || dice == 17) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                                 + " зачем-то обнимает " + "@" + secondNick + " ヽ༼ຈل͜ຈ༽ﾉ");
                     }
 
@@ -301,11 +305,11 @@ public class EventHandlerMain {
                             || ((newMessage.toLowerCase().startsWith("!kill")) && (arrayList.size() > 1) && (GlobalKillTimer.killCooldownTimer != null) && (Global10secCDTimer.getGlobal10secTimer() == null))
             ) {
                 if (GlobalKillTimer.killCoolDownTimerLeft != 0) {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
                             + " Подойти к кому-либо можно будет через " + GlobalKillTimer.killCoolDownTimerLeft + " секунд OpieOP");
                     Global10secCDTimer.setGlobal10secTimer();
                 } else {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
                             + " !kill готов happaDjosh =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿");
                     Global10secCDTimer.setGlobal10secTimer();
                 }
@@ -342,7 +346,7 @@ public class EventHandlerMain {
                     } catch (Exception e) {
                         log.error("resetKillCommand failed", e);
                     }
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "!kill готов happaDjosh =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿");
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "!kill готов happaDjosh =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿");
                     KillResetTimer.killResetCooldownTimer = new Timer("killResetCoolDownTimer");
                     //TODO change delay to
                     long delay = 120 * 1000L;
@@ -354,9 +358,9 @@ public class EventHandlerMain {
                     }, delay); // delay of kill reset cooldown
                     KillResetTimer.setKillResetCoolDownTimerLeft(delay / 1000);
                 } else if (commandPermissionList.size() != 0) {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " не так быстро Tssk можно через " + KillResetTimer.killResetCoolDownTimerLeft + " сек");
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " не так быстро Tssk можно через " + KillResetTimer.killResetCoolDownTimerLeft + " сек");
                 } else if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                             " Должна быть одна из этих ролей: " + requiredPermissionList);
                     Global10secCDTimer.setGlobal10secTimer();
                 }
@@ -370,14 +374,14 @@ public class EventHandlerMain {
         if (!event.getUser().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getBotChannelName())) {
             String newMessage = event.getMessage().toLowerCase();
             if (newMessage.contains("monkas") && russianRoulettePlayers == null && GlobalRouletteTimer.rouletteCooldownTimer == null) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                         " инициировал сходку клуба любителей пострелять monkaSHAKE они почему-то пишут monkaS в чат");
                 russianRoulettePlayers = new ArrayList<>(Collections.singleton(event.getUser().getName()));
 
                 TimerTask timerTask = new TimerTask() {
                     @Override
                     public void run() {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "Сходка клуба любителей пострелять не состоялась FeelsBadMan");
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "Сходка клуба любителей пострелять не состоялась FeelsBadMan");
                         GlobalRouletteTimer.rouletteTimerToAccept = null;
                         russianRoulettePlayers = null;
                         GlobalRouletteTimer.rouletteCooldownTimer = new Timer("rouletteCoolDownTimer");
@@ -432,7 +436,7 @@ public class EventHandlerMain {
                     }, delay); // delay of roulette cooldown
                     GlobalRouletteTimer.setRouletteCoolDownTimerLeft(delay / 1000);
 
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), allRoulettePlayers.toString() +
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), allRoulettePlayers.toString() +
                             " стреляют себе в лица, на всех один патрон monkaMEGA ...");
                     Thread.sleep(3000);
 
@@ -440,17 +444,17 @@ public class EventHandlerMain {
                     int dice2 = (int) (Math.random() * 2);
                     String deadRoulettePlayer = russianRoulettePlayers.get(dice);
                     if (dice2 == 0) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + deadRoulettePlayer + " happaF");
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + deadRoulettePlayer + " happaF");
                         UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(deadRoulettePlayer), 180, "shodka");
                     } else {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + deadRoulettePlayer +
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + deadRoulettePlayer +
                                 "'у повезло и он помер не сразу, есть 5 сек...");
                         Thread timeoutIn5sec = new Thread() {
                             @Override
                             public void run() {
                                 try {
                                     Thread.sleep(5000);
-                                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + deadRoulettePlayer + " happaF");
+                                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + deadRoulettePlayer + " happaF");
                                     UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(deadRoulettePlayer), 180, "shodka");
                                 } catch (InterruptedException | IOException e) {
                                     throw new RuntimeException(e);
@@ -469,11 +473,11 @@ public class EventHandlerMain {
     public void russianRouletteTimeLeft(ChannelMessageEvent event) {
         String newMessage = event.getMessage().toLowerCase();
         if (newMessage.contains("!сходка") && GlobalRouletteTimer.rouletteCooldownTimer == null && Global10secCDTimer.getGlobal10secTimer() == null) {
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "ну довай PepegaAim");
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "ну довай PepegaAim");
             Global10secCDTimer.setGlobal10secTimer();
         }
         else if (newMessage.contains("!сходка") && GlobalRouletteTimer.rouletteCooldownTimer != null && Global10secCDTimer.getGlobal10secTimer() == null) {
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                     " начать сходку можно через " + GlobalRouletteTimer.rouletteCoolDownTimerLeft + " happaUHW");
             Global10secCDTimer.setGlobal10secTimer();
         }
@@ -496,11 +500,11 @@ public class EventHandlerMain {
         SubscriptionData subscriptionData = event.getData();
         log.info("Sub note Works");
         if(subscriptionData.getDisplayName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(subscriptionData.getChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(subscriptionData.getChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
                     + " найс катаешь Kappa");
         }
         else {
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(subscriptionData.getChannelName(), "@" + subscriptionData.getDisplayName() +
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(subscriptionData.getChannelName(), "@" + subscriptionData.getDisplayName() +
                     " peepoClap peepoClap peepoClap peepoClap");
         }
     }
@@ -591,12 +595,10 @@ public class EventHandlerMain {
         if (message.contains("!чек др") && (event.getUser().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()) || botProperties.isOwner(event.getUser().getName())
                 || botProperties.isModerator(event.getUser().getName()) || moderatorsList.contains(event.getUser().getName()))) {
             if (UtilityDOB.listOfUsersWithDOB.isEmpty()) {
-                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
-                        .sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня ни у кого нет ДР FeelsBadMan");
+                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня ни у кого нет ДР FeelsBadMan");
             }
             else if (UtilityDOB.listOfUsersWithDOB.size() == 1) {
-                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
-                        .sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня у " + UtilityDOB.listOfUsersWithDOB.get(0)
+                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня у " + UtilityDOB.listOfUsersWithDOB.get(0)
                                 + " день рождения! " + "@" + UtilityDOB.listOfUsersWithDOB.get(0) + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan "
                                 + "PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
             }
@@ -606,8 +608,7 @@ public class EventHandlerMain {
                     sb.append("@").append(login).append(" ");
                 }
                 String allUsersWithDOB = sb.toString().trim();
-                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
-                        .sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня у этих прекрасных людей дни рождения! "
+                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня у этих прекрасных людей дни рождения! "
                                 + allUsersWithDOB + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
             }
         }
@@ -634,8 +635,7 @@ public class EventHandlerMain {
                     usersService.save(checkUser);
                     if (checkUser.getFollowingSince() == null) {
                         if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                    .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " нужно быть фолловером больше, чем"
+                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " нужно быть фолловером больше, чем"
                                             + " 6 месяцев.");
                             Global10secCDTimer.setGlobal10secTimer();
                         }
@@ -662,8 +662,7 @@ public class EventHandlerMain {
                             } else {
                                 DOBDate = null;
                                 if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                            .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Формат даты должен быть таким: "
+                                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Формат даты должен быть таким: "
                                                     + "день/месяц/год или день/месяц . С лидирующими нолями в дне и месяце");
                                     Global10secCDTimer.setGlobal10secTimer();
                                 }
@@ -673,26 +672,22 @@ public class EventHandlerMain {
                                 usersService.save(checkUser);
                                 int dice = (int) (Math.random() * 2) + 1;
                                 if (dice == 1) {
-                                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
-                                            .sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " pepeNoted");
+                                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " pepeNoted");
                                 }
                                 else if (dice == 2) {
-                                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
-                                            .sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " HmmNotes");
+                                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " HmmNotes");
                                 }
                             }
                         } else {
                             if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                        .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " нельзя менять ДР DansGame");
+                                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " нельзя менять ДР DansGame");
                                 Global10secCDTimer.setGlobal10secTimer();
                             }
                         }
                     }
                     else {
                         if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                    .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " нужно быть фолловером больше, чем"
+                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " нужно быть фолловером больше, чем"
                                             + " 6 месяцев.");
                             Global10secCDTimer.setGlobal10secTimer();
                         }
@@ -730,21 +725,17 @@ public class EventHandlerMain {
                         }
                     }
                     if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() == 0) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithoutYear.format(user.getDateOfBirth())
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithoutYear.format(user.getDateOfBirth())
                                         + messageToDOB);
                     } else if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() != 0) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithYear.format(user.getDateOfBirth())
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithYear.format(user.getDateOfBirth())
                                         + messageToDOB);
                     } else {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " День рождения не установлен");
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " День рождения не установлен");
                     }
                 } else {
                     if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-                                .getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
                                         + " сначала добавь командой !др день/месяц/год или день/месяц . С лидирующими нолями в дне и месяце");
                         log.debug("такого юзера нет: {}", event.getUser().getName());
                         Global10secCDTimer.setGlobal10secTimer();
@@ -773,49 +764,49 @@ public class EventHandlerMain {
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!ник") ||
                 newMessage.toLowerCase().startsWith("!nick"))) {
             String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "Оцениваю " + "@" + firstNick + " ...");
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "Оцениваю " + "@" + firstNick + " ...");
             Thread.sleep(3000);
 
             int dice = (int) (Math.random() * 10) + 1;
             if (dice == 1) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " твой ник калич 4Head 1/10, зобаню даж");
                 UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 60, "nick");
             }
             else if (dice == 2) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " ник ниачом 2/10, даж без смайла");
             }
             else if (dice == 3) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " ну такой себе ник 3/10 DansGame");
             }
             else if (dice == 4) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " скучный ник 4/10 ResidentSleeper");
             }
             else if (dice == 5) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " твердая питёрка 5/10  billyWink");
             }
             else if (dice == 6) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " нормальный такой ник SeemsGood 6/10");
             }
             else if (dice == 7) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " ну, конечно, не Александр, но 7/10 , not bad ChadYes");
             }
             else if (dice == 8) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " ну, конечно, не Максон, но 8/10 PogChamp");
             }
             else if (dice == 9) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " хрена себе никчанский happaWut 9/10");
             }
             else if (dice == 10) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " твой ник просто прекрасен cageGASM держи happa100 и бан, чтоб другим не обидно было happaShutup");
                 UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 60, "nick");
             }
@@ -835,28 +826,28 @@ public class EventHandlerMain {
             String secondSlot = arrayList.get(dice2);
             String thirdSlot = arrayList.get(dice3);
 
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), firstSlot + " " + secondSlot + " " + thirdSlot);
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), firstSlot + " " + secondSlot + " " + thirdSlot);
 
             if (firstSlot.equals("mericCat") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 1$ haHAA");
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 1$ haHAA");
             }
             if (firstSlot.equals("happaPepe") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 100$");
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 100$");
             }
             if (firstSlot.equals("happaWut") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 1000$!");
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 1000$!");
             }
             if (firstSlot.equals("happaPride") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 69$  gachiBASS");
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 69$  gachiBASS");
             }
             if (firstSlot.equals("happa100") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 100 рублей!!! Два трека (условно)!");
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 100 рублей!!! Два трека (условно)!");
             }
             if (firstSlot.equals("PepeLaugh") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 100000$!!!");
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 100000$!!!");
             }
             if (firstSlot.equals("EZ") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 1000000$ и разорили казино!!!");
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 1000000$ и разорили казино!!!");
                 UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 300, "Casino");
             }
 
@@ -869,28 +860,28 @@ public class EventHandlerMain {
 
             int dice = (int) (Math.random() * 6) + 1;
             if (dice == 1) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " ОГО! Ты получаешь целое... НИ ХУ ХРЫ!");
             }
             else if (dice == 2) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " ОГО! Да тебе выпало целое НИ ФИ ГА! жоска!");
             }
             else if (dice == 3) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " ОГО! У тебя теперь есть НИ ЧЕР ТА! круто!");
             }
             else if (dice == 4) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " ОГО! Да это же ШИШ С МАСЛОМ! забирай! и таймач прихвати!");
                 UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 30, "drops");
             }
             else if (dice == 5) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " ОГО! Да это же ГОЛЯК! грац!");
             }
             else if (dice == 6) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " ОГО! Тут всего-то чуть меньше, чем НИ ЧТО! Вау!");
             }
             Global10secCDTimer.setGlobal10secTimer();
@@ -901,22 +892,22 @@ public class EventHandlerMain {
 
             int dice = (int) (Math.random() * 1000) + 1;
             if (dice == 1) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " Ваше место в очереди... Вы следующий! PogChamp скринь! SHTO");
             } else if (dice == 1000) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " Ваше место в очереди... Вы последний! АХАХА maaaaan");
             } else {
                 if (dice < 100) {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                             + " Ваше место в очереди... " + dice + ", осталось немного peepoComfy");
                 }
                 else if (dice > 900) {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                             + " Ваше место в очереди... " + dice + ", это вооон за тем челом PepePoint");
                 }
                 else {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                             + " Ваше место в очереди... " + dice + " Tssk");
                 }
             }
@@ -931,7 +922,7 @@ public class EventHandlerMain {
             arrayList.remove("\udb40\udc00");
 
             if (UtilityCommandsMainChannel.getModeratorsList().contains(firstNick)){
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " А жареных гвоздей не хочешь? PETTHEMODS");
             }
             else {
@@ -942,50 +933,50 @@ public class EventHandlerMain {
 
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().contains("лфзза"))) {
             String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                     + " Kappa");
             Global10secCDTimer.setGlobal10secTimer();
         }
 
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().contains("4руфв"))) {
             String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                     + " 4Head");
             Global10secCDTimer.setGlobal10secTimer();
         }
 
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!паук"))) {
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "ВИКТОР - /\\/\\╭( ͡° ͡° ͜ʖ ͡° ͡°)╮/\\╱\\");
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "ВИКТОР - /\\/\\╭( ͡° ͡° ͜ʖ ͡° ͡°)╮/\\╱\\");
             Global10secCDTimer.setGlobal10secTimer();
         }
 
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().contains("амиго"))) {
             String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                     + " Вот не надо на Амиго гнать, вполне обычный браузер. Репутацию сломал потому что вместе с вирусами ставился. С офф сайта он нормальный");
             Global10secCDTimer.setGlobal10secTimer();
         }
 
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!джошукен"))) {
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "༼ つ happaDans ༽つ ─=≡Σ happaDjosh ))");
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "༼ つ happaDans ༽つ ─=≡Σ happaDjosh ))");
             Global10secCDTimer.setGlobal10secTimer();
         }
 
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!хадукен"))) {
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "༼ つಠ益ಠ༽つ ─=≡ΣO))");
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "༼ つಠ益ಠ༽つ ─=≡ΣO))");
             Global10secCDTimer.setGlobal10secTimer();
         }
 
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!пасты"))) {
             String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                     + " Только не балуйся Kapp https://docs.google.com/document/d/1S8tudkuBmTQjoLZcIcTPDFJ4AZqnpi7pof3FlhevktI/edit?usp=sharing");
             Global10secCDTimer.setGlobal10secTimer();
         }
 
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!судоку"))) {
             String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                     + " https://sudoku.com/ 4Head");
             Global10secCDTimer.setGlobal10secTimer();
         }
@@ -1021,16 +1012,16 @@ public class EventHandlerMain {
             commandPermissionList2.retainAll(requiredPermissionList2);
 
             if (!commandPermissionList1.isEmpty()) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                         " Стыдно, товарищ!");
             }
             else if (!commandPermissionList2.isEmpty()) {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " бан 10 мин за гуся и прочую ересь. Одумайся, уважаемый на канале чел!");
                 UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 600, "kaban_i_gus");
             }
             else {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                         + " бан на 11 дней за гуся и прочую ересь.");
                 //TODO change to 999999
                 UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 999999, "kaban_i_gus");
@@ -1038,7 +1029,7 @@ public class EventHandlerMain {
         }
         if (newMessage.contains("Ỏ")) {
             String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + firstNick
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
                     + " таймач сутки за хрень на пол чата");
             //TODO change to 86400 - sutki
             UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 86400, "polChataHren");
@@ -1089,7 +1080,7 @@ public class EventHandlerMain {
             if (message.contains("!mods")) {
                 ArrayList<String> moderatorsList = UtilityCommandsMainChannel.getModeratorsList();
                 String fullModsList = moderatorsList.toString();
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), fullModsList);
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), fullModsList);
             }
         }
     }
@@ -1099,7 +1090,7 @@ public class EventHandlerMain {
         if (botProperties.isOwner(event.getUser().getName())) {
             if (event.getMessage().toLowerCase().contains("!rep1ly")) {
 //                twitchClientHappa.getChat().sendMessage(event.getChannel().getName(), "ku");
-                applicationContext.getBean(MainBuilderUtil.class).getTwitchClientMain().getChat().sendMessage(event.getChannel().getName(), "ku");
+                applicationContext.getBean(MainBuilderUtil.class).sendMessage(event.getChannel().getName(), "ku");
             }
         }
     }
@@ -1134,7 +1125,7 @@ public class EventHandlerMain {
             try {
                 if (message.contains("!time1outnewtest")) {
                     UtilityCommandsMainChannel.timeoutUser(applicationContext.getBean(BotBuilderUtil.class).getTestChannelId(), 10, "no reason");
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "new request sent");
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "new request sent");
                 }
             } catch (IOException e) {
                 log.error("timeoutMainTest failed", e);
@@ -1147,7 +1138,7 @@ public class EventHandlerMain {
 //        if (botProperties.isOwner(event.getUser().getName())) {
 //            String message = event.getMessage();
 //            if (message.contains("!cooldownduel")) {
-//                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), String.valueOf(GlobalDuelTimer.duelCoolDownTimerLeft));
+//                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), String.valueOf(GlobalDuelTimer.duelCoolDownTimerLeft));
 //            }
 //        }
 //    }
@@ -1188,20 +1179,20 @@ public class EventHandlerMain {
                 String mode = splitMessage[1];
                 if (mode.toUpperCase().equals(FilterMode.AI.getName())) {
                     this.filterMode = FilterMode.AI;
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                             " мат фильтр теперь - " + this.filterMode.getName());
                 } else if (mode.toUpperCase().equals(FilterMode.OLD.getName())) {
                     this.filterMode = FilterMode.OLD;
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                             " мат фильтр теперь - " + this.filterMode.getName());
                 }
                 else {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                             " нужно указать способ фильтрации (ai или old), сейчас - " + this.filterMode.getName());
                 }
             }
             else {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                         " нужно указать способ фильтрации (ai или old), сейчас - " + this.filterMode.getName());
             }
         }
@@ -1232,11 +1223,11 @@ public class EventHandlerMain {
                         String eventChannel = event.getChannel().getName();
 
                         if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
-                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutBadWord);
+                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutBadWord);
                             UtilityCommandsMainChannel.timeoutUser(id, 600, "bad word bot");
                         } else if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
                             try {
-                                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutBadWord);
+                                applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutBadWord);
                                 UtilityCommandsTestChannel.timeoutUserTest(id, 5, "bad word bot");
 
                             } catch (Exception e) {
@@ -1260,14 +1251,14 @@ public class EventHandlerMain {
 
                 if (eventChannel.equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
                     try {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " Мат в чате запрещён!");
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " Мат в чате запрещён!");
                         UtilityCommandsMainChannel.timeoutUser(id, 600, "bad word bot");
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 } else if (eventChannel.equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
                     try {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " Мат в чате запрещён!");
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " Мат в чате запрещён!");
                         UtilityCommandsTestChannel.timeoutUserTest(id, 5, "bad word bot");
                     } catch (Exception e) {
                         log.error("timeoutForMat (old filter): failed to timeout test channel user", e);
@@ -1293,20 +1284,20 @@ public class EventHandlerMain {
                 String mode = splitMessage[1];
                 if (mode.toUpperCase().equals(TsyaMode.ON.getName())) {
                     this.tsyaMode = TsyaMode.ON;
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                             " ться триггер теперь - " + this.tsyaMode.getName());
                 } else if (mode.toUpperCase().equals(TsyaMode.OFF.getName())) {
                     this.tsyaMode = TsyaMode.OFF;
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                             " ться триггер теперь - " + this.tsyaMode.getName());
                 }
                 else {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                             " нужно указать ON или OFF, сейчас - " + this.tsyaMode.getName());
                 }
             }
             else {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                         " нужно указать ON или OFF, сейчас - " + this.tsyaMode.getName());
             }
         }
@@ -1333,10 +1324,10 @@ public class EventHandlerMain {
                             String textAboutTsyaMistakes = gpt4o.ResponseForTextContainingTsyaMistake(newMessage);
                             String eventChannel = event.getChannel().getName();
                             if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
-                                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutTsyaMistakes);
+                                applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutTsyaMistakes);
                                 GlobalTsyaTimer.setTimer();
                             } else if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
-                                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutTsyaMistakes);
+                                applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutTsyaMistakes);
                                 GlobalTsyaTimer.setTimer();
                             }
                         }
@@ -1362,20 +1353,20 @@ public class EventHandlerMain {
                 String mode = splitMessage[1];
                 if (mode.toUpperCase().equals(GptBotMode.ON.getName())) {
                     this.gptBotMode = GptBotMode.ON;
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                             " теперь  бот будет отвечать");
                 } else if (mode.toUpperCase().equals(GptBotMode.OFF.getName())) {
                     this.gptBotMode = GptBotMode.OFF;
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                             " теперь бот не будет отвечать");
                 }
                 else {
-                    applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                             " нужно указать ON или OFF, сейчас - " + this.gptBotMode.getName());
                 }
             }
             else {
-                applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
+                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
                         " нужно указать ON или OFF, сейчас - " + this.gptBotMode.getName());
             }
         }
@@ -1396,10 +1387,10 @@ public class EventHandlerMain {
                 if ( (botProperties.isModerator(event.getUser().getName())) ) {
                     String reply = gpt4o.ResponseForTextAddressingToBot(newMessage.substring(13));
                     if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
 //                        GlobalTsyaTimer.setTimer();
                     } else if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
 //                        GlobalTsyaTimer.setTimer();
                     }
                 }
@@ -1420,16 +1411,16 @@ public class EventHandlerMain {
                     if (!commandPermissionList.isEmpty()) {
                         String reply = gpt4o.ResponseForTextAddressingToBot(newMessage.substring(13));
                         if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
-                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
+                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
                             GlobalReplyTimer.setTimer();
                         } else if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
-                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
+                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
                             GlobalReplyTimer.setTimer();
                         }
                     }
                 } else if (GlobalReplyTimer.getTimerLeft() != 0) {
                     if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                        applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(eventChannel,
+                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel,
                                 "@" + event.getUser().getName() + " не дудось меня AAAA (еще " + GlobalReplyTimer.getTimerLeft() + " сек)");
 
                         Global10secCDTimer.setGlobal10secTimer();
@@ -1447,7 +1438,7 @@ public class EventHandlerMain {
 
         if ( (botProperties.isModerator(event.getUser().getName())) && (newMessage.toLowerCase().startsWith("!reboot")) ) {
             log.info("rebooting...");
-            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot().getChat().sendMessage(event.getChannel().getName(),
+            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(),
                     "@" + event.getUser().getName() + " rebooting...");
             SpringBootTwitchBotApplication.restart();
         }

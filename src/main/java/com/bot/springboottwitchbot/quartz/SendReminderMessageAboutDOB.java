@@ -12,8 +12,7 @@ public class SendReminderMessageAboutDOB implements Job {
     ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
     @Override
     public void execute(JobExecutionContext context) {
-        ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
-                .sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "Добавляй свой др командой !др день/месяц/год или день/месяц , если фолловер >6 месяцев! "
+        ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "Добавляй свой др командой !др день/месяц/год или день/месяц , если фолловер >6 месяцев! "
                 + "Поздравления в 14:30");
     }
 }

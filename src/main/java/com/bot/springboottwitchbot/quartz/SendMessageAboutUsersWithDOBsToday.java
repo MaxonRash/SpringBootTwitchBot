@@ -13,16 +13,13 @@ public class SendMessageAboutUsersWithDOBsToday implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         if (UtilityDOB.listOfUsersWithDOB.isEmpty()) {
-            ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
-                    .sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName() + " Сегодня ни у кого нет ДР FeelsBadMan");
+            ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName() + " Сегодня ни у кого нет ДР FeelsBadMan");
         }
         else if (UtilityDOB.listOfUsersWithDOB.size() == 1) {
-            ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
-                    .sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName() + " Сегодня у " + UtilityDOB.listOfUsersWithDOB.get(0)
+            ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName() + " Сегодня у " + UtilityDOB.listOfUsersWithDOB.get(0)
                     + " день рождения! " + "@" + UtilityDOB.listOfUsersWithDOB.get(0) + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan "
                     + "PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
-            ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
-                    .sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName() + " Сегодня у " + UtilityDOB.listOfUsersWithDOB.get(0)
+            ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName() + " Сегодня у " + UtilityDOB.listOfUsersWithDOB.get(0)
                             + " день рождения! " + "@" + UtilityDOB.listOfUsersWithDOB.get(0) + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan "
                             + "PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
         }
@@ -32,11 +29,9 @@ public class SendMessageAboutUsersWithDOBsToday implements Job {
                 sb.append("@").append(login).append(" ");
             }
             String allUsersWithDOB = sb.toString().trim();
-            ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
-                    .sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName() + " Сегодня у этих прекрасных людей дни рождения! "
+            ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName() + " Сегодня у этих прекрасных людей дни рождения! "
                             + allUsersWithDOB + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
-            ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot().getChat()
-                    .sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName() + " Сегодня у этих прекрасных людей дни рождения! "
+            ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName() + " Сегодня у этих прекрасных людей дни рождения! "
                             + allUsersWithDOB + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
         }
     }

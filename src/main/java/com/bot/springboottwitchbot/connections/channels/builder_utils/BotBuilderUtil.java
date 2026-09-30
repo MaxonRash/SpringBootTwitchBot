@@ -1,40 +1,36 @@
 package com.bot.springboottwitchbot.connections.channels.builder_utils;
 
-import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
-/**
- * The idea of using ApplicationProvider is not good, but not to rewrite the whole structure here is the solution:
- * <a href="https://stackoverflow.com/questions/78871993/why-applicationcontextprovider-throws-nullpointerexception-on-another-system">Why @DependsOn is used here</a>
- */
-
 @Component
-@DependsOn({"applicationContextProvider"})
 public class BotBuilderUtil {
 
-    TestChannelCredentialsUtil testChannelCredentialsUtil;
+    private static final Logger log = LoggerFactory.getLogger(BotBuilderUtil.class);
+
+    private final TestChannelCredentialsUtil testChannelCredentialsUtil;
+    private final OAuth2Credential credentialBot;
+    private final TwitchClient twitchClientBot;
 
     @Autowired
     private BotBuilderUtil(TestChannelCredentialsUtil testChannelCredentialsUtil) {
         this.testChannelCredentialsUtil = testChannelCredentialsUtil;
+        this.credentialBot = new OAuth2Credential("twitch", testChannelCredentialsUtil.getBotToken());
+        this.twitchClientBot =
+                TwitchClientBuilder.builder()
+                        .withEnableChat(true)
+                        .withChatAccount(credentialBot)
+                        .withEnableHelix(true)
+                        .withEnablePubSub(true)
+                        .withDefaultEventHandler(SimpleEventHandler.class)
+                        .build();
     }
-
-    public final OAuth2Credential credentialBot = new OAuth2Credential("twitch",
-            ApplicationContextProvider.getApplicationContext().getBean(TestChannelCredentialsUtil.class).getBotToken());
-    public final TwitchClient twitchClientBot =
-            TwitchClientBuilder.builder()
-                    .withEnableChat(true)
-                    .withChatAccount(credentialBot)
-                    .withEnableHelix(true)
-                    .withEnablePubSub(true)
-                    .withDefaultEventHandler(SimpleEventHandler.class)
-                    .build();
 
     public String getTestChannelId() {
         return testChannelCredentialsUtil.getTestChannelId();
@@ -66,6 +62,15 @@ public class BotBuilderUtil {
 
     public TwitchClient getTwitchClientBot() {
         return twitchClientBot;
+    }
+
+    /**
+     * Sends a chat message via the bot account and logs it, so every outgoing bot message
+     * (on whichever channel) is visible in the logs.
+     */
+    public void sendMessage(String channel, String message) {
+        log.info("[SEND -> {}] {}", channel, message);
+        twitchClientBot.getChat().sendMessage(channel, message);
     }
 
 }

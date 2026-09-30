@@ -28,15 +28,15 @@ public class SpringBootTwitchBotApplication {
         context = SpringApplication.run(SpringBootTwitchBotApplication.class, args);
 
         // Which channels connect is driven by the bot.channels property (see application.properties).
-        BotProperties botProperties = ApplicationContextProvider.getApplicationContext().getBean(BotProperties.class);
+        BotProperties botProperties = context.getBean(BotProperties.class);
         if (botProperties.isChannelEnabled("test")) {
-            ApplicationContextProvider.getApplicationContext().getBean(BotConnectionRunner.class).getChannelConnection().run();
+            context.getBean(BotConnectionRunner.class).getChannelConnection().run();
         }
         if (botProperties.isChannelEnabled("main")) {
-            ApplicationContextProvider.getApplicationContext().getBean(MainConnectionRunner.class).getChannelConnection().run();
+            context.getBean(MainConnectionRunner.class).getChannelConnection().run();
         }
         if (botProperties.isChannelEnabled("second")) {
-            ApplicationContextProvider.getApplicationContext().getBean(SecondConnectionRunner.class).getChannelConnection().run();
+            context.getBean(SecondConnectionRunner.class).getChannelConnection().run();
         }
 
 //        CheckDOBRunner.runSimpleTriggerTest();

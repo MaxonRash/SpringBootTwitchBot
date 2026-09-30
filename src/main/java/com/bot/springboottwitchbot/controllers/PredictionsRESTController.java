@@ -1,14 +1,11 @@
 package com.bot.springboottwitchbot.controllers;
 
-import com.bot.springboottwitchbot.ApplicationContextProvider;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsMainChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,9 +20,14 @@ import java.io.IOException;
 public class PredictionsRESTController {
     private static final Logger log = LoggerFactory.getLogger(PredictionsRESTController.class);
 
-    @Qualifier("webApplicationContext")
+    private final BotBuilderUtil botBuilderUtil;
+    private final MainBuilderUtil mainBuilderUtil;
+
     @Autowired
-    ApplicationContext applicationContext;
+    public PredictionsRESTController(BotBuilderUtil botBuilderUtil, MainBuilderUtil mainBuilderUtil) {
+        this.botBuilderUtil = botBuilderUtil;
+        this.mainBuilderUtil = mainBuilderUtil;
+    }
 
     private static String lastExecutedPredictionStartTime = null;
 
@@ -63,9 +65,8 @@ public class PredictionsRESTController {
                 UtilityCommandsMainChannel.makeStandardPrediction();
             } catch (HttpClientErrorException.BadRequest e) {
                 log.warn("Prediction is already started. Time: {} Waiting fow outcome now.", time);
-                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
-                        .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                                .getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                botBuilderUtil.sendMessage(mainBuilderUtil
+                                .getMainChannelName(), "@" + mainBuilderUtil.getMainChannelName()
                                 + " Кто-то (модеры MODS ) уже запустил ставку ResidentSleeper Ок, если она для игры, "
                         + "начавшейся в " + time + " Ждём исхода...");
                 lastExecutedPredictionStartTime = time;
@@ -74,9 +75,8 @@ public class PredictionsRESTController {
             Thread.sleep(1000);
             lastExecutedPredictionStartTime = time;
             log.info("New Prediction Made, Game Started at: {}", time);
-            ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
-                    .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                            .getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+            botBuilderUtil.sendMessage(mainBuilderUtil
+                            .getMainChannelName(), "@" + mainBuilderUtil.getMainChannelName()
                             + " Начата ставка для игры, начавшейся в " + time);
             return "New Prediction Made, Game Started at: " + time;
         }
@@ -87,9 +87,8 @@ public class PredictionsRESTController {
                 } catch (NullPointerException e) {
                     lastExecutedPredictionStartTime = null;
                     log.info("No opened predictions, someone closed it earlier. Time was: {}", time);
-                    ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
-                            .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                                    .getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                    botBuilderUtil.sendMessage(mainBuilderUtil
+                                    .getMainChannelName(), "@" + mainBuilderUtil.getMainChannelName()
                                     + " Нет открытых ставок. Кто-то (модеры MODS ) уже закрыл ставку для игры, "
                                     + "начавшейся в " + time + " Ждём начала новой игры...");
                     return "No opened predictions, someone closed it earlier. Time was: " + time;
@@ -97,9 +96,8 @@ public class PredictionsRESTController {
                 Thread.sleep(1000);
                 lastExecutedPredictionStartTime = null;
                 log.info("Outcome for prediction for game started at: {} is set to WON", time);
-                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
-                        .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                                .getMainChannelName(),"@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                botBuilderUtil.sendMessage(mainBuilderUtil
+                                .getMainChannelName(),"@" + mainBuilderUtil.getMainChannelName()
                                 + " Исход для игры, начавшейся в " + time + " - WIN (1-4)");
                 return "Outcome for prediction for game started at: " + time + " is set to WON";
             }
@@ -111,9 +109,8 @@ public class PredictionsRESTController {
                 } catch (NullPointerException e) {
                     lastExecutedPredictionStartTime = null;
                     log.info("No opened predictions, someone closed it earlier. Time was: {}", time);
-                    ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
-                            .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                                    .getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                    botBuilderUtil.sendMessage(mainBuilderUtil
+                                    .getMainChannelName(), "@" + mainBuilderUtil.getMainChannelName()
                                     + " Нет открытых ставок. Кто-то (модеры MODS ) уже закрыл ставку для игры, "
                                     + "начавшейся в " + time + " Ждём начала новой игры...");
                     return "No opened predictions, someone closed it earlier. Time was: " + time;
@@ -121,9 +118,8 @@ public class PredictionsRESTController {
                 Thread.sleep(1000);
                 lastExecutedPredictionStartTime = null;
                 log.info("Outcome for prediction for game started at: {} is set to LOST", time);
-                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).getTwitchClientBot()
-                        .getChat().sendMessage(ApplicationContextProvider.getApplicationContext().getBean(MainBuilderUtil.class)
-                                .getMainChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
+                botBuilderUtil.sendMessage(mainBuilderUtil
+                                .getMainChannelName(), "@" + mainBuilderUtil.getMainChannelName()
                                 + " Исход для игры, начавшейся в " + time + " - LOST (5-8)");
                 return "Outcome for prediction for game started at: " + time + " is set to LOST";
             }
