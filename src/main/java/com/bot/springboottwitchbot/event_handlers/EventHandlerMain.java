@@ -884,32 +884,7 @@ public class EventHandlerMain {
             Global10secCDTimer.setGlobal10secTimer();
         }
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!в очередь"))) {
-            String firstNick = event.getUser().getName();
-
-            int dice = (int) (Math.random() * 1000) + 1;
-            if (dice == 1) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " Ваше место в очереди... Вы следующий! PogChamp скринь! SHTO");
-            } else if (dice == 1000) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " Ваше место в очереди... Вы последний! АХАХА maaaaan");
-            } else {
-                if (dice < 100) {
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                            + " Ваше место в очереди... " + dice + ", осталось немного peepoComfy");
-                }
-                else if (dice > 900) {
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                            + " Ваше место в очереди... " + dice + ", это вооон за тем челом PepePoint");
-                }
-                else {
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                            + " Ваше место в очереди... " + dice + " Tssk");
-                }
-            }
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // !в очередь migrated to commands/QueueCommand (Phase 5).
 
         if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!мут мне на"))) {
             String firstNick = event.getUser().getName();
@@ -928,28 +903,13 @@ public class EventHandlerMain {
             Global10secCDTimer.setGlobal10secTimer();
         }
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().contains("лфзза"))) {
-            String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                    + " Kappa");
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // лфзза trigger migrated to commands/KappaTriggerCommand (Phase 5).
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().contains("4руфв"))) {
-            String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                    + " 4Head");
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // 4руфв trigger migrated to commands/FourHeadTriggerCommand (Phase 5).
 
         // !паук migrated to commands/SpiderCommand (Phase 5).
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().contains("амиго"))) {
-            String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                    + " Вот не надо на Амиго гнать, вполне обычный браузер. Репутацию сломал потому что вместе с вирусами ставился. С офф сайта он нормальный");
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // амиго trigger migrated to commands/AmigoTriggerCommand (Phase 5).
 
         // !джошукен migrated to commands/JoshukenCommand (Phase 5).
 
