@@ -1,5 +1,6 @@
 package com.bot.springboottwitchbot.commands;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -30,6 +31,9 @@ public interface ChannelContext {
 
     /** Current Twitch moderator logins for this channel (Helix call). */
     List<String> getModerators();
+
+    /** Times out a user (by login) for {@code seconds} with a reason, via this channel's moderation endpoint. */
+    void timeoutByName(String login, int seconds, String reason) throws IOException;
 
     /** Sends a chat message to this channel via the bot account (logged by the builder util). */
     void send(String message);

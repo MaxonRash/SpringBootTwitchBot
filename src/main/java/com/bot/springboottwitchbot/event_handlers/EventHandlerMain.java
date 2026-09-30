@@ -758,150 +758,15 @@ public class EventHandlerMain {
     public void spamMessagesCommand(ChannelMessageEvent event) throws IOException, InterruptedException {
         String newMessage = event.getMessage().toLowerCase();
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!ник") ||
-                newMessage.toLowerCase().startsWith("!nick"))) {
-            String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "Оцениваю " + "@" + firstNick + " ...");
-            Thread.sleep(3000);
+        // !ник / !nick migrated to commands/NickCommand (Phase 5).
 
-            int dice = (int) (Math.random() * 10) + 1;
-            if (dice == 1) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " твой ник калич 4Head 1/10, зобаню даж");
-                UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 60, "nick");
-            }
-            else if (dice == 2) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " ник ниачом 2/10, даж без смайла");
-            }
-            else if (dice == 3) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " ну такой себе ник 3/10 DansGame");
-            }
-            else if (dice == 4) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " скучный ник 4/10 ResidentSleeper");
-            }
-            else if (dice == 5) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " твердая питёрка 5/10  billyWink");
-            }
-            else if (dice == 6) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " нормальный такой ник SeemsGood 6/10");
-            }
-            else if (dice == 7) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " ну, конечно, не Александр, но 7/10 , not bad ChadYes");
-            }
-            else if (dice == 8) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " ну, конечно, не Максон, но 8/10 PogChamp");
-            }
-            else if (dice == 9) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " хрена себе никчанский happaWut 9/10");
-            }
-            else if (dice == 10) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " твой ник просто прекрасен cageGASM держи happa100 и бан, чтоб другим не обидно было happaShutup");
-                UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 60, "nick");
-            }
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // !слот / !slot migrated to commands/SlotCommand (Phase 5).
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!слот") ||
-                newMessage.toLowerCase().startsWith("!slot"))) {
-            String firstNick = event.getUser().getName();
-
-            ArrayList<String> arrayList = new ArrayList<>(Arrays.asList("mericCat", "happaPepe", "happaWut", "happaPride", "happa100", "PepeLaugh", "EZ"));
-            int dice1 = (int) (Math.random() * 7);
-            int dice2 = (int) (Math.random() * 7);
-            int dice3 = (int) (Math.random() * 7);
-
-            String firstSlot = arrayList.get(dice1);
-            String secondSlot = arrayList.get(dice2);
-            String thirdSlot = arrayList.get(dice3);
-
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), firstSlot + " " + secondSlot + " " + thirdSlot);
-
-            if (firstSlot.equals("mericCat") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 1$ haHAA");
-            }
-            if (firstSlot.equals("happaPepe") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 100$");
-            }
-            if (firstSlot.equals("happaWut") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 1000$!");
-            }
-            if (firstSlot.equals("happaPride") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 69$  gachiBASS");
-            }
-            if (firstSlot.equals("happa100") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 100 рублей!!! Два трека (условно)!");
-            }
-            if (firstSlot.equals("PepeLaugh") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 100000$!!!");
-            }
-            if (firstSlot.equals("EZ") && firstSlot.equals(secondSlot) && firstSlot.equals(thirdSlot)) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick + " Вы выиграли 1000000$ и разорили казино!!!");
-                UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 300, "Casino");
-            }
-
-            Global10secCDTimer.setGlobal10secTimer();
-        }
-
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!drops") ||
-                newMessage.toLowerCase().startsWith("!дропс"))) {
-            String firstNick = event.getUser().getName();
-
-            int dice = (int) (Math.random() * 6) + 1;
-            if (dice == 1) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " ОГО! Ты получаешь целое... НИ ХУ ХРЫ!");
-            }
-            else if (dice == 2) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " ОГО! Да тебе выпало целое НИ ФИ ГА! жоска!");
-            }
-            else if (dice == 3) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " ОГО! У тебя теперь есть НИ ЧЕР ТА! круто!");
-            }
-            else if (dice == 4) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " ОГО! Да это же ШИШ С МАСЛОМ! забирай! и таймач прихвати!");
-                UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 30, "drops");
-            }
-            else if (dice == 5) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " ОГО! Да это же ГОЛЯК! грац!");
-            }
-            else if (dice == 6) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " ОГО! Тут всего-то чуть меньше, чем НИ ЧТО! Вау!");
-            }
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // !drops / !дропс migrated to commands/DropsCommand (Phase 5).
 
         // !в очередь migrated to commands/QueueCommand (Phase 5).
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!мут мне на"))) {
-            String firstNick = event.getUser().getName();
-
-            String[] array = newMessage.split(" ");
-            ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(array));
-            arrayList.remove("\udb40\udc00");
-
-            if (UtilityCommandsMainChannel.getModeratorsList().contains(firstNick)){
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " А жареных гвоздей не хочешь? PETTHEMODS");
-            }
-            else {
-                UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), Integer.parseInt(arrayList.get(3)), "muteAsked");
-            }
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // !мут мне на migrated to commands/MuteMeCommand (Phase 5).
 
         // лфзза trigger migrated to commands/KappaTriggerCommand (Phase 5).
 
@@ -917,12 +782,7 @@ public class EventHandlerMain {
 
         // !пасты migrated to commands/PastasCommand (Phase 5).
 
-        if ((Global10secCDTimer.getGlobal10secTimer() == null) && (newMessage.toLowerCase().startsWith("!судоку"))) {
-            String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                    + " https://sudoku.com/ 4Head");
-            Global10secCDTimer.setGlobal10secTimer();
-        }
+        // !судоку migrated to commands/SudokuCommand (Phase 5).
 
         if (newMessage.toLowerCase().startsWith("!с локтя") && (botProperties.isOwner(event.getUser().getName()))) {
             String[] array = newMessage.split(" ");

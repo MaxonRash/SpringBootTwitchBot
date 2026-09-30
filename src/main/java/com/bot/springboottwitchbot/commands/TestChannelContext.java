@@ -2,10 +2,12 @@ package com.bot.springboottwitchbot.commands;
 
 import com.bot.springboottwitchbot.config.BotProperties;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
+import com.bot.springboottwitchbot.utilities.UtilityCommandsGlobal;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsTestChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 
 /** {@link ChannelContext} for the test channel (sends via the bot account to the test channel). */
@@ -54,6 +56,11 @@ public class TestChannelContext implements ChannelContext {
     @Override
     public List<String> getModerators() {
         return UtilityCommandsTestChannel.getModeratorsList();
+    }
+
+    @Override
+    public void timeoutByName(String login, int seconds, String reason) throws IOException {
+        UtilityCommandsTestChannel.timeoutUserTest(UtilityCommandsGlobal.getUserIdByName(login), seconds, reason);
     }
 
     @Override

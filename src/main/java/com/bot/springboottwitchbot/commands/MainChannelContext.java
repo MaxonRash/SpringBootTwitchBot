@@ -3,10 +3,12 @@ package com.bot.springboottwitchbot.commands;
 import com.bot.springboottwitchbot.config.BotProperties;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
+import com.bot.springboottwitchbot.utilities.UtilityCommandsGlobal;
 import com.bot.springboottwitchbot.utilities.UtilityCommandsMainChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -61,6 +63,11 @@ public class MainChannelContext implements ChannelContext {
     @Override
     public List<String> getModerators() {
         return UtilityCommandsMainChannel.getModeratorsList();
+    }
+
+    @Override
+    public void timeoutByName(String login, int seconds, String reason) throws IOException {
+        UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(login), seconds, reason);
     }
 
     @Override
