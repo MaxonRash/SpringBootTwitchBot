@@ -432,19 +432,7 @@ public class EventHandlerBot {
         }
     }
 
-    @EventSubscriber
-    public void russianRouletteTimeLeft(ChannelMessageEvent event) {
-        String newMessage = event.getMessage().toLowerCase();
-        if (newMessage.contains("!сходка") && GlobalRouletteTimer.rouletteCooldownTimer == null && Global10secCDTimer.getGlobal10secTimer() == null) {
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "ну довай PepegaAim");
-            Global10secCDTimer.setGlobal10secTimer();
-        }
-        else if (newMessage.contains("!сходка") && GlobalRouletteTimer.rouletteCooldownTimer != null && Global10secCDTimer.getGlobal10secTimer() == null) {
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
-                    " начать сходку можно через " + GlobalRouletteTimer.rouletteCoolDownTimerLeft + " happaUHW");
-            Global10secCDTimer.setGlobal10secTimer();
-        }
-    }
+    // russianRouletteTimeLeft (!сходка) migrated to commands/ShodkaCommand (Phase 5).
 
     //_______________________________________________________________________________________________________________________________
     //_______________________________________________________________________________________________________________________________
@@ -456,44 +444,7 @@ public class EventHandlerBot {
     //_______________________________________________________________________________________________________________________________
 
     //TODO change timeouts from test to real ones
-    @EventSubscriber
-    public void spamMessagesCommand(ChannelMessageEvent event) throws IOException, InterruptedException {
-        String newMessage = event.getMessage().toLowerCase();
-
-        // !ник / !nick migrated to commands/NickCommand (Phase 5).
-
-        // !слот / !slot migrated to commands/SlotCommand (Phase 5).
-
-        // !drops / !дропс migrated to commands/DropsCommand (Phase 5).
-
-        // !в очередь migrated to commands/QueueCommand (Phase 5).
-
-        // !мут мне на migrated to commands/MuteMeCommand (Phase 5).
-
-        // лфзза trigger migrated to commands/KappaTriggerCommand (Phase 5).
-
-        // 4руфв trigger migrated to commands/FourHeadTriggerCommand (Phase 5).
-
-        // !паук migrated to commands/SpiderCommand (Phase 5).
-
-        // амиго trigger migrated to commands/AmigoTriggerCommand (Phase 5).
-
-        // !джошукен migrated to commands/JoshukenCommand (Phase 5).
-
-        // !хадукен migrated to commands/HadoukenCommand (Phase 5).
-
-        // !пасты migrated to commands/PastasCommand (Phase 5).
-
-        // !судоку migrated to commands/SudokuCommand (Phase 5).
-
-        if (newMessage.toLowerCase().startsWith("!с локтя") && (botProperties.isOwner(event.getUser().getName()))) {
-            String[] array = newMessage.split(" ");
-            ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(array));
-            arrayList.remove("\udb40\udc00");
-
-            UtilityCommandsTestChannel.timeoutUserTest(UtilityCommandsGlobal.getUserIdByName(arrayList.get(2)), 30, "sLoktya");
-        }
-    }
+    // spamMessagesCommand fully migrated to commands/ (Phase 5): nick, slot, drops, queue, mute, trigger words, pastas, sudoku, !с локтя.
 
     @EventSubscriber
     public void badMessagesBanCommand(ChannelMessageEvent event) throws IOException {
