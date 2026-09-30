@@ -908,167 +908,17 @@ public class EventHandlerBot {
         }
     }
 
-    private TsyaMode tsyaMode = TsyaMode.OFF;
+    // tsyaMode state moved to ChannelContext; !tsya + nag migrated to commands/ (Phase 5).
 
-    @EventSubscriber
-    public void changeTsyaMode(ChannelMessageEvent event) {
-        if (event.getUser().getName().equals(botProperties.getBotAccountName())) {
-            return;
-        }
-        String newMessage = event.getMessage().toLowerCase();
-//        newMessage = newMessage.replace("\udb40\udc00", "");
+    // changeTsyaMode (!tsya) migrated to commands/TsyaToggleCommand (Phase 5).
 
-        if ( (botProperties.isModerator(event.getUser().getName())) && (newMessage.toLowerCase().startsWith("!tsya")) ) {
-            String[] splitMessage  = newMessage.split(" ");
-            if (splitMessage.length > 1) {
-                String mode = splitMessage[1];
-                if (mode.toUpperCase().equals(TsyaMode.ON.getName())) {
-                    this.tsyaMode = TsyaMode.ON;
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
-                            " ться триггер теперь - " + this.tsyaMode.getName());
-                } else if (mode.toUpperCase().equals(TsyaMode.OFF.getName())) {
-                    this.tsyaMode = TsyaMode.OFF;
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
-                            " ться триггер теперь - " + this.tsyaMode.getName());
-                }
-                else {
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
-                            " нужно указать ON или OFF, сейчас - " + this.tsyaMode.getName());
-                }
-            }
-            else {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
-                        " нужно указать ON или OFF, сейчас - " + this.tsyaMode.getName());
-            }
-        }
-    }
+    // tellAboutTsyaMistake migrated to commands/TsyaMistakeCommand (Phase 5).
 
-    @EventSubscriber
-    public void tellAboutTsyaMistake(ChannelMessageEvent event) {
-        if (event.getUser().getName().equals(botProperties.getBotAccountName())) {
-            return;
-        }
-        String newMessage = event.getMessage().toLowerCase();
-        newMessage = newMessage.replace("\udb40\udc00", "");
-//        newMessage = newMessage.replaceAll("(.)\\1+", "$1");
-        String trimmedNewMessage = newMessage.replace(" ", "");
-        if (this.tsyaMode == TsyaMode.ON) {
-            if (GlobalTsyaTimer.getTimerLeft() == 0) {
-                if (trimmedNewMessage.contains("тся") || trimmedNewMessage.contains("ться")) {
-                    boolean hasTsyaMistakes = gpt4o.isTextContainingTsyaMistake(newMessage);
+    // gptBotMode state moved to ChannelContext; !botreply + reply migrated to commands/ (Phase 5).
 
-                    log.debug("ошибки с ться: {}", hasTsyaMistakes);
+    // changeBotMode (!botreply) migrated to commands/BotReplyToggleCommand (Phase 5).
 
-                    if (hasTsyaMistakes) {
-                        String textAboutTsyaMistakes = gpt4o.ResponseForTextContainingTsyaMistake(newMessage);
-                        String eventChannel = event.getChannel().getName();
-                        if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
-                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutTsyaMistakes);
-                            GlobalTsyaTimer.setTimer();
-                        } else if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
-                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + textAboutTsyaMistakes);
-                            GlobalTsyaTimer.setTimer();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private GptBotMode gptBotMode = GptBotMode.ON;
-
-    @EventSubscriber
-    public void changeBotMode(ChannelMessageEvent event) {
-        if (event.getUser().getName().equals(botProperties.getBotAccountName())) {
-            return;
-        }
-        String newMessage = event.getMessage().toLowerCase();
-        newMessage = newMessage.replace("\udb40\udc00", "");
-
-        if ( (botProperties.isModerator(event.getUser().getName())) && (newMessage.toLowerCase().startsWith("!botreply")) ) {
-            String[] splitMessage  = newMessage.split(" ");
-            if (splitMessage.length > 1) {
-                String mode = splitMessage[1];
-                if (mode.toUpperCase().equals(GptBotMode.ON.getName())) {
-                    this.gptBotMode = GptBotMode.ON;
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
-                            " теперь  бот будет отвечать");
-                } else if (mode.toUpperCase().equals(GptBotMode.OFF.getName())) {
-                    this.gptBotMode = GptBotMode.OFF;
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
-                            " теперь бот не будет отвечать");
-                }
-                else {
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
-                            " нужно указать ON или OFF, сейчас - " + this.gptBotMode.getName());
-                }
-            }
-            else {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
-                        " нужно указать ON или OFF, сейчас - " + this.gptBotMode.getName());
-            }
-        }
-    }
-
-    @EventSubscriber
-    public void replyToMessage(ChannelMessageEvent event) {
-        if (event.getUser().getName().equals(botProperties.getBotAccountName())) {
-            return;
-        }
-        String newMessage = event.getMessage().toLowerCase();
-        newMessage = newMessage.replace("\udb40\udc00", "");
-//        newMessage = newMessage.replaceAll("(.)\\1+", "$1");
-//        String trimmedNewMessage = newMessage.replace(" ", "");
-        if (newMessage.startsWith("@maximuz_bot ")) {
-            if (this.gptBotMode == GptBotMode.ON) {
-                String eventChannel = event.getChannel().getName();
-                if ( (botProperties.isModerator(event.getUser().getName())) ) {
-                    String reply = gpt4o.ResponseForTextAddressingToBot(newMessage.substring(13));
-                    if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
-                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
-//                        GlobalTsyaTimer.setTimer();
-                    } else if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
-                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
-//                        GlobalTsyaTimer.setTimer();
-                    }
-                }
-                else if (GlobalReplyTimer.getTimerLeft() == 0) {
-
-                    String commandPermissionString = event.getPermissions().toString();
-//                    System.out.println("String: " + commandPermissionString);
-                    commandPermissionString = commandPermissionString.substring(1);
-                    commandPermissionString = commandPermissionString.substring(0, commandPermissionString.lastIndexOf("]"));
-//                    System.out.println("Updated String: " + commandPermissionString);
-                    ArrayList<String> commandPermissionList = new ArrayList<>(Arrays.asList(commandPermissionString.split(", ")));
-                    log.debug("command permission list: {}", commandPermissionList);
-                    ArrayList<String> requiredPermissionList = new ArrayList<>(Arrays.asList("PARTNER, SUBSCRIBER, FOUNDER, SUBGIFTER, VIP, MODERATOR, BROADCASTER".split(", ")));
-//                    ArrayList<String> requiredPermissionList = new ArrayList<>(Arrays.asList("VIP".split(", ")));
-                    log.debug("required permission list: {}", requiredPermissionList);
-                    commandPermissionList.retainAll(requiredPermissionList);
-                    log.debug("updated command permission: {}", commandPermissionList);
-
-                    if (!commandPermissionList.isEmpty()) {
-                        String reply = gpt4o.ResponseForTextAddressingToBot(newMessage.substring(13));
-                        if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
-                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
-                            GlobalReplyTimer.setTimer();
-                        } else if (event.getChannel().getName().equalsIgnoreCase(applicationContext.getBean(BotBuilderUtil.class).getTestChannelName())) {
-                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + event.getUser().getName() + " " + reply);
-                            GlobalReplyTimer.setTimer();
-                        }
-                    }
-                } else if (GlobalReplyTimer.getTimerLeft() != 0) {
-                    if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel,
-                                "@" + event.getUser().getName() + " не дудось меня AAAA (еще " + GlobalReplyTimer.getTimerLeft() + " сек)");
-
-                        Global10secCDTimer.setGlobal10secTimer();
-                    }
-                }
-
-            }
-        }
-    }
+    // replyToMessage migrated to commands/BotReplyCommand (Phase 5).
 
     // rebootBotContext (!reboot) migrated to commands/RebootCommand (Phase 5).
 

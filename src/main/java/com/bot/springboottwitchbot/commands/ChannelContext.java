@@ -1,5 +1,8 @@
 package com.bot.springboottwitchbot.commands;
 
+import com.bot.springboottwitchbot.gpt.GptBotMode;
+import com.bot.springboottwitchbot.gpt.TsyaMode;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -34,6 +37,16 @@ public interface ChannelContext {
 
     /** Times out a user (by login) for {@code seconds} with a reason, via this channel's moderation endpoint. */
     void timeoutByName(String login, int seconds, String reason) throws IOException;
+
+    /** Per-channel тся/ться nag toggle state (independent between test and main). */
+    TsyaMode getTsyaMode();
+
+    void setTsyaMode(TsyaMode mode);
+
+    /** Per-channel "bot replies to @&lt;bot&gt;" toggle state (independent between test and main). */
+    GptBotMode getGptBotMode();
+
+    void setGptBotMode(GptBotMode mode);
 
     /** Sends a chat message to this channel via the bot account (logged by the builder util). */
     void send(String message);
