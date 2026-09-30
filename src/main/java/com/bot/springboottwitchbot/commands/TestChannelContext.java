@@ -2,8 +2,11 @@ package com.bot.springboottwitchbot.commands;
 
 import com.bot.springboottwitchbot.config.BotProperties;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
+import com.bot.springboottwitchbot.utilities.UtilityCommandsTestChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /** {@link ChannelContext} for the test channel (sends via the bot account to the test channel). */
 @Component
@@ -41,6 +44,16 @@ public class TestChannelContext implements ChannelContext {
     @Override
     public String getBotAccountName() {
         return botProperties.getBotAccountName();
+    }
+
+    @Override
+    public boolean isSandbox() {
+        return true;
+    }
+
+    @Override
+    public List<String> getModerators() {
+        return UtilityCommandsTestChannel.getModeratorsList();
     }
 
     @Override

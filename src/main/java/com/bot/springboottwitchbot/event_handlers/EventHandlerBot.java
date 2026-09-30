@@ -778,15 +778,7 @@ public class EventHandlerBot {
         }
     }
 
-    @EventSubscriber
-    public void getModeratorsTest(ChannelMessageEvent event) {
-        String message = event.getMessage();
-        if (message.contains("!mods")) {
-            ArrayList<String> moderatorsList = UtilityCommandsTestChannel.getModeratorsList();
-            String fullModsList = moderatorsList.toString();
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), fullModsList);
-        }
-    }
+    // getModeratorsTest (!mods) migrated to commands/ModsCommand (Phase 5).
     @EventSubscriber
     public void getUserIdTest(ChannelMessageEvent event) {
         String message = event.getMessage();

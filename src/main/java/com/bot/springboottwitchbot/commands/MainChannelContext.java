@@ -3,8 +3,11 @@ package com.bot.springboottwitchbot.commands;
 import com.bot.springboottwitchbot.config.BotProperties;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.BotBuilderUtil;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
+import com.bot.springboottwitchbot.utilities.UtilityCommandsMainChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * {@link ChannelContext} for the main channel. Channel identity comes from {@link MainBuilderUtil},
@@ -48,6 +51,16 @@ public class MainChannelContext implements ChannelContext {
     @Override
     public String getBotAccountName() {
         return botProperties.getBotAccountName();
+    }
+
+    @Override
+    public boolean isSandbox() {
+        return false;
+    }
+
+    @Override
+    public List<String> getModerators() {
+        return UtilityCommandsMainChannel.getModeratorsList();
     }
 
     @Override

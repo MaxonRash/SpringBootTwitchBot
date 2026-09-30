@@ -1070,17 +1070,7 @@ public class EventHandlerMain {
         }
     }
 
-    @EventSubscriber
-    public void getModeratorsHappa(ChannelMessageEvent event) throws IOException {
-        String message = event.getMessage();
-        if (botProperties.isOwner(event.getUser().getName())) {
-            if (message.contains("!mods")) {
-                ArrayList<String> moderatorsList = UtilityCommandsMainChannel.getModeratorsList();
-                String fullModsList = moderatorsList.toString();
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), fullModsList);
-            }
-        }
-    }
+    // getModeratorsHappa (!mods) migrated to commands/ModsCommand (Phase 5).
 
     @EventSubscriber
     public void replyTest(ChannelMessageEvent event) {
