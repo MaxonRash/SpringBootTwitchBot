@@ -57,10 +57,7 @@ public class EventHandlerBot {
     private String firstDuelName = null;
     private String secondDuelName = null;
 
-    @EventSubscriber
-    public void printChannelMessage(ChannelMessageEvent event) {
-        log.debug("[{}]{{MyEventHandlerBot}}[{}] {}: {}", event.getChannel().getName(), event.getPermissions(), event.getUser().getName(), event.getMessage());
-    }
+    // printChannelMessage migrated to commands/MessageLoggingCommand (Phase 5).
 
     @EventSubscriber
     public void duelCommand(ChannelMessageEvent event) throws IOException {

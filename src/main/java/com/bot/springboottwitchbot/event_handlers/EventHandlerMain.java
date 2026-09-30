@@ -59,10 +59,7 @@ public class EventHandlerMain {
     @Autowired
     BotProperties botProperties;
 
-    @EventSubscriber
-    public void printChannelMessage(ChannelMessageEvent event) {
-        log.debug("[{}]{{MyEventHandlerHappa}}[{}] {}: {}", event.getChannel().getName(), event.getPermissions(), event.getUser().getName(), event.getMessage());
-    }
+    // printChannelMessage migrated to commands/MessageLoggingCommand (Phase 5).
 
     @EventSubscriber
     public void duelCommand(ChannelMessageEvent event) throws IOException {
