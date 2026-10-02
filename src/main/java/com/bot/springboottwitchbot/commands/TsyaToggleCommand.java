@@ -1,4 +1,5 @@
 package com.bot.springboottwitchbot.commands;
+import com.bot.springboottwitchbot.utilities.TwitchText;
 
 import com.bot.springboottwitchbot.gpt.TsyaMode;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
@@ -26,7 +27,7 @@ public class TsyaToggleCommand implements ChatCommand {
     public void execute(ChannelMessageEvent event, ChannelContext ctx) {
         String newMessage = event.getMessage().toLowerCase();
         if (!ctx.isSandbox()) {
-            newMessage = newMessage.replace("󠀀", "");
+            newMessage = newMessage.replace(TwitchText.INVISIBLE_TAG, "");
         }
         String user = event.getUser().getName();
         String[] splitMessage = newMessage.split(" ");

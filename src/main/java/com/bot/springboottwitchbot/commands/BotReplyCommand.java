@@ -1,4 +1,5 @@
 package com.bot.springboottwitchbot.commands;
+import com.bot.springboottwitchbot.utilities.TwitchText;
 
 import com.bot.springboottwitchbot.gpt.GptBotMode;
 import com.bot.springboottwitchbot.gpt.openai.GPT4o;
@@ -44,13 +45,13 @@ public class BotReplyCommand implements ChatCommand {
         if (ctx.getGptBotMode() != GptBotMode.ON) {
             return false;
         }
-        String newMessage = event.getMessage().toLowerCase().replace("󠀀", "");
+        String newMessage = event.getMessage().toLowerCase().replace(TwitchText.INVISIBLE_TAG, "");
         return newMessage.startsWith("@" + ctx.getBotAccountName() + " ");
     }
 
     @Override
     public void execute(ChannelMessageEvent event, ChannelContext ctx) {
-        String newMessage = event.getMessage().toLowerCase().replace("󠀀", "");
+        String newMessage = event.getMessage().toLowerCase().replace(TwitchText.INVISIBLE_TAG, "");
         String addressed = newMessage.substring(("@" + ctx.getBotAccountName() + " ").length());
         String user = event.getUser().getName();
 

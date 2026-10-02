@@ -1,4 +1,5 @@
 package com.bot.springboottwitchbot.commands;
+import com.bot.springboottwitchbot.utilities.TwitchText;
 
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ public class SLoktyaCommand implements ChatCommand {
     public void execute(ChannelMessageEvent event, ChannelContext ctx) throws Exception {
         String[] array = event.getMessage().toLowerCase().split(" ");
         List<String> arrayList = new ArrayList<>(Arrays.asList(array));
-        arrayList.remove("󠀀");
+        arrayList.remove(TwitchText.INVISIBLE_TAG);
         ctx.timeoutByName(arrayList.get(2), 30, "sLoktya");
     }
 }

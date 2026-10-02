@@ -1,4 +1,5 @@
 package com.bot.springboottwitchbot.commands;
+import com.bot.springboottwitchbot.utilities.TwitchText;
 
 import com.bot.springboottwitchbot.gpt.GptBotMode;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
@@ -23,7 +24,7 @@ public class BotReplyToggleCommand implements ChatCommand {
 
     @Override
     public void execute(ChannelMessageEvent event, ChannelContext ctx) {
-        String newMessage = event.getMessage().toLowerCase().replace("󠀀", "");
+        String newMessage = event.getMessage().toLowerCase().replace(TwitchText.INVISIBLE_TAG, "");
         String user = event.getUser().getName();
         String[] splitMessage = newMessage.split(" ");
         if (splitMessage.length > 1) {

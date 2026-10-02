@@ -1,4 +1,5 @@
 package com.bot.springboottwitchbot.commands;
+import com.bot.springboottwitchbot.utilities.TwitchText;
 
 import com.bot.springboottwitchbot.gpt.TsyaMode;
 import com.bot.springboottwitchbot.gpt.openai.GPT4o;
@@ -35,7 +36,7 @@ public class TsyaMistakeCommand implements ChatCommand {
         if (ctx.getTsyaMode() != TsyaMode.ON || GlobalTsyaTimer.getTimerLeft() != 0) {
             return false;
         }
-        String newMessage = event.getMessage().toLowerCase().replace("󠀀", "");
+        String newMessage = event.getMessage().toLowerCase().replace(TwitchText.INVISIBLE_TAG, "");
         if (!ctx.isSandbox() && newMessage.split(" ").length <= 1) {
             return false;
         }
@@ -45,7 +46,7 @@ public class TsyaMistakeCommand implements ChatCommand {
 
     @Override
     public void execute(ChannelMessageEvent event, ChannelContext ctx) {
-        String newMessage = event.getMessage().toLowerCase().replace("󠀀", "");
+        String newMessage = event.getMessage().toLowerCase().replace(TwitchText.INVISIBLE_TAG, "");
         boolean hasTsyaMistakes = gpt4o.isTextContainingTsyaMistake(newMessage);
         log.debug("ошибки с ться: {}", hasTsyaMistakes);
         if (hasTsyaMistakes) {

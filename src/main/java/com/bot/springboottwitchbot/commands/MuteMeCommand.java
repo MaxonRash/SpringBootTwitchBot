@@ -1,4 +1,5 @@
 package com.bot.springboottwitchbot.commands;
+import com.bot.springboottwitchbot.utilities.TwitchText;
 
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ public class MuteMeCommand extends CooldownCommand {
 
         String[] array = event.getMessage().toLowerCase().split(" ");
         List<String> arrayList = new ArrayList<>(Arrays.asList(array));
-        arrayList.remove("󠀀");
+        arrayList.remove(TwitchText.INVISIBLE_TAG);
 
         if (ctx.getModerators().contains(firstNick)) {
             ctx.send("@" + firstNick + " А жареных гвоздей не хочешь? PETTHEMODS");

@@ -1,4 +1,5 @@
 package com.bot.springboottwitchbot.event_handlers;
+import com.bot.springboottwitchbot.utilities.TwitchText;
 
 
 import com.bot.springboottwitchbot.ApplicationContextProvider;
@@ -65,7 +66,7 @@ public class EventHandlerBot {
 
         String[] array = newMessage.split(" ");
         ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(array));
-        arrayList.remove("\udb40\udc00");
+        arrayList.remove(TwitchText.INVISIBLE_TAG);
 
         if (newMessage.toLowerCase().startsWith("!duel") && (arrayList.size() > 1)) {
 
@@ -181,7 +182,7 @@ public class EventHandlerBot {
 
         String[] array = newMessage.split(" ");
         ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(array));
-        arrayList.remove("\udb40\udc00");
+        arrayList.remove(TwitchText.INVISIBLE_TAG);
 
         if (newMessage.toLowerCase().startsWith("!kill") && (arrayList.size() > 1) && (GlobalKillTimer.killCooldownTimer == null)) {
             String firstNick = event.getUser().getName().toLowerCase();
@@ -309,7 +310,7 @@ public class EventHandlerBot {
 
         String[] array = newMessage.split(" ");
         ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(array));
-        arrayList.remove("\udb40\udc00");
+        arrayList.remove(TwitchText.INVISIBLE_TAG);
 
         if (newMessage.toLowerCase().startsWith("!reset") && (arrayList.size() > 1) && (arrayList.get(1).equals("kill"))) {
             String commandPermissionString = event.getPermissions().toString();
@@ -585,165 +586,7 @@ public class EventHandlerBot {
 
     // checkTodayDOBs (!чек др) migrated to commands/CheckBirthdaysCommand (Phase 5).
 
-    @EventSubscriber
-    public void UserDOBTest(ChannelMessageEvent event) throws IOException, ParseException {
-        String message = event.getMessage().toLowerCase();
-        message = message.replace("\udb40\udc00", "");
-        if (message.startsWith("!др ")) {
-            ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(message.split(" ")));
-            arrayList.remove("\udb40\udc00");
-            if (arrayList.size() > 1) {
-                User checkUser = usersService.findOne(event.getUser().getName());
-                if (checkUser == null) {
-                    checkUser = UsersResponseToUserConverter.ConvertUserFromDTO(UtilityCommandsGlobal.getUserDTOByName(event.getUser().getName()));
-                    checkUser.setFollowingSince(UtilityCommandsMainChannel.getFollowingSinceDate(
-                            Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
-//                    checkUser.setFollowingSince(UtilityCommandsTestChannel.getFollowingSinceDate(
-//                            Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
-                    usersService.save(checkUser);
-                }
-                if (checkUser.getFollowingSince() == null) {
-                    checkUser.setFollowingSince(UtilityCommandsMainChannel.getFollowingSinceDate(
-                            Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
-//                    checkUser.setFollowingSince(UtilityCommandsTestChannel.getFollowingSinceDate(
-//                            Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName())))));
-                    usersService.save(checkUser);
-                    if (checkUser.getFollowingSince() == null) {
-                        if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                            applicationContext.getBean(BotBuilderUtil.class).sendMessage("maximuz666", "@" + event.getUser().getName() + " нужно быть фолловером больше, чем"
-                                            + " 6 месяцев.");
-                            Global10secCDTimer.setGlobal10secTimer();
-                        }
-                    }
-                }
-                if(checkUser.getFollowingSince() != null) {
-                    if (UtilityDOB.CheckIfFollowIsMoreThan6Months(new Date(), checkUser.getFollowingSince())) {
-                        if (checkUser.getDateOfBirth() == null) {
-                            String originalDOB = arrayList.get(1);
-                            String DOB;
-                            Date DOBDate;
-                            if (originalDOB.matches("(0[1-9]|[1-2]\\d|3[01])[/.-](1[0-2]|0[1-9])[/.-](19[6-9]\\d|20[0-1]\\d)")) {
-                                originalDOB = originalDOB.replaceAll("\\.", "/");
-                                originalDOB = originalDOB.replaceAll("-", "/");
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                                DOB = originalDOB;
-                                DOBDate = sdf.parse(DOB);
-                            } else if (originalDOB.matches("(0[1-9]|[1-2]\\d|3[01])[/.-](1[0-2]|0[1-9])")) {
-                                originalDOB = originalDOB.replaceAll("\\.", "/");
-                                originalDOB = originalDOB.replaceAll("-", "/");
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                                DOB = originalDOB + "/1900";
-                                DOBDate = sdf.parse(DOB);
-                            } else {
-                                DOBDate = null;
-                                if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                                    applicationContext.getBean(BotBuilderUtil.class).sendMessage("maximuz666", "@" + event.getUser().getName() + " Формат даты должен быть таким: "
-                                                    + "день/месяц/год или день/месяц . С лидирующими нолями в дне и месяце");
-                                    Global10secCDTimer.setGlobal10secTimer();
-                                }
-                            }
-                            if (DOBDate != null) {
-                                checkUser.setDateOfBirth(DOBDate);
-                                usersService.save(checkUser);
-                                int dice = (int) (Math.random() * 2) + 1;
-                                if (dice == 1) {
-                                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " pepeNoted");
-                                }
-                                else if (dice == 2) {
-                                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " HmmNotes");
-                                }
-                            }
-                        } else {
-                            if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                                applicationContext.getBean(BotBuilderUtil.class).sendMessage("maximuz666", "@" + event.getUser().getName() + " нельзя менять ДР DansGame");
-                                Global10secCDTimer.setGlobal10secTimer();
-                            }
-                        }
-                    }
-                    else {
-                        if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                            applicationContext.getBean(BotBuilderUtil.class).sendMessage("maximuz666", "@" + event.getUser().getName() + " нужно быть фолловером больше, чем"
-                                            + " 6 месяцев.");
-                            Global10secCDTimer.setGlobal10secTimer();
-                        }
-                    }
-                }
-            }
-//            else {
-//                if (Global10secCDTimer.getGlobal10secTimer() == null) {
-//                    Locale ruLocale = new Locale("ru", "RU");
-//                    SimpleDateFormat simpleDateFormatWithoutYear = new SimpleDateFormat("dd MMMM", ruLocale);
-//                    SimpleDateFormat simpleDateFormatWithYear = new SimpleDateFormat("dd MMMM yyyy", ruLocale);
-//                    User user = usersService.findOne(event.getUser().getName());
-//                    if (user != null) {
-//                        if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() == 0) {
-//                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-//                                    .getChat().sendMessage(event.getChannel().getName(), simpleDateFormatWithoutYear.format(user.getDateOfBirth()));
-//                        } else if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() != 0) {
-//                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-//                                    .getChat().sendMessage(event.getChannel().getName(), simpleDateFormatWithYear.format(user.getDateOfBirth()));
-//                        } else {
-//                            applicationContext.getBean(BotBuilderUtil.class).getTwitchClientBot()
-//                                    .getChat().sendMessage(event.getChannel().getName(), "День рождения не установлен");
-//                        }
-//                    } else {
-//                        System.out.println("такого юзера нет: " + event.getUser().getName());
-//                    }
-//                    Global10secCDTimer.setGlobal10secTimer();
-//                }
-//            }
-
-        }
-        else if (message.equals("!др")) {
-            if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                Locale ruLocale = new Locale("ru", "RU");
-                SimpleDateFormat simpleDateFormatWithoutYear = new SimpleDateFormat("dd MMMM", ruLocale);
-                SimpleDateFormat simpleDateFormatWithYear = new SimpleDateFormat("dd MMMM yyyy", ruLocale);
-                User user = usersService.findOne(event.getUser().getName());
-                if (user != null) {
-                    String messageToDOB = "";
-                    long daysBetween= 0;
-                    if (user.getDateOfBirth() != null) {
-                        Date todayDate = new Date();
-                        LocalDate currentDate = LocalDate.ofInstant(todayDate.toInstant(), ZoneId.systemDefault()).withYear(1900);
-                        Date userDateFromDB = user.getDateOfBirth();
-                        LocalDate userDate = Instant.ofEpochMilli(userDateFromDB.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
-                        LocalDate userDateUpdated;
-                        if (userDate.getMonth().getValue() < currentDate.getMonth().getValue()) {
-                            userDateUpdated = userDate.withYear(1901);
-                        } else {
-                            userDateUpdated = userDate.withYear(1900);
-                        }
-                        daysBetween = DAYS.between(currentDate, userDateUpdated);
-                        messageToDOB = ", ещё " + daysBetween + " дней!";
-                        if (String.valueOf(daysBetween).startsWith("-")) {
-                            messageToDOB = ", был всего " + String.valueOf(daysBetween).substring(1) + " дней назад Kappa";
-                        }
-                        if (daysBetween == 0) {
-                            messageToDOB = ", это же сегодня! Pog";
-                        }
-                    }
-                    if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() == 0) {
-                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithoutYear.format(user.getDateOfBirth())
-                                + messageToDOB);
-                    } else if (user.getDateOfBirth() != null && user.getDateOfBirth().getYear() != 0) {
-                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " " + simpleDateFormatWithYear.format(user.getDateOfBirth())
-                                + messageToDOB);
-                    } else {
-                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " День рождения не установлен");
-                    }
-                } else {
-                    if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
-                                        + " сначала добавь командой !др день/месяц/год или день/месяц . С лидирующими нолями в дне и месяце");
-                        log.debug("такого юзера нет: {}", event.getUser().getName());
-                        Global10secCDTimer.setGlobal10secTimer();
-                    }
-                }
-                Global10secCDTimer.setGlobal10secTimer();
-            }
-        }
-    }
+    // UserDOBTest (!др) migrated to commands/BirthdayCommand (Phase 5).
 
     @EventSubscriber
     public void timeoutHappaTest(ChannelMessageEvent event) {
@@ -804,7 +647,7 @@ public class EventHandlerBot {
     public void timeoutForMat(ChannelMessageEvent event) {
 //    String newMessage = event.getMessage();
         String newMessage = event.getMessage().toLowerCase();
-        newMessage = newMessage.replace("\udb40\udc00", "");
+        newMessage = newMessage.replace(TwitchText.INVISIBLE_TAG, "");
         newMessage = newMessage.replaceAll("(.)\\1+", "$1");
         String trimmedNewMessage = newMessage.replace(" ", "");
 //        String newMessage = message.replaceAll("\\s", "").toLowerCase();
@@ -902,7 +745,7 @@ public class EventHandlerBot {
     @EventSubscriber
     public void testGettingAIMToken(ChannelMessageEvent event) {
         String newMessage = event.getMessage().toLowerCase();
-        newMessage = newMessage.replace("\udb40\udc00", "");
+        newMessage = newMessage.replace(TwitchText.INVISIBLE_TAG, "");
 
         if ( (botProperties.isOwner(event.getUser().getName())) && (newMessage.toLowerCase().startsWith("!yagpt_test")) ) {
             applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(),
