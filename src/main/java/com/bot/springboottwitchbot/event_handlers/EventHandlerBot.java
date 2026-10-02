@@ -583,31 +583,7 @@ public class EventHandlerBot {
         }
     }
 
-    @EventSubscriber
-    public void checkTodayDOBs(ChannelMessageEvent event) {
-        String message = event.getMessage().toLowerCase();
-        ArrayList<String> moderatorsList = UtilityCommandsMainChannel.getModeratorsList();
-        if (message.contains("!чек др") && (event.getUser().getName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()) || botProperties.isOwner(event.getUser().getName())
-        || botProperties.isModerator(event.getUser().getName()) || moderatorsList.contains(event.getUser().getName()))) {
-            if (UtilityDOB.listOfUsersWithDOB.isEmpty()) {
-                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня ни у кого нет ДР FeelsBadMan");
-            }
-            else if (UtilityDOB.listOfUsersWithDOB.size() == 1) {
-                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня у " + UtilityDOB.listOfUsersWithDOB.get(0)
-                                + " день рождения! " + "@" + UtilityDOB.listOfUsersWithDOB.get(0) + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan "
-                                + "PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
-            }
-            else {
-                StringBuilder sb = new StringBuilder();
-                for (String login : UtilityDOB.listOfUsersWithDOB) {
-                    sb.append("@").append(login).append(" ");
-                }
-                String allUsersWithDOB = sb.toString().trim();
-                ApplicationContextProvider.getApplicationContext().getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() + " Сегодня у этих прекрасных людей дни рождения! "
-                                + allUsersWithDOB + " PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan PJSalt FeelsBirthdayMan");
-            }
-        }
-    }
+    // checkTodayDOBs (!чек др) migrated to commands/CheckBirthdaysCommand (Phase 5).
 
     @EventSubscriber
     public void UserDOBTest(ChannelMessageEvent event) throws IOException, ParseException {
