@@ -117,78 +117,21 @@ public class EventHandlerBot {
     // badWordMessage (test-only) migrated to commands/BadWordTestCommand (Phase 5).
 
     // getModeratorsTest (!mods) migrated to commands/ModsCommand (Phase 5).
-    @EventSubscriber
-    public void getUserIdTest(ChannelMessageEvent event) {
-        String message = event.getMessage();
-        if (message.contains("!test")) {
-            try {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage("maximuz666", "new bot: " + UtilityCommandsGlobal.getUserIdByName("maximuz666"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    // getUserIdTest (!test) migrated to commands/UserIdTestCommand (Phase 5).
 
-    }
+    // vipUser (!vip) migrated to commands/VipUserTestCommand (Phase 5).
 
-    @EventSubscriber
-    public void vipUser(ChannelMessageEvent event) throws IOException {
-        String message = event.getMessage();
-        if (message.contains("!vip")) {
-            UtilityCommandsTestChannel.vipUser(message.split(" ")[1]);
-        }
-    }
+    // followedSinceTest (!follow) migrated to commands/FollowSinceTestCommand (Phase 5).
 
-    @EventSubscriber
-    public void followedSinceTest(ChannelMessageEvent event) throws IOException, ParseException {
-        String message = event.getMessage();
-        if (message.contains("!follow")) {
-            User user = usersService.findOne("winretkristin");
-            Date followingSince = UtilityCommandsTestChannel.getFollowingSinceDate(137335434);
-            user.setFollowingSince(followingSince);
-            usersService.save(user);
-        }
-    }
-
-    @EventSubscriber
-    public void BobFollowTest(ChannelMessageEvent event) throws IOException, ParseException {
-        String message = event.getMessage();
-        if (message.contains("!checkfollow")) {
-            Date date = UtilityCommandsTestChannel.getFollowingSinceDate(Integer.parseInt(Objects.requireNonNull(UtilityCommandsGlobal.getUserIdByName(event.getUser().getName()))));
-//            User user = usersService.findOne("steyro");
-            if (date != null) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage("maximuz666", date.toString());
-            }
-            else {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage("maximuz666", "TI NE FOLLOWER");
-            }
-        }
-    }
+    // BobFollowTest (!checkfollow) migrated to commands/CheckFollowTestCommand (Phase 5).
 
     // checkTodayDOBs (!чек др) migrated to commands/CheckBirthdaysCommand (Phase 5).
 
     // UserDOBTest (!др) migrated to commands/BirthdayCommand (Phase 5).
 
-    @EventSubscriber
-    public void timeoutHappaTest(ChannelMessageEvent event) {
-        String message = event.getMessage();
-        try {
-            if (message.contains("!emotetest")) {
-                UtilityCommandsTestChannel.emoteOnlyMode(true);
-            }
-        } catch (IOException e) {
-            log.error("timeoutHappaTest failed", e);
-        }
-    }
+    // timeoutHappaTest (!emotetest) migrated to commands/EmoteTestCommand (Phase 5).
 
-    @EventSubscriber
-    public void checkIfUserIsBanned(ChannelMessageEvent event) {
-        String message = event.getMessage();
-            if (message.contains("!checkbanned")) {
-                boolean isBanned = UtilityCommandsTestChannel.isBannedUser("72903124");
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
-                                + " " + isBanned);
-            }
-    }
+    // checkIfUserIsBanned (!checkbanned) migrated to commands/CheckBannedTestCommand (Phase 5).
 //
 //    @EventSubscriber
 //    public void duelCooldownTest(ChannelMessageEvent event) {
@@ -322,16 +265,5 @@ public class EventHandlerBot {
     // rebootBotContext (!reboot) migrated to commands/RebootCommand (Phase 5).
 
 
-    @EventSubscriber
-    public void testGettingAIMToken(ChannelMessageEvent event) {
-        String newMessage = event.getMessage().toLowerCase();
-        newMessage = newMessage.replace(TwitchText.INVISIBLE_TAG, "");
-
-        if ( (botProperties.isOwner(event.getUser().getName())) && (newMessage.toLowerCase().startsWith("!yagpt_test")) ) {
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(),
-                    "@" + event.getUser().getName() + " testing...");
-//            yandexGPT.isTextContainingBadWord("кароче слушай сюда, мудень, я знаю, что ты говноед, из тебя хреновый писатель, жопный ты человек, да и вообще херовый пиздец блять");
-            yandexGPT.isTextContainingBadWord("пиздец");
-        }
-    }
+    // testGettingAIMToken (!yagpt_test) migrated to commands/YaGptTestCommand (Phase 5).
 }

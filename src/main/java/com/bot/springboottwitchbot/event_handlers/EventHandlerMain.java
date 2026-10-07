@@ -121,27 +121,8 @@ public class EventHandlerMain {
 
     // getModeratorsHappa (!mods) migrated to commands/ModsCommand (Phase 5).
 
-    @EventSubscriber
-    public void replyTest(ChannelMessageEvent event) {
-        if (botProperties.isOwner(event.getUser().getName())) {
-            if (event.getMessage().toLowerCase().contains("!rep1ly")) {
-//                twitchClientHappa.getChat().sendMessage(event.getChannel().getName(), "ku");
-                applicationContext.getBean(MainBuilderUtil.class).sendMessage(event.getChannel().getName(), "ku");
-            }
-        }
-    }
-    @EventSubscriber
-    public void vipAndUnVipTest(ChannelMessageEvent event) {
-        if (botProperties.isOwner(event.getUser().getName()) && event.getMessage().contains("!viptest")) {
-            try {
-                UtilityCommandsMainChannel.vipUser("steyro");
-                Thread.sleep(5000);
-                UtilityCommandsMainChannel.unVipUser("steyro");
-            } catch (Exception e) {
-                log.error("vipAndUnVipTest failed", e);
-            }
-        }
-    }
+    // replyTest (!rep1ly) migrated to commands/ReplyTestCommand (Phase 5).
+    // vipAndUnVipTest (!viptest) migrated to commands/VipUnvipTestCommand (Phase 5).
 //
 //    @EventSubscriber
 //    public void getSubNotificationTest(ChannelMessageEvent event) {
@@ -154,20 +135,7 @@ public class EventHandlerMain {
 //        }
 //    }
 //
-    @EventSubscriber
-    public void timeoutMainTest(ChannelMessageEvent event) {
-        if (botProperties.isOwner(event.getUser().getName())) {
-            String message = event.getMessage();
-            try {
-                if (message.contains("!time1outnewtest")) {
-                    UtilityCommandsMainChannel.timeoutUser(applicationContext.getBean(BotBuilderUtil.class).getTestChannelId(), 10, "no reason");
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "new request sent");
-                }
-            } catch (IOException e) {
-                log.error("timeoutMainTest failed", e);
-            }
-        }
-    }
+    // timeoutMainTest (!time1outnewtest) migrated to commands/TimeoutMainTestCommand (Phase 5).
 //
 //    @EventSubscriber
 //    public void duelCooldownTest(ChannelMessageEvent event) {
