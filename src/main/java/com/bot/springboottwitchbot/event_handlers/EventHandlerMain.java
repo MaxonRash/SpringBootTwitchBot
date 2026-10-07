@@ -78,102 +78,13 @@ public class EventHandlerMain {
     //_______________________________________________________________________________________________________________________________
     //_______________________________________________________________________________________________________________________________
 
-    @EventSubscriber
-    public void getSubNotification(ChannelSubscribeEvent event) {
-//        System.out.println(event.getData().getDisplayName());
-//        SubscriptionPlan subscriptionPlan = event.getTier();
-//        subscriptionPlan.
+    // getSubNotification (ChannelSubscribeEvent) migrated to commands/PubSubEventDispatcher (Phase 5).
 
-        SubscriptionData subscriptionData = event.getData();
-        log.info("Sub note Works");
-        if(subscriptionData.getDisplayName().equalsIgnoreCase(applicationContext.getBean(MainBuilderUtil.class).getMainChannelName())) {
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(subscriptionData.getChannelName(), "@" + applicationContext.getBean(MainBuilderUtil.class).getMainChannelName()
-                    + " найс катаешь Kappa");
-        }
-        else {
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(subscriptionData.getChannelName(), "@" + subscriptionData.getDisplayName() +
-                    " peepoClap peepoClap peepoClap peepoClap");
-        }
-    }
+    // emoteOnlyForPoints reward migrated to commands/EmoteOnlyRewardCommand (Phase 5).
 
-    @EventSubscriber
-    public void emoteOnlyForPoints(RewardRedeemedEvent event) throws IOException {
-        ChannelPointsRedemption rewardRedeemedEvent = event.getRedemption();
-        ChannelPointsReward channelPointsReward = rewardRedeemedEvent.getReward();
-        log.debug("channel points reward: {}", channelPointsReward);
-//        System.out.println(channelPointsReward.getId());
-//        System.out.println(channelPointsReward.getPrompt());
-//        System.out.println(channelPointsReward.getTitle());
+    // vipUserForPoints reward migrated to commands/VipRewardCommand (Phase 5).
 
-//        if (channelPointsReward.getTitle().equalsIgnoreCase("emotemode")) {
-//            UtilityCommandsMainChannel.emoteOnlyModeOn();
-//        }
-        String title = channelPointsReward.getTitle().toLowerCase();
-//        System.out.println("title: " + title);
-
-
-        if (title.equalsIgnoreCase("ЕMОTЕMОDЕ")) {
-//            System.out.println("if to emotemode works");
-            UtilityCommandsMainChannel.emoteOnlyMode(true);
-            Thread emoteOffTimer = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(300 * 1000L);
-                        UtilityCommandsMainChannel.emoteOnlyMode(false);
-                    } catch (InterruptedException | IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            };
-            emoteOffTimer.start();
-        }
-    }
-
-    @EventSubscriber
-    public void vipUserForPoints(RewardRedeemedEvent event) throws IOException {
-        ChannelPointsRedemption rewardRedeemedEvent = event.getRedemption();
-        ChannelPointsReward channelPointsReward = rewardRedeemedEvent.getReward();
-
-        log.debug("channel points reward: {}", channelPointsReward);
-
-        String title = channelPointsReward.getTitle().toLowerCase();
-        if (title.equalsIgnoreCase("Я персона VIP VIP")) {
-//            System.out.println("if to vipUser works");
-            String userLogin = rewardRedeemedEvent.getUser().getLogin();
-            UtilityCommandsMainChannel.vipUser(userLogin);
-            Thread unVIPTimer = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(86400 * 1000L);
-                        UtilityCommandsMainChannel.unVipUser(userLogin);
-                    } catch (InterruptedException | IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            };
-            unVIPTimer.start();
-        }
-    }
-
-    @EventSubscriber
-    public void timeoutUserForPoints(RewardRedeemedEvent event) throws IOException {
-        ChannelPointsRedemption rewardRedeemedEvent = event.getRedemption();
-        ChannelPointsReward channelPointsReward = rewardRedeemedEvent.getReward();
-
-        log.debug("channel points reward: {}", channelPointsReward);
-
-        String title = channelPointsReward.getTitle().toLowerCase();
-        if (title.equalsIgnoreCase("ТАЙМАЧ БРАТУЗЕ!")) {
-//            System.out.println("if to timeoutUserForPoints works");
-            String userToTimeout = rewardRedeemedEvent.getUserInput().split(" ")[0];
-            if(userToTimeout.startsWith("@")) {
-                userToTimeout = userToTimeout.substring(1);
-            }
-            UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(userToTimeout), 180, "Timeout for points");
-        }
-    }
+    // timeoutUserForPoints reward migrated to commands/TimeoutRewardCommand (Phase 5).
 
     // checkTodayDOBs (!чек др) migrated to commands/CheckBirthdaysCommand (Phase 5).
 
@@ -250,19 +161,7 @@ public class EventHandlerMain {
     //_______________________________________________________________________________________________________________________________
     //_______________________________________________________________________________________________________________________________
 
-    @EventSubscriber
-    public void TestForPoints(RewardRedeemedEvent event) throws IOException {
-        ChannelPointsRedemption rewardRedeemedEvent = event.getRedemption();
-        ChannelPointsReward channelPointsReward = rewardRedeemedEvent.getReward();
-
-        log.debug("channel points reward: {}", channelPointsReward);
-
-        String title = channelPointsReward.getTitle().toLowerCase();
-        if (title.equalsIgnoreCase("-1000") && botProperties.isOwner(rewardRedeemedEvent.getUser().getDisplayName())) {
-//            System.out.println("if to timeoutUserForPoints works");
-            UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName("steyro"), 10, "Timeout for points test");
-        }
-    }
+    // TestForPoints reward migrated to commands/TestRewardCommand (Phase 5).
 
     @EventSubscriber
     public void emoteModeMessage(ChannelMessageEvent event) throws InterruptedException, JsonProcessingException {

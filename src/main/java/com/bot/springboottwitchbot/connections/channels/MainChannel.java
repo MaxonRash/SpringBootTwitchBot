@@ -3,6 +3,8 @@ package com.bot.springboottwitchbot.connections.channels;
 import com.bot.springboottwitchbot.commands.ChatCommand;
 import com.bot.springboottwitchbot.commands.ChatEventDispatcher;
 import com.bot.springboottwitchbot.commands.MainChannelContext;
+import com.bot.springboottwitchbot.commands.PubSubEventDispatcher;
+import com.bot.springboottwitchbot.commands.RewardCommand;
 import com.bot.springboottwitchbot.connections.channels.builder_utils.MainBuilderUtil;
 import com.bot.springboottwitchbot.connections.channel_connections.ChannelConnection;
 import com.bot.springboottwitchbot.event_handlers.EventHandlerMain;
@@ -18,14 +20,17 @@ public class MainChannel implements ChannelConnection {
     private final MainBuilderUtil mainBuilderUtil;
     private final EventHandlerMain eventHandlerMain;
     private final List<ChatCommand> chatCommands;
+    private final List<RewardCommand> rewardCommands;
     private final MainChannelContext mainChannelContext;
 
     @Autowired
     public MainChannel(MainBuilderUtil mainBuilderUtil, EventHandlerMain eventHandlerMain,
-                       List<ChatCommand> chatCommands, MainChannelContext mainChannelContext) {
+                       List<ChatCommand> chatCommands, List<RewardCommand> rewardCommands,
+                       MainChannelContext mainChannelContext) {
         this.mainBuilderUtil = mainBuilderUtil;
         this.eventHandlerMain = eventHandlerMain;
         this.chatCommands = chatCommands;
+        this.rewardCommands = rewardCommands;
         this.mainChannelContext = mainChannelContext;
     }
 
@@ -38,6 +43,9 @@ public class MainChannel implements ChannelConnection {
         eventManagerMain.getEventHandler(SimpleEventHandler.class).registerListener(eventHandlerMain);
         eventManagerMain.getEventHandler(SimpleEventHandler.class)
                 .registerListener(new ChatEventDispatcher(chatCommands, mainChannelContext));
+        // PubSub reward/subscribe events are main-only (test never subscribes to these topics).
+        eventManagerMain.getEventHandler(SimpleEventHandler.class)
+                .registerListener(new PubSubEventDispatcher(rewardCommands, mainChannelContext));
         mainBuilderUtil.getTwitchClientMain().getPubSub()
                 .listenForSubscriptionEvents(mainBuilderUtil.getCredentialMain(), mainBuilderUtil.getMainChannelId());
         mainBuilderUtil.getTwitchClientMain().getPubSub()
