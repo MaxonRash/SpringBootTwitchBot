@@ -103,53 +103,7 @@ public class EventHandlerMain {
     //TODO change timeouts from test to real ones
     // spamMessagesCommand fully migrated to commands/ (Phase 5): nick, slot, drops, queue, mute, trigger words, pastas, sudoku, !с локтя.
 
-    @EventSubscriber
-    public void badMessagesBanCommand(ChannelMessageEvent event) throws IOException {
-        String newMessage = event.getMessage();
-
-        if (newMessage.contains("⣿⣿⣿") || newMessage.contains("░░░") || newMessage.contains("███")) {
-            String firstNick = event.getUser().getName();
-
-            String commandPermissionString = event.getPermissions().toString();
-            commandPermissionString = commandPermissionString.substring(1);
-            commandPermissionString = commandPermissionString.substring(0, commandPermissionString.lastIndexOf("]"));
-            ArrayList<String> commandPermissionList = new ArrayList<>(Arrays.asList(commandPermissionString.split(",")));
-
-            ArrayList<String> commandPermissionList1 = new ArrayList<>(commandPermissionList);
-            ArrayList<String> requiredPermissionList1 = new ArrayList<>(Arrays.asList("VIP, MODERATOR, BROADCASTER".split(",")));
-
-            ArrayList<String> commandPermissionList2 = new ArrayList<>(commandPermissionList);
-            ArrayList<String> requiredPermissionList2 = new ArrayList<>(Arrays.asList("PARTNER, SUBSCRIBER, FOUNDER, SUBGIFTER".split(",")));
-
-            commandPermissionList1.retainAll(requiredPermissionList1);
-            commandPermissionList2.retainAll(requiredPermissionList2);
-
-            if (!commandPermissionList1.isEmpty()) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
-                        " Стыдно, товарищ!");
-            }
-            else if (!commandPermissionList2.isEmpty()) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " бан 10 мин за гуся и прочую ересь. Одумайся, уважаемый на канале чел!");
-                UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 600, "kaban_i_gus");
-            }
-            else {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " бан на 11 дней за гуся и прочую ересь.");
-                //TODO change to 999999
-                UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 999999, "kaban_i_gus");
-            }
-        }
-        if (newMessage.contains("Ỏ")) {
-            String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                    + " таймач сутки за хрень на пол чата");
-            //TODO change to 86400 - sutki
-            UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstNick), 86400, "polChataHren");
-        }
-
-
-    }
+    // badMessagesBanCommand (ASCII-art ban) migrated to commands/BadMessageBanCommand (Phase 5).
 
 
     //_______________________________________________________________________________________________________________________________
@@ -163,16 +117,7 @@ public class EventHandlerMain {
 
     // TestForPoints reward migrated to commands/TestRewardCommand (Phase 5).
 
-    @EventSubscriber
-    public void emoteModeMessage(ChannelMessageEvent event) throws InterruptedException, JsonProcessingException {
-        if (botProperties.isOwner(event.getUser().getName())) {
-            if (event.getMessage().toLowerCase().contains("!emotemodetest")) {
-                UtilityCommandsMainChannel.emoteOnlyMode(true);
-                Thread.sleep(7000);
-                UtilityCommandsMainChannel.emoteOnlyMode(false);
-            }
-        }
-    }
+    // emoteModeMessage (!emotemodetest) migrated to commands/EmoteModeTestCommand (Phase 5).
 
     // getModeratorsHappa (!mods) migrated to commands/ModsCommand (Phase 5).
 

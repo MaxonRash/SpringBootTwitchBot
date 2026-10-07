@@ -80,53 +80,7 @@ public class EventHandlerBot {
     //TODO change timeouts from test to real ones
     // spamMessagesCommand fully migrated to commands/ (Phase 5): nick, slot, drops, queue, mute, trigger words, pastas, sudoku, !с локтя.
 
-    @EventSubscriber
-    public void badMessagesBanCommand(ChannelMessageEvent event) throws IOException {
-        String newMessage = event.getMessage();
-
-        if (newMessage.contains("⣿⣿⣿") || newMessage.contains("░░░") || newMessage.contains("███")) {
-            String firstNick = event.getUser().getName();
-
-            String commandPermissionString = event.getPermissions().toString();
-            commandPermissionString = commandPermissionString.substring(1);
-            commandPermissionString = commandPermissionString.substring(0, commandPermissionString.lastIndexOf("]"));
-            ArrayList<String> commandPermissionList = new ArrayList<>(Arrays.asList(commandPermissionString.split(",")));
-
-            ArrayList<String> commandPermissionList1 = new ArrayList<>(commandPermissionList);
-            ArrayList<String> requiredPermissionList1 = new ArrayList<>(Arrays.asList("VIP, MODERATOR, BROADCASTER".split(",")));
-
-            ArrayList<String> commandPermissionList2 = new ArrayList<>(commandPermissionList);
-            ArrayList<String> requiredPermissionList2 = new ArrayList<>(Arrays.asList("PARTNER, SUBSCRIBER, FOUNDER, SUBGIFTER".split(",")));
-
-            commandPermissionList1.retainAll(requiredPermissionList1);
-            commandPermissionList2.retainAll(requiredPermissionList2);
-
-            if (!commandPermissionList1.isEmpty()) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName() +
-                        " Стыдно, товарищ!");
-            }
-            else if (!commandPermissionList2.isEmpty()) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " бан 10 мин за гуся и прочую ересь. Одумайся, уважаемый на канале чел!");
-                UtilityCommandsTestChannel.timeoutUserTest(UtilityCommandsGlobal.getUserIdByName(firstNick), 10, "kaban_i_gus");
-            }
-            else {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                        + " бан на 11 дней за гуся и прочую ересь.");
-                //TODO change to 999999
-                UtilityCommandsTestChannel.timeoutUserTest(UtilityCommandsGlobal.getUserIdByName(firstNick), 10, "kaban_i_gus");
-            }
-        }
-        if (newMessage.contains("Ỏ")) {
-            String firstNick = event.getUser().getName();
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstNick
-                    + " таймач сутки за хрень на пол чата");
-            //TODO change to 86400 - sutki
-            UtilityCommandsTestChannel.timeoutUserTest(UtilityCommandsGlobal.getUserIdByName(firstNick), 10, "polChataHren");
-        }
-
-
-    }
+    // badMessagesBanCommand (ASCII-art ban) migrated to commands/BadMessageBanCommand (Phase 5).
 //
 //    //_______________________________________________________________________________________________________________________________
 //    //_______________________________________________________________________________________________________________________________
@@ -160,14 +114,7 @@ public class EventHandlerBot {
 ////        }
 ////    }
 //
-    @EventSubscriber
-    public void badWordMessage(ChannelMessageEvent event) throws IOException {
-        String message = event.getMessage();
-        if (message.contains("badword") || message.contains("фыва")) {
-            UtilityCommandsTestChannel.timeoutUserTest("72903124", 10, "test");
-            applicationContext.getBean(BotBuilderUtil.class).sendMessage("maximuz666", "new Bot: That was a bad word");
-        }
-    }
+    // badWordMessage (test-only) migrated to commands/BadWordTestCommand (Phase 5).
 
     // getModeratorsTest (!mods) migrated to commands/ModsCommand (Phase 5).
     @EventSubscriber
