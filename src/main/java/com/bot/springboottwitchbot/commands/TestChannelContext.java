@@ -70,6 +70,11 @@ public class TestChannelContext implements ChannelContext {
     }
 
     @Override
+    public void timeoutById(String userId, int seconds, String reason) throws IOException {
+        UtilityCommandsTestChannel.timeoutUserTest(userId, seconds, reason);
+    }
+
+    @Override
     public TsyaMode getTsyaMode() {
         return tsyaMode;
     }

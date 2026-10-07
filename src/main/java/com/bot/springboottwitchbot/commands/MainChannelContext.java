@@ -77,6 +77,11 @@ public class MainChannelContext implements ChannelContext {
     }
 
     @Override
+    public void timeoutById(String userId, int seconds, String reason) throws IOException {
+        UtilityCommandsMainChannel.timeoutUser(userId, seconds, reason);
+    }
+
+    @Override
     public TsyaMode getTsyaMode() {
         return tsyaMode;
     }

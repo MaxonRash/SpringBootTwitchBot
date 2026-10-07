@@ -38,6 +38,9 @@ public interface ChannelContext {
     /** Times out a user (by login) for {@code seconds} with a reason, via this channel's moderation endpoint. */
     void timeoutByName(String login, int seconds, String reason) throws IOException;
 
+    /** Times out a user (by Twitch user id) for {@code seconds} with a reason, via this channel's moderation endpoint. */
+    void timeoutById(String userId, int seconds, String reason) throws IOException;
+
     /** Per-channel тся/ться nag toggle state (independent between test and main). */
     TsyaMode getTsyaMode();
 
