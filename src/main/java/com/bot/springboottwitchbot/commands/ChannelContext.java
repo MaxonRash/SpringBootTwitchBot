@@ -51,6 +51,11 @@ public interface ChannelContext {
     /** Per-channel pending-duel state (independent between test and main). */
     DuelState getDuelState();
 
+    /** Per-channel Russian-roulette lobby: the gathering players, or null when no round is open. */
+    List<String> getRoulettePlayers();
+
+    void setRoulettePlayers(List<String> players);
+
     /** Sends a chat message to this channel via the bot account (logged by the builder util). */
     void send(String message);
 }

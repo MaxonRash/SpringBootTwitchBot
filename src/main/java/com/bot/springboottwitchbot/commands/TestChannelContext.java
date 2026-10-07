@@ -21,6 +21,7 @@ public class TestChannelContext implements ChannelContext {
     private TsyaMode tsyaMode = TsyaMode.OFF;
     private GptBotMode gptBotMode = GptBotMode.ON;
     private final DuelState duelState = new DuelState();
+    private List<String> roulettePlayers = null;
 
     @Autowired
     public TestChannelContext(BotBuilderUtil botBuilderUtil, BotProperties botProperties) {
@@ -91,6 +92,16 @@ public class TestChannelContext implements ChannelContext {
     @Override
     public DuelState getDuelState() {
         return duelState;
+    }
+
+    @Override
+    public List<String> getRoulettePlayers() {
+        return roulettePlayers;
+    }
+
+    @Override
+    public void setRoulettePlayers(List<String> players) {
+        this.roulettePlayers = players;
     }
 
     @Override
