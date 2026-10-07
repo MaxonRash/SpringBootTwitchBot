@@ -30,12 +30,15 @@
     </appender>
 
     <!--
-      Dedicated chat stream, fed by utilities/ChatLog. additivity="false" keeps it out of the console
-      (it is the file transcript only), and its own INFO level means it is captured on every profile,
-      including prod, regardless of the com.bot.springboottwitchbot console level.
+      Dedicated chat stream, fed by utilities/ChatLog. Written to both the rolling file and the console.
+      additivity="false" stops it from ALSO propagating to the root console appender (which would double
+      each line); its own INFO level means the full chat is captured on every profile, including prod,
+      regardless of the com.bot.springboottwitchbot console level.
     -->
     <logger name="CHAT" level="INFO" additivity="false">
         <appender-ref ref="CHAT_FILE"/>
+        <!-- Also echo the full chat (IN/OUT) to the console/app.log, not just the rolling file. -->
+        <appender-ref ref="CONSOLE"/>
     </logger>
 
     <root level="INFO">

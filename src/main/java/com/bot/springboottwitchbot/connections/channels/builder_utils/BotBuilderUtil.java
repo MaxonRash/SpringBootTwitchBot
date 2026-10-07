@@ -69,7 +69,6 @@ public class BotBuilderUtil {
      * (on whichever channel) is visible in the logs.
      */
     public void sendMessage(String channel, String message) {
-        log.info("[SEND -> {}] {}", channel, message);
         com.bot.springboottwitchbot.utilities.ChatLog.out(channel, message);
         twitchClientBot.getChat().sendMessage(channel, message);
     }
