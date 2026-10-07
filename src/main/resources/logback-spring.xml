@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!--
+      Reuse Spring Boot's default console setup so the existing console logging (pattern, colors) and
+      the per-profile levels from application*.properties (logging.level.*) are unchanged: Spring Boot
+      applies those level overrides on top of this file after loading it.
+    -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <!--
+      Rolling chat transcript: writes to chat.log, rolls over once per calendar day, and keeps only the
+      last 7 daily files (maxHistory) - the oldest is deleted automatically on the 8th day.
+    -->
+    <!--
+      Directory for chat.log. Defaults to the working directory ("."); override with the CHAT_LOG_DIR
+      env var or -DCHAT_LOG_DIR=... (the deploy script sets it to /usr/games so the file lands there
+      instead of inside target/, which is where the jar runs from).
+    -->
+    <appender name="CHAT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${CHAT_LOG_DIR:-.}/chat.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${CHAT_LOG_DIR:-.}/chat.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--
+      Dedicated chat stream, fed by utilities/ChatLog. additivity="false" keeps it out of the console
+      (it is the file transcript only), and its own INFO level means it is captured on every profile,
+      including prod, regardless of the com.bot.springboottwitchbot console level.
+    -->
+    <logger name="CHAT" level="INFO" additivity="false">
+        <appender-ref ref="CHAT_FILE"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
