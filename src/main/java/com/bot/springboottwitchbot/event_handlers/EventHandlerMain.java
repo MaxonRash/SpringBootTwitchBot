@@ -51,8 +51,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 public class EventHandlerMain {
     private static final Logger log = LoggerFactory.getLogger(EventHandlerMain.class);
     ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
-    private String firstDuelName = null;
-    private String secondDuelName = null;
     @Autowired
     UsersService usersService;
     @Autowired
@@ -62,135 +60,7 @@ public class EventHandlerMain {
 
     // printChannelMessage migrated to commands/MessageLoggingCommand (Phase 5).
 
-    @EventSubscriber
-    public void duelCommand(ChannelMessageEvent event) throws IOException {
-        String newMessage = event.getMessage().toLowerCase();
-
-        String[] array = newMessage.split(" ");
-        ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(array));
-        arrayList.remove(TwitchText.INVISIBLE_TAG);
-
-        if (newMessage.toLowerCase().startsWith("!duel") && (arrayList.size() > 1)) {
-
-            if (/*newMessage.toLowerCase().startsWith("!duel") && */(GlobalDuelTimer.duelTimerToAccept != null) && (GlobalDuelTimer.duelCooldownTimer == null)) {
-//            System.out.println("this works");
-                String eventChannel = event.getChannel().getName();
-
-                String secondDuelName = arrayList.get(1).toLowerCase();
-                if (secondDuelName.startsWith("@")) {
-                    secondDuelName = secondDuelName.substring(1);
-                }
-                if (secondDuelName.equals(this.firstDuelName) && (event.getUser().getName().equals(this.secondDuelName))) {
-                    GlobalDuelTimer.duelTimerToAccept.cancel();
-                    GlobalDuelTimer.duelTimerToAccept = null;
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel,
-                            "@" + this.firstDuelName + " и " + "@" + this.secondDuelName + " подходят друг к другу...");
-                    GlobalDuelTimer.duelCooldownTimer = new Timer("duelCoolDownTimer");
-                    //TODO change delay to 600
-                    long delay = 600 * 1000L;
-                    GlobalDuelTimer.duelCooldownTimer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            GlobalDuelTimer.duelCooldownTimer = null;
-                        }
-                    }, delay); // delay of duel cooldown
-                    GlobalDuelTimer.setDuelCoolDownTimerLeft(delay / 1000);
-                    if (UtilityCommandsMainChannel.getModeratorsList().contains(this.secondDuelName)) {
-                        applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + firstDuelName + " он же модир FailFish");
-                        UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstDuelName), 60, "duel");
-                    }
-                    else {
-                        int dice = (int) (Math.random() * 2) + 1;
-                        if (dice == 1) {
-                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + this.firstDuelName
-                                    + " отстреливает " + "@" + this.secondDuelName + " лицо happaDans");
-                            UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(this.secondDuelName), 60, "duel");
-                        }
-                        if (dice == 2) {
-                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + this.secondDuelName
-                                    + " отстреливает " + "@" + this.firstDuelName + " лицо happaDans");
-                            UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(this.firstDuelName), 60, "duel");
-                        }
-                    }
-                    //TODO duel logic
-                }
-
-                this.firstDuelName = null;
-                this.secondDuelName = null;
-            }
-
-            //snachala rabotaet 2 else, perviy uje na otvet
-
-            else if (/*newMessage.toLowerCase().startsWith("!duel") && */(GlobalDuelTimer.duelTimerToAccept == null) && (GlobalDuelTimer.duelCooldownTimer == null)) {
-//            String[] array = newMessage.split(" ");
-                String secondDuelName = arrayList.get(1).toLowerCase();
-                if (secondDuelName.startsWith("@")) {
-                    secondDuelName = secondDuelName.substring(1);
-                }
-                String eventChannel = event.getChannel().getName();
-                String firstDuelName = event.getUser().getName();
-                if (firstDuelName.equals(secondDuelName)) {
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel,"@" + firstDuelName + " выстрелил себе в лицо FailFish");
-                    UtilityCommandsMainChannel.timeoutUser(UtilityCommandsGlobal.getUserIdByName(firstDuelName), 60, "duel");
-                    GlobalDuelTimer.duelCooldownTimer = new Timer("duelCoolDownTimer");
-                    //TODO change delay to 600
-                    long delay = 600 * 1000L;
-                    GlobalDuelTimer.duelCooldownTimer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            GlobalDuelTimer.duelCooldownTimer = null;
-                        }
-                    }, delay); // delay of duel cooldown
-                    GlobalDuelTimer.setDuelCoolDownTimerLeft(delay / 1000);
-                }
-                else {
-                    this.firstDuelName = firstDuelName.toLowerCase();
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + firstDuelName + " вызывает " + "@" + secondDuelName + " на дуэль! happaPled");
-                    log.debug("duel command args: {}", arrayList);
-                    String finalSecondDuelName = secondDuelName;
-                    this.secondDuelName = finalSecondDuelName;
-//            System.out.println("second name = " + this.secondDuelName + "// first name = " + this.firstDuelName);
-                    TimerTask timerTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            applicationContext.getBean(BotBuilderUtil.class).sendMessage(eventChannel, "@" + finalSecondDuelName + " намочил штанишки 4Head");
-                            GlobalDuelTimer.duelTimerToAccept = null;
-                        }
-                    };
-                    if (GlobalDuelTimer.duelTimerToAccept == null) {
-                        GlobalDuelTimer.duelTimerToAccept = new Timer("duelTimer");
-                        //TODO change delay to 30
-                        long delay = 30 * 1000L; // delay for "namochil shtanishki"
-                        GlobalDuelTimer.duelTimerToAccept.schedule(timerTask, delay);
-                    }
-                }
-            }
-            else if (Global10secCDTimer.getGlobal10secTimer() == null) {
-                if (GlobalDuelTimer.duelCoolDownTimerLeft != 0) {
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
-                            + " вызвать кого-либо на дуэль можно через " + GlobalDuelTimer.duelCoolDownTimerLeft + " секунд OpieOP");
-                    Global10secCDTimer.setGlobal10secTimer();
-                }
-                else {
-                    applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
-                            + " можно вызвать кого-то на дуэль Kappa");
-                    Global10secCDTimer.setGlobal10secTimer();
-                }
-            }
-        }
-        else if (newMessage.toLowerCase().startsWith("!duel") && (arrayList.size() == 1) && (Global10secCDTimer.getGlobal10secTimer() == null)){
-            if (GlobalDuelTimer.duelCoolDownTimerLeft != 0) {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
-                        + " вызвать кого-либо на дуэль можно через " + GlobalDuelTimer.duelCoolDownTimerLeft + " секунд OpieOP");
-                Global10secCDTimer.setGlobal10secTimer();
-            }
-            else {
-                applicationContext.getBean(BotBuilderUtil.class).sendMessage(event.getChannel().getName(), "@" + event.getUser().getName()
-                        + " можно вызвать кого-то на дуэль Kappa");
-                Global10secCDTimer.setGlobal10secTimer();
-            }
-        }
-    }
+    // duelCommand (!duel) migrated to commands/DuelCommand (Phase 5).
 
     // killCommand (!kill) migrated to commands/KillCommand (Phase 5).
 

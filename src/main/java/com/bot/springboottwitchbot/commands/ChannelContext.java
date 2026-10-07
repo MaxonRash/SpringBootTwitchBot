@@ -48,6 +48,9 @@ public interface ChannelContext {
 
     void setGptBotMode(GptBotMode mode);
 
+    /** Per-channel pending-duel state (independent between test and main). */
+    DuelState getDuelState();
+
     /** Sends a chat message to this channel via the bot account (logged by the builder util). */
     void send(String message);
 }

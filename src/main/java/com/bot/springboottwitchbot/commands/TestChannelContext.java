@@ -20,6 +20,7 @@ public class TestChannelContext implements ChannelContext {
     private final BotProperties botProperties;
     private TsyaMode tsyaMode = TsyaMode.OFF;
     private GptBotMode gptBotMode = GptBotMode.ON;
+    private final DuelState duelState = new DuelState();
 
     @Autowired
     public TestChannelContext(BotBuilderUtil botBuilderUtil, BotProperties botProperties) {
@@ -85,6 +86,11 @@ public class TestChannelContext implements ChannelContext {
     @Override
     public void setGptBotMode(GptBotMode mode) {
         this.gptBotMode = mode;
+    }
+
+    @Override
+    public DuelState getDuelState() {
+        return duelState;
     }
 
     @Override
