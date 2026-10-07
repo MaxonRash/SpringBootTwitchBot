@@ -30,6 +30,10 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### Chat transcript (rolling 7-day log written by logback-spring.xml) ###
+chat.log
+chat.*.log
+
 ### VS Code ###
 .vscode/
 /src/main/resources/databaseCredentials.properties

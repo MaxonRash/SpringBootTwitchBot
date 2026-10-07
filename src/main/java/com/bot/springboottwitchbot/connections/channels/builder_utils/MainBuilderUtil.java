@@ -60,6 +60,7 @@ public class MainBuilderUtil {
      */
     public void sendMessage(String channel, String message) {
         log.info("[SEND (main acct) -> {}] {}", channel, message);
+        com.bot.springboottwitchbot.utilities.ChatLog.out(channel, message);
         twitchClientMain.getChat().sendMessage(channel, message);
     }
 }

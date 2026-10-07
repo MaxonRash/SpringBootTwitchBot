@@ -1,5 +1,6 @@
 package com.bot.springboottwitchbot.commands;
 
+import com.bot.springboottwitchbot.utilities.ChatLog;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,5 +25,6 @@ public class MessageLoggingCommand implements ChatCommand {
     public void execute(ChannelMessageEvent event, ChannelContext ctx) {
         log.debug("[{}]{{dispatcher}}[{}] {}: {}", event.getChannel().getName(), event.getPermissions(),
                 event.getUser().getName(), event.getMessage());
+        ChatLog.in(event.getChannel().getName(), event.getUser().getName(), event.getMessage());
     }
 }
